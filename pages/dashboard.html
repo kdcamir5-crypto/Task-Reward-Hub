@@ -1,1 +1,77 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - ড্যাশবোর্ড</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app">
+    <header class="head">
+      <div class="head__top">
+        <strong>Task Reward Hub</strong>
+        <span>
+          <button class="icon-btn" id="bell" type="button">নোটিফিকেশন<span class="badge">2</span></button>
+          <button class="icon-btn" id="logout" type="button">সাইন আউট</button>
+        </span>
+      </div>
+      <div class="who"><h2 id="name"></h2><p id="uid"></p></div>
+    </header>
+
+    <section class="balances">
+      <div class="bal"><span>মোট ব্যালেন্স</span><strong id="balance">৳ 0.00</strong></div>
+      <div class="bal"><span>উইথড্র করা যাবে</span><strong>৳ 0.00</strong></div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><strong id="tasks">0</strong><span>সম্পন্ন টাস্ক</span></div>
+      <div class="stat"><strong id="refs">0</strong><span>রেফারেল</span></div>
+      <div class="stat"><strong>Level 1</strong><span>শুরুর স্তর</span></div>
+    </section>
+
+    <h3 class="section">দ্রুত যান</h3>
+    <div class="grid">
+      <a class="tile" href="#"><b>টাস্ক</b><small>কাজ করে আয় করুন</small></a>
+      <a class="tile" href="#"><b>রিওয়ার্ড কোড</b><small>দৈনিক বোনাস নিন</small></a>
+      <a class="tile" href="#"><b>ওয়ালেট</b><small>ব্যালেন্স ও উইথড্র</small></a>
+      <a class="tile" href="#"><b>সাপোর্ট</b><small>সাহায্য নিন</small></a>
+    </div>
+
+    <section class="refbox">
+      <b>আপনার রেফারেল লিংক</b>
+      <code id="reflink"></code>
+      <button id="copy" type="button">লিংক কপি করুন</button>
+    </section>
+
+    <h3 class="section">সাম্প্রতিক কার্যক্রম</h3>
+    <p class="empty">এখনো কোনো কার্যক্রম নেই। প্রথম টাস্ক শুরু করুন।</p>
+
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html" aria-current="page">হোম</a>
+      <a href="#">টাস্ক</a>
+      <a href="#">ফিড</a>
+      <a href="#">প্রোফাইল</a>
+    </nav>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet__body">
+      <button class="sheet__close" id="close" type="button">বন্ধ করুন</button>
+      <h3>নোটিফিকেশন</h3>
+      <ul>
+        <li>স্বাগতম!<small>আপনার অ্যাকাউন্ট তৈরি হয়েছে।</small></li>
+        <li>প্রথম টাস্ক<small>টাস্ক সম্পন্ন করে রিওয়ার্ড জিতুন।</small></li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>
