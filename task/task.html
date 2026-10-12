@@ -1,1 +1,36 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - টাস্ক</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top"><strong>টাস্ক</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
+    <div class="tabs2">
+      <button type="button" data-f="all" aria-pressed="true">সব</button>
+      <button type="button" data-f="open" aria-pressed="false">নতুন</button>
+      <button type="button" data-f="mine" aria-pressed="false">আমার জমা</button>
+    </div>
+    <div id="list"></div>
+    <p class="note">প্রমাণ জমা দেওয়ার পর অ্যাডমিন যাচাই করলে রিওয়ার্ড ব্যালেন্সে যোগ হবে।</p>
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html">হোম</a>
+      <a href="tasks.html" aria-current="page">টাস্ক</a>
+      <a href="#">ফিড</a>
+      <a href="#">প্রোফাইল</a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/tasks-data.js"></script>
+  <script src="../js/tasks.js"></script>
+</body>
+</html>
