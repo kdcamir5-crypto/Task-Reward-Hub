@@ -1,0 +1,17 @@
+/* base.css - সব পেজে ব্যবহৃত রঙ, ফন্ট ও সাধারণ স্টাইল */
+:root{
+  --bg:#F5F7F2; --card:#FFFFFF; --ink:#1B1F1D; --muted:#5E6A64;
+  --forest:#0F3D2E; --lime:#E3F26F; --line:#D9E0DA; --danger:#B3261E;
+  --on-forest:#F5F7F2; --radius:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0C1713; --card:#14241D; --ink:#EAF1EC; --muted:#9DB0A5;
+  --forest:#E3F26F; --lime:#E3F26F; --line:#274034; --danger:#FF8A80;
+  --on-forest:#0C1713;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

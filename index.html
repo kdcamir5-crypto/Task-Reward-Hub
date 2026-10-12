@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - সাইন ইন</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <button class="theme" id="theme" type="button">ডার্ক / লাইট</button>
+  <main class="login">
+    <div class="login__box">
+      <div class="login__brand">
+        <h1>Task Reward Hub</h1>
+        <p>টাস্ক সম্পন্ন করুন, রিওয়ার্ড জিতুন।</p>
+      </div>
+      <div class="login__card">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" data-mode="signin" aria-selected="true">সাইন ইন</button>
+          <button type="button" role="tab" data-mode="signup" aria-selected="false">নতুন অ্যাকাউন্ট</button>
+        </div>
+        <form id="form" novalidate>
+          <div class="field">
+            <label for="email">ইমেইল</label>
+            <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+          </div>
+          <div class="field">
+            <label for="password">পাসওয়ার্ড</label>
+            <div class="pw">
+              <input id="password" type="password" autocomplete="current-password" placeholder="কমপক্ষে ৬ অক্ষর" required>
+              <button type="button" id="toggle-pw" aria-label="পাসওয়ার্ড দেখান বা লুকান">দেখুন</button>
+            </div>
+          </div>
+          <div class="field hidden" id="confirm-wrap">
+            <label for="confirm">পাসওয়ার্ড আবার লিখুন</label>
+            <input id="confirm" type="password" autocomplete="new-password">
+          </div>
+          <p class="msg" id="msg" role="alert"></p>
+          <button class="btn" id="submit" type="submit">সাইন ইন</button>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
