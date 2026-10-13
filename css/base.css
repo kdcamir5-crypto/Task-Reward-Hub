@@ -1,17 +1,126 @@
-/* base.css - সব পেজে ব্যবহৃত রঙ, ফন্ট ও সাধারণ স্টাইল */
-:root{
-  --bg:#F5F7F2; --card:#FFFFFF; --ink:#1B1F1D; --muted:#5E6A64;
-  --forest:#0F3D2E; --lime:#E3F26F; --line:#D9E0DA; --danger:#B3261E;
-  --on-forest:#F5F7F2; --radius:14px;
+/* 
+  Task-Reward-Hub - Global Modern UI Base Styling
+  Theme: Cyber Dynamic Dark
+*/
+
+@import url('https://googleapis.com');
+
+:root {
+    /* Color Grading System */
+    --bg-main: linear-gradient(135deg, #0f172a 0%, #0b0f19 100%);
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(255, 255, 255, 0.08);
+    
+    --color-primary: #8b5cf6;      /* Vivid Purple */
+    --color-secondary: #06b6d4;    /* Neon Cyan */
+    --color-accent: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 100%);
+    
+    --text-main: #f8fafc;          /* High contrast white */
+    --text-muted: #94a3b8;         /* Silver gray */
+    --color-success: #10b981;      /* Neon Green for Earn/Wallet */
+    
+    --shadow-glow: 0 8px 32px 0 rgba(139, 92, 246, 0.15);
+    --radius-lg: 16px;
+    --radius-md: 12px;
 }
-:root[data-theme="dark"]{
-  --bg:#0C1713; --card:#14241D; --ink:#EAF1EC; --muted:#9DB0A5;
-  --forest:#E3F26F; --lime:#E3F26F; --line:#274034; --danger:#FF8A80;
-  --on-forest:#0C1713;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Card Effect */
+.card, .dashboard-box, .task-item, .reward-box {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover, .task-item:hover, .reward-box:hover {
+    transform: translateY(-4px);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Attractive Gradient Buttons */
+.btn-primary, button[type="submit"], .claim-btn {
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover, button[type="submit"]:hover {
+    opacity: 0.95;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Earning/Wallet Balance Highlight */
+.balance-text, .points-display {
+    color: var(--color-success);
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Typography Enhancements */
+h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p {
+    color: var(--text-muted);
+}
+
+/* Beautiful Inputs for Login/Forms */
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    padding: 14px;
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
