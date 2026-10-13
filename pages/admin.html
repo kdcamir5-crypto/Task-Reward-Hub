@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - অ্যাডমিন</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+  <link rel="stylesheet" href="../css/wallet.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top"><strong>অ্যাডমিন প্যানেল</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
+
+    <section class="box hidden" id="gate"><h3>অনুমতি নেই</h3><p class="lock">এই পেজ শুধু অ্যাডমিনদের জন্য।</p></section>
+
+    <div class="hidden" id="panel">
+      <section class="box">
+        <h3>অপেক্ষায় থাকা জমা</h3>
+        <div id="subs"></div>
+      </section>
+
+      <section class="box">
+        <h3>নতুন টাস্ক</h3>
+        <form id="tform" novalidate>
+          <input id="ttitle" maxlength="80" placeholder="শিরোনাম" aria-label="শিরোনাম">
+          <textarea id="tdesc" rows="2" maxlength="200" placeholder="বিবরণ" aria-label="বিবরণ"></textarea>
+          <input id="treward" type="number" min="0.5" step="0.5" placeholder="রিওয়ার্ড (৳)" aria-label="রিওয়ার্ড">
+          <input id="tproof" maxlength="80" placeholder="ইউজারের কাছে কী প্রমাণ চাইবেন?" aria-label="প্রমাণের নির্দেশ">
+          <button class="go" type="submit">টাস্ক যুক্ত করুন</button>
+          <p class="msg2" id="tmsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="box">
+        <h3>সব টাস্ক</h3>
+        <div id="tlist"></div>
+      </section>
+    </div>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/guard.js"></script>
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>
