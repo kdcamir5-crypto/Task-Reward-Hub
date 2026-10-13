@@ -91,3 +91,10 @@
     box-shadow: none !important;
   }
 }
+
+
+/* Mining Robot progress card — visual card only; functionality will be added later */
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stat--mining .stat__icon--mining{background:#E3FCEF;color:#087F5B;font-size:19px}
+.stat--mining strong{font-size:.88rem;letter-spacing:-.35px;overflow-wrap:anywhere}
+@media(max-width:390px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat--mining strong{font-size:1rem}}
