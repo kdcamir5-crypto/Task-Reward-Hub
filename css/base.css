@@ -1,27 +1,26 @@
 /* 
-  Task-Reward-Hub - Global Modern UI Base Styling
-  Theme: Premium Cosmic Dark 
+  Task-Reward-Hub - Ultimate Global Base Styling
+  Fixes All Black Screens on Tasks, Feed, and Profile Pages
 */
 
 @import url('https://googleapis.com');
 
 :root {
-    /* উন্নত কালার গ্রেডিং সিস্টেম */
-    --bg-main: #0B0F19; 
-    --bg-card: #151D30;
-    --bg-input: #0D1322;
+    --bg-main: #090D16; 
+    --bg-card: #131A2B;
+    --bg-input: #0B101D;
     --border-color: rgba(255, 255, 255, 0.06);
     
-    --color-primary: #8B5CF6;      /* সাইবার পার্পল */
-    --color-secondary: #06B6D4;    /* ইলেকট্রিক সায়ান */
+    --color-primary: #8B5CF6;      
+    --color-secondary: #06B6D4;    
     --color-accent: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
     
-    --text-main: #F8FAFC;          /* উজ্জ্বল সাদা টেক্সট */
-    --text-muted: #94A3B8;         /* হালকা রূপালী টেক্সট */
-    --color-success: #10B981;      /* ব্যালেন্সের জন্য নিয়ন গ্রিন */
+    --text-main: #F8FAFC;          
+    --text-muted: #94A3B8;         
+    --color-success: #10B981;      
     
     --radius-lg: 16px;
-    --radius-md: 10px;
+    --radius-md: 12px;
     --shadow-glow: 0 4px 20px rgba(6, 182, 212, 0.15);
 }
 
@@ -30,204 +29,234 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background-color: var(--bg-main);
-    color: var(--text-main);
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
     min-height: 100vh;
-    padding: 20px;
+    padding: 20px 20px 90px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* পুরো ইন্টারফেস কন্টেইনার */
-.container, main, #app {
+.app {
     width: 100%;
-    max-width: 500px; /* মোবাইল ফ্রেন্ডলি সাইজ */
+    max-width: 480px;
     margin: 0 auto;
 }
 
-/* শীর্ষ হেডার ও ইউজার ইনফো */
-header, .header-section {
+/* ==========================================================================
+   ১. কমন হেডার ও পেজ টপ স্টাইলিং (টাস্ক, ফিড, প্রোফাইল সব পেজের জন্য)
+   ========================================================================== */
+header, .header-section, .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
     width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
 }
 
-.logo, h1 {
-    font-size: 1.25rem;
+h1, h2, h3, .section {
+    color: var(--text-main) !important;
     font-weight: 700;
-    color: var(--text-main);
 }
 
-/* নোটিফিকেশন ও সাইন আউট বাটন */
-.nav-buttons, header div {
-    display: flex;
-    gap: 8px;
-}
-
-header button, .nav-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-main);
-    padding: 6px 12px;
+.icon-btn, .dashboard-btn, header button, .nav-btn, a[href="dashboard.html"] {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-white) !important;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
-    transition: all 0.2s;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-header button:hover, .nav-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--color-secondary);
-}
-
-/* ইউজার আইডি সেকশন */
-.user-profile {
+/* ==========================================================================
+   ২. টাস্ক পেজ ফিক্স (`tasks.html` এর জন্য অটো-বক্সিং)
+   ========================================================================== */
+/* টাস্ক ফিল্টার মেনু (সব, নতুন, আমার জমা) */
+.task-tabs, .tabs, .filter-nav {
+    display: flex;
+    justify-content: space-around;
     margin-bottom: 25px;
+    background: var(--bg-input);
+    padding: 8px;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
 }
-.user-profile h2 {
-    font-size: 1.4rem;
-    font-weight: 700;
-}
-.user-profile p {
+
+.task-tabs span, .tabs button, .tab-item {
     color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+.task-tabs .active, .tabs .active {
+    color: var(--color-secondary) !important;
+    background: rgba(6, 182, 212, 0.1);
+}
+
+/* প্রতিটি টাস্ক আইটেম বক্স */
+.task-item, .task-card, .task, [id^="task"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-item h4, .task-item b {
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.task-item p, .task-item small {
+    color: var(--text-muted) !important;
+    font-size: 0.85rem;
+}
+
+/* টাস্কের ভেতরের লিংক ও বাটন */
+.task-item a, .link-btn {
+    color: var(--color-secondary) !important;
+    text-decoration: none;
+    font-weight: 600;
     font-size: 0.9rem;
 }
 
-/* ব্যালেন্স গ্রিড (মোট ব্যালেন্স এবং উইথড্র) */
-.balance-grid, .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-/* গ্লাস কার্ড ইফেক্ট (যা আপনার ব্ল্যাক স্ক্রিন ঠিক করবে) */
-.balance-card, .stat-box, .menu-item, .referral-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 16px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s, border-color 0.2s;
-}
-
-.balance-card:hover, .menu-item:hover {
-    transform: translateY(-2px);
-    border-color: rgba(6, 182, 212, 0.3);
-}
-
-.balance-card p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-}
-
-.balance-card h3 {
-    color: var(--color-success);
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-/* স্ট্যাটাস গ্রিড (টাস্ক, রেফারেল, লেভেল) */
-.stats-grid {
-    grid-template-columns: 1fr 1fr 1fr;
-    margin-bottom: 30px;
-}
-
-.stat-box h4 {
-    font-size: 1.3rem;
-    color: var(--text-main);
-}
-.stat-box p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 4px;
-}
-
-/* সেকশন টাইটেল (যেমন: দ্রুত যান, সাম্প্রতিক কার্যক্রম) */
-.section-title {
-    font-size: 1.1rem;
+/* প্রমান জমা দিন / স্ক্রিনশট বাটন */
+.task-item button, button[type="submit"], #copy, .submit-btn {
+    background: var(--color-accent) !important;
+    color: white !important;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
     font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--text-main);
-    border-left: 3px solid var(--color-primary);
-    padding-left: 10px;
-    text-align: left;
-}
-
-/* ৪টি প্রধান মেনু গ্রিড (টাস্ক, রিওয়ার্ড, ওয়ালেট, সাপোর্ট) */
-.menu-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.menu-item {
-    text-align: left;
-    padding: 20px 16px;
+    font-size: 0.9rem;
     cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
-.menu-item h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 4px;
-}
-
-.menu-item p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-/* রেফারেল লিংক বক্স */
-.referral-box {
-    text-align: left;
-    padding: 20px;
-    margin-bottom: 30px;
-}
-
-.referral-box p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+/* ==========================================================================
+   ৩. কমিউনিটি ফিড পেজ ফিক্স (`feed.html`)
+   ========================================================================== */
+/* টেক্সট এরিয়া ইনপুট বক্স */
+textarea, .feed-input {
+    width: 100%;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md);
+    padding: 15px;
+    color: var(--text-main) !important;
+    font-size: 0.9rem;
+    resize: none;
     margin-bottom: 10px;
 }
 
-.referral-input-group {
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    padding: 12px;
-    border-radius: var(--radius-md);
-    word-break: break-all;
+textarea:focus {
+    outline: none;
+    border-color: var(--color-primary) !important;
+}
+
+/* ফাকা নোটিশ */
+.empty, .no-data {
+    color: var(--text-muted);
     font-size: 0.85rem;
-    color: var(--color-secondary);
-    margin-bottom: 12px;
-}
-
-/* আকর্ষণীয় গ্রেডিয়েন্ট বাটন */
-.btn-action {
-    background: var(--color-accent);
-    color: #fff;
-    border: none;
-    width: 100%;
-    padding: 12px;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.01);
+    padding: 20px;
     border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    box-shadow: var(--shadow-glow);
-    transition: opacity 0.2s;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    text-align: center;
+    margin-top: 15px;
 }
 
-.btn-action:hover {
-    opacity: 0.9;
+/* ==========================================================================
+   ৪. প্রোফাইল পেজ ফিক্স (`profile.html`)
+   ========================================================================== */
+/* প্রোফাইল ফর্মের লেবেলসমূহ */
+.profile-section b, .form-group label, .profile-form span {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 15px;
+}
+
+/* ইনপুট বক্সের গ্লোবাল ডিজাইন (ফোন নম্বর, ইউজারনেম) */
+input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+    width: 100%;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    color: var(--text-main) !important;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--color-secondary) !important;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+/* রেফারেল কোড কপি করার জন্য ছোট কার্ড */
+.referral-card, .ref-code-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   ৫. গ্লোবাল বটম নেভিগেশন বার (সবার নিচে ফিক্সড থাকবে)
+   ========================================================================== */
+.nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: rgba(19, 26, 43, 0.95) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 15px 0;
+    z-index: 999;
+}
+
+.nav a {
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+    font-size: 0.85rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.nav a:hover, .nav a[aria-current="page"] {
+    color: var(--color-secondary) !important;
+    font-weight: 700;
 }
