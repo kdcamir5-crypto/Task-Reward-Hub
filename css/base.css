@@ -1,17 +1,62 @@
-/* base.css - সব পেজে ব্যবহৃত রঙ, ফন্ট ও সাধারণ স্টাইল */
+/* base.css - Task Reward Hub global premium dark theme */
 :root{
-  --bg:#F5F7F2; --card:#FFFFFF; --ink:#1B1F1D; --muted:#5E6A64;
-  --forest:#0F3D2E; --lime:#E3F26F; --line:#D9E0DA; --danger:#B3261E;
-  --on-forest:#F5F7F2; --radius:14px;
+  color-scheme:dark;
+  --bg:#07130F;
+  --card:#101F19;
+  --ink:#ECFDF5;
+  --muted:#9BB5A8;
+  --forest:#16A36A;
+  --lime:#7CF0B2;
+  --line:#244638;
+  --danger:#FF8B8B;
+  --on-forest:#04110B;
+  --radius:18px;
+  --shadow:0 14px 34px rgba(0,0,0,.22);
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#F3F8F5;
+  --card:#FFFFFF;
+  --ink:#14251D;
+  --muted:#60766A;
+  --forest:#087F50;
+  --lime:#B9F6D4;
+  --line:#D7E6DD;
+  --danger:#B3261E;
+  --on-forest:#FFFFFF;
 }
 :root[data-theme="dark"]{
-  --bg:#0C1713; --card:#14241D; --ink:#EAF1EC; --muted:#9DB0A5;
-  --forest:#E3F26F; --lime:#E3F26F; --line:#274034; --danger:#FF8A80;
-  --on-forest:#0C1713;
+  color-scheme:dark;
+  --bg:#07130F;
+  --card:#101F19;
+  --ink:#ECFDF5;
+  --muted:#9BB5A8;
+  --forest:#16A36A;
+  --lime:#7CF0B2;
+  --line:#244638;
+  --danger:#FF8B8B;
+  --on-forest:#04110B;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+html,body{min-height:100%;scroll-behavior:smooth}
+body{
+  font-family:'Hind Siliguri',system-ui,sans-serif;
+  background:
+    radial-gradient(ellipse at top left,rgba(22,163,106,.10),transparent 42%),
+    var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{transition:background-color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+button:not(:disabled){cursor:pointer}
+button:not(:disabled):active{transform:translateY(1px)}
+input,select,textarea{
+  accent-color:var(--forest);
+}
+:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+::selection{background:var(--forest);color:var(--on-forest)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
