@@ -1,11 +1,8 @@
-/* profile.css - প্রোফাইল ও সেটিংস (.app, .top, .nav, .box ইত্যাদি অন্য CSS থেকে আসে) */
-.pcard{margin:16px;background:var(--forest);color:var(--on-forest);border-radius:var(--radius);padding:18px;display:flex;gap:14px;align-items:center}
-.avatar{width:56px;height:56px;border-radius:50%;background:var(--lime);color:#0F3D2E;display:grid;place-items:center;font-size:1.5rem;font-weight:700;flex:none}
-.pcard h2{font-size:1.15rem}
-.pcard p{opacity:.85;font-size:.85rem;word-break:break-all}
-.refrow{display:flex;gap:8px;align-items:center}
-.refrow code{flex:1;background:var(--bg);padding:9px;border-radius:8px;font-size:.9rem}
-.refrow button{border:0;background:var(--forest);color:var(--on-forest);padding:9px 14px;border-radius:8px;font-weight:600;cursor:pointer}
-.box label{font-size:.85rem;font-weight:600}
-.danger{width:100%;border:1px solid var(--danger);background:none;color:var(--danger);padding:11px;border-radius:10px;font-weight:700;cursor:pointer}
-input[readonly]{opacity:.7}
+/* Profile and settings */
+.pcard{margin:16px;background:linear-gradient(135deg,#123D8B,#176BFF 70%,#39BFFF);color:#fff;border:1px solid rgba(57,216,255,.28);border-radius:20px;padding:19px;display:flex;gap:14px;align-items:center;box-shadow:0 10px 24px rgba(23,107,255,.17)}
+.avatar{width:56px;height:56px;border-radius:50%;background:#39D8FF;color:#07152F;display:grid;place-items:center;font-size:1.5rem;font-weight:700;flex:none}
+.pcard h2{font-size:1.15rem}.pcard p{opacity:.9;font-size:.85rem;word-break:break-all}
+.refrow{display:flex;gap:8px;align-items:center}.refrow code{flex:1;min-width:0;overflow-wrap:anywhere;background:#F1F6FF;color:#29415F;padding:9px;border-radius:9px;font-size:.9rem}
+.refrow button{border:0;background:#176BFF;color:#fff;padding:9px 14px;border-radius:99px;font-weight:600;cursor:pointer}
+.box label{font-size:.85rem;font-weight:600;color:#10213F}.danger{width:100%;border:1px solid #E34D59;background:#FFF5F5;color:#C52F3B;padding:11px;border-radius:11px;font-weight:700;cursor:pointer}
+input[readonly]{opacity:.75}
