@@ -1,50 +1,39 @@
-/* base.css - Task Reward Hub global premium dark theme */
+/* Task Reward Hub - Deep Navy + Neon Sky Blue theme */
 :root{
   color-scheme:dark;
-  --bg:#07130F;
-  --card:#101F19;
-  --ink:#ECFDF5;
-  --muted:#9BB5A8;
-  --forest:#16A36A;
-  --lime:#7CF0B2;
-  --line:#244638;
-  --danger:#FF8B8B;
-  --on-forest:#04110B;
-  --radius:18px;
-  --shadow:0 14px 34px rgba(0,0,0,.22);
+  --bg:#07152F;
+  --card:#FFFFFF;
+  --ink:#10213F;
+  --muted:#62718B;
+  --forest:#176BFF;
+  --lime:#39D8FF;
+  --line:#DCE6F4;
+  --danger:#E34D59;
+  --on-forest:#FFFFFF;
+  --radius:20px;
+  --shadow:0 14px 34px rgba(1,10,30,.18);
 }
 :root[data-theme="light"]{
   color-scheme:light;
-  --bg:#F3F8F5;
-  --card:#FFFFFF;
-  --ink:#14251D;
-  --muted:#60766A;
-  --forest:#087F50;
-  --lime:#B9F6D4;
-  --line:#D7E6DD;
-  --danger:#B3261E;
-  --on-forest:#FFFFFF;
+  --bg:#07152F;--card:#FFFFFF;--ink:#10213F;--muted:#62718B;
+  --forest:#176BFF;--lime:#39D8FF;--line:#DCE6F4;--danger:#E34D59;--on-forest:#FFFFFF;
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#07130F;
-  --card:#101F19;
-  --ink:#ECFDF5;
-  --muted:#9BB5A8;
-  --forest:#16A36A;
-  --lime:#7CF0B2;
-  --line:#244638;
-  --danger:#FF8B8B;
-  --on-forest:#04110B;
+  --bg:#07152F;--card:#FFFFFF;--ink:#10213F;--muted:#62718B;
+  --forest:#176BFF;--lime:#39D8FF;--line:#DCE6F4;--danger:#E34D59;--on-forest:#FFFFFF;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%;scroll-behavior:smooth}
 body{
   font-family:'Hind Siliguri',system-ui,sans-serif;
   background:
-    radial-gradient(ellipse at top left,rgba(22,163,106,.10),transparent 42%),
+    radial-gradient(circle at 12% 8%,rgba(57,216,255,.12) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 78% 22%,rgba(57,216,255,.08) 0 1px,transparent 1.8px),
+    radial-gradient(ellipse at top left,rgba(23,107,255,.22),transparent 44%),
     var(--bg);
-  color:var(--ink);
+  background-size:24px 24px,32px 32px,auto,auto;
+  color:#F4F8FF;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
@@ -52,11 +41,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{transition:background-color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
 button:not(:disabled){cursor:pointer}
 button:not(:disabled):active{transform:translateY(1px)}
-input,select,textarea{
-  accent-color:var(--forest);
-}
+input,select,textarea{accent-color:var(--forest)}
 :focus-visible{outline:3px solid var(--lime);outline-offset:3px}
-::selection{background:var(--forest);color:var(--on-forest)}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
-}
+::selection{background:var(--forest);color:#fff}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
