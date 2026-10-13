@@ -1,0 +1,17 @@
+/* wallet.css - ওয়ালেট ও উইথড্র পেজ (.app, .top, .nav, .task ইত্যাদি অন্য CSS থেকে আসে) */
+.wcard{margin:16px;background:var(--forest);color:var(--on-forest);border-radius:var(--radius);padding:18px}
+.wcard span{opacity:.85;font-size:.85rem}
+.wcard strong{display:block;font-size:2rem}
+.wcard button{margin-top:10px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--lime);color:#0F3D2E}
+.box{margin:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.box h3{font-size:1rem;margin-bottom:8px}
+.box form{display:grid;gap:8px}
+.box input,.box select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%}
+.box .go{border:0;background:var(--forest);color:var(--on-forest);padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
+.warn{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:8px;font-size:.8rem;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.row small{display:block;color:var(--muted)}
+.lock{font-size:.75rem;color:var(--muted)}
+.msg2{min-height:1.3em;font-size:.85rem}
+.msg2.ok{color:#1D7A46}.msg2.err{color:var(--danger)}
+.hidden{display:none}
