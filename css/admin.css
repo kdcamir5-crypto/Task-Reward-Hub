@@ -1,0 +1,6 @@
+/* admin.css - অ্যাডমিন প্যানেল (বাকিটা wallet.css ও tasks.css থেকে আসে) */
+.acts{display:flex;gap:6px;flex:none}
+.mini{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.8rem}
+.mini.ok{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
+.mini.no{color:var(--danger);border-color:var(--danger)}
+.box textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%;font:inherit;color:inherit}
