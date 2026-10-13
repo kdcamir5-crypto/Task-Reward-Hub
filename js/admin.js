@@ -9,6 +9,9 @@ document.documentElement.dataset.theme = Store.get('theme', 'light');
 
 if (!me.profile || me.profile.role !== 'admin') {
   $('#gate').classList.remove('hidden');
+  // কেন ঢুকতে পারছেন না তার কারণ দেখায়
+  $('#why').textContent = 'লগইন ইমেইল: ' + me.email + ' | UID: ' + me.uid + ' | role: ' +
+    (me.profile ? JSON.stringify(me.profile.role) : 'নথি পাওয়া যায়নি') + (me.error ? ' | ত্রুটি: ' + me.error : '');
 } else {
   $('#panel').classList.remove('hidden');
   loadAll();
