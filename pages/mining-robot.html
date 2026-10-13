@@ -10,29 +10,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
   <style>
-    :root{color-scheme:dark}
-    body{font-family:'Hind Siliguri',sans-serif;background:#07152f;color:#eef5ff;margin:0}
-    .shop{width:min(100% - 28px,720px);margin:0 auto;padding:20px 0 42px}
-    .top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-    .back{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #27456f;border-radius:14px;background:#10264a;color:#fff;text-decoration:none;font-size:24px}
-    .brand{font-size:.75rem;color:#9bb5d9;letter-spacing:1.5px;font-weight:700}
-    h1{font-size:clamp(1.55rem,6vw,2.3rem);line-height:1.15;margin:4px 0 0}
-    .hero{position:relative;overflow:hidden;padding:25px 21px;border:1px solid #285184;border-radius:25px;background:radial-gradient(ellipse at 90% 0%,#164e83 0,transparent 48%),linear-gradient(145deg,#10264b,#0b1a37 68%);box-shadow:0 16px 44px #0003}
-    .robot{display:grid;place-items:center;width:66px;height:66px;border:1px solid #46d9ff66;border-radius:21px;background:#19bdf51b;font-size:36px;box-shadow:0 0 28px #27c8ff24;margin-bottom:18px}
-    .eyebrow{font-size:.72rem;letter-spacing:1.7px;color:#4bdcff;font-weight:800;margin:0 0 8px}
-    .hero h2{font-size:1.5rem;margin:0 0 8px}
-    .hero p{line-height:1.7;color:#bfd0e9;margin:0}
-    .status{display:flex;align-items:flex-start;gap:10px;padding:14px;margin-top:18px;border:1px solid #2b4770;border-radius:16px;background:#0b1a34;color:#cad9ee;font-size:.9rem;line-height:1.6}
-    .status-icon{flex:0 0 auto;font-size:20px}
-    .section-title{margin:25px 2px 10px;font-size:1.1rem}
-    .steps{display:grid;gap:10px}
-    .step{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid #1d355b;border-radius:17px;background:#0c1d3a}
-    .step-num{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:11px;background:#153b68;color:#5be1ff;font-weight:800}
-    .step strong{display:block;margin:0 0 3px}
-    .step p{margin:0;color:#aebfda;font-size:.88rem;line-height:1.55}
-    .footer{margin-top:22px;text-align:center;color:#8198bb;font-size:.78rem}
-    @media(prefers-reduced-motion:no-preference){.robot{animation:robotGlow 3.5s ease-in-out infinite alternate}@keyframes robotGlow{to{box-shadow:0 0 32px #27c8ff48;transform:translateY(-2px)}}}
-    @media(prefers-reduced-motion:reduce){.robot{animation:none}}
+    :root{color-scheme:dark;--bg:#07152f;--panel:#0c1d3a;--line:#23436d;--text:#eef5ff;--muted:#aebfda;--cyan:#4bdcff;--green:#76f3c0}
+    *{box-sizing:border-box}
+    body{font-family:'Hind Siliguri',sans-serif;background:radial-gradient(ellipse at 50% -12%,#123f72 0,transparent 48%),var(--bg);color:var(--text);margin:0;min-height:100vh}
+    button,input{font:inherit}
+    .shop{width:min(100% - 28px,980px);margin:0 auto;padding:18px 0 44px}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .back{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:#10264a;color:#fff;text-decoration:none;font-size:24px}
+    .brand{font-size:.72rem;color:#9bb5d9;letter-spacing:1.5px;font-weight:800}
+    h1{font-size:clamp(1.5rem,5vw,2.25rem);line-height:1.15;margin:4px 0 0}
+    .hero{position:relative;overflow:hidden;padding:23px 20px;border:1px solid #285184;border-radius:24px;background:radial-gradient(ellipse at 92% 0%,#164e83 0,transparent 48%),linear-gradient(145deg,#10264b,#0b1a37 68%);box-shadow:0 16px 44px #0003}
+    .hero-top{display:flex;align-items:center;gap:16px}
+    .robot{display:grid;place-items:center;flex:0 0 64px;width:64px;height:64px;border:1px solid #46d9ff66;border-radius:20px;background:#19bdf51b;font-size:34px;box-shadow:0 0 28px #27c8ff24}
+    .eyebrow{font-size:.7rem;letter-spacing:1.6px;color:var(--cyan);font-weight:800;margin:0 0 6px}
+    .hero h2{font-size:clamp(1.25rem,4vw,1.65rem);margin:0 0 5px}
+    .hero p{line-height:1.65;color:#bfd0e9;margin:0}
+    .unlock{display:flex;gap:12px;align-items:flex-start;margin-top:17px;padding:14px;border:1px solid #28634f;border-radius:16px;background:#0b2a2a;color:#d9fff0;line-height:1.6}
+    .unlock b{color:var(--green)}
+    .notice{margin-top:12px;padding:12px 14px;border:1px solid #6b5326;border-radius:14px;background:#2a2111;color:#f7dfad;font-size:.84rem;line-height:1.65}
+    .section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:25px 2px 12px}
+    .section-title h2{font-size:1.22rem;margin:0}
+    .section-title span{font-size:.78rem;color:#92a9ca}
+    .bots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .bot{min-width:0;overflow:hidden;border:1px solid #203d65;border-radius:20px;background:linear-gradient(160deg,#10274a,#0a1831);box-shadow:0 12px 26px #0002;transition:transform .2s,border-color .2s}
+    .bot:hover{transform:translateY(-3px);border-color:#3b83ae}
+    .bot-img-wrap{position:relative;height:180px;background:radial-gradient(ellipse at 50% 50%,#16436a,#0a1933 72%);overflow:hidden}
+    .bot-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+    .bot-number{position:absolute;top:10px;left:10px;padding:4px 9px;border:1px solid #ffffff30;border-radius:999px;background:#06152cbb;color:#dcecff;font-size:.7rem;font-weight:800}
+    .bot-body{padding:15px}
+    .bot h3{font-size:1.08rem;line-height:1.35;margin:0 0 10px}
+    .price-line{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+    .price{font-size:1.55rem;font-weight:800;color:#fff}
+    .price-caption{font-size:.76rem;color:#9eb5d7}
+    .details{display:grid;gap:8px;margin:0 0 14px}
+    .detail{display:flex;justify-content:space-between;gap:8px;font-size:.82rem;line-height:1.4}
+    .detail span{color:#9fb5d4}
+    .detail strong{text-align:right;font-weight:700}
+    .detail .commission{color:var(--green)}
+    .buy{width:100%;border:1px solid #2d8bb2;border-radius:12px;padding:11px 12px;color:#06172a;font-weight:800;background:linear-gradient(100deg,#64e5ff,#6df2c2);cursor:pointer}
+    .buy:focus-visible,.back:focus-visible,.modal button:focus-visible,.modal a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+    .buy:disabled{opacity:.6;cursor:wait}
+    .free-card{display:flex;gap:14px;align-items:center;padding:16px;border:1px dashed #3b7a78;border-radius:18px;background:#0b242f}
+    .free-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:16px;background:#123d4b;font-size:26px}
+    .free-card h3{font-size:1rem;margin:0 0 4px}
+    .free-card p{font-size:.84rem;line-height:1.55;color:#a9c2d9;margin:0}
+    .free-state{margin-left:auto;white-space:nowrap;color:#9cebd4;font-size:.78rem;font-weight:800}
+    .footer{text-align:center;color:#8198bb;font-size:.78rem;margin-top:24px}
+    .modal-backdrop{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:#020817d9;backdrop-filter:blur(7px)}
+    .modal-backdrop.open{display:flex}
+    .modal{width:min(100%,430px);padding:21px;border:1px solid #2b527e;border-radius:22px;background:#0c1d3a;box-shadow:0 25px 80px #0008}
+    .modal h2{font-size:1.3rem;margin:0 0 7px}
+    .modal p{color:#b6c9e2;line-height:1.65;margin:0 0 13px}
+    .modal-summary{padding:13px;border:1px solid #203d65;border-radius:14px;background:#09172f;margin-bottom:14px}
+    .modal-summary div{display:flex;justify-content:space-between;gap:12px;margin:5px 0;font-size:.9rem}
+    .modal-summary span{color:#a6bbd8}
+    .ref-field{display:grid;gap:6px;margin:13px 0}
+    .ref-field label{font-size:.82rem;color:#c3d4ea}
+    .ref-field input{width:100%;padding:11px 12px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff}
+    .modal-msg{font-size:.88rem;line-height:1.6;margin:10px 0;color:#ffdf9a}
+    .modal-actions{display:flex;gap:10px;margin-top:14px}
+    .modal-actions button,.modal-actions a{display:flex;align-items:center;justify-content:center;flex:1;min-height:44px;padding:10px;border:1px solid #315276;border-radius:12px;text-decoration:none;font-weight:700;cursor:pointer}
+    .cancel{background:#142849;color:#eaf3ff}
+    .confirm{background:linear-gradient(100deg,#64e5ff,#6df2c2);color:#06172a;border:0!important}
+    .hidden{display:none!important}
+    @media(min-width:800px){.bots{grid-template-columns:repeat(3,minmax(0,1fr))}.bot-img-wrap{height:200px}}
+    @media(max-width:430px){.shop{width:min(100% - 20px,980px)}.bots{grid-template-columns:1fr}.bot{display:grid;grid-template-columns:38% 1fr}.bot-img-wrap{height:100%;min-height:250px}.bot-img{position:absolute;inset:0}.bot-body{padding:13px}.bot h3{font-size:1rem}.price{font-size:1.35rem}.detail{font-size:.77rem}.buy{padding:10px 7px}.free-state{white-space:normal;text-align:right}}
+    @media(prefers-reduced-motion:reduce){.bot{transition:none}.bot:hover{transform:none}}
   </style>
 </head>
 <body>
@@ -43,28 +86,111 @@
     </header>
 
     <section class="hero">
-      <div class="robot" aria-hidden="true">🤖</div>
-      <p class="eyebrow">MINING ROBOT SYSTEM</p>
-      <h2>আপনার AI Bot যাত্রা শুরু করুন</h2>
-      <p>এখানে আপনার Mining Robot, বট প্যাকেজ এবং আনলক করা বটের তথ্য এক জায়গায় থাকবে। ফিচারটি ধাপে ধাপে তৈরি হচ্ছে।</p>
+      <div class="hero-top">
+        <div class="robot" aria-hidden="true">🤖</div>
+        <div><p class="eyebrow">AI MINING ROBOT SYSTEM</p><h2>আপনার বট কালেকশন তৈরি করুন</h2><p>পাঁচটি AI bot package, প্যাকেজের মূল্য, প্রচারমূলক বোনাস ও রেফারেল তথ্য এক জায়গায়।</p></div>
+      </div>
+      <div class="unlock"><span aria-hidden="true">🔓</span><div><b>১টা Verified Referral = ১টা Free Bot Unlock</b><br>রেফারেল সত্যিই ভেরিফাই হওয়ার পরই ফ্রি বট আনলক হবে। ভেরিফিকেশন সার্ভার থেকে নিশ্চিত না হওয়া পর্যন্ত এই পেজ নিজে থেকে কাউকে verified দেখাবে না।</div></div>
     </section>
 
-    <div class="status" role="status">
-      <span class="status-icon" aria-hidden="true">ℹ️</span>
-      <div><strong>শপ সেটআপ চলছে</strong><br>এই প্রথম ধাপে শুধু শপ পেজ ও নেভিগেশন তৈরি হয়েছে। এখনো কোনো কেনাকাটা, টাকা কাটা, বট আনলক বা রিটার্ন প্রসেস চালু হয়নি।</div>
-    </div>
+    <div class="notice" role="note">গুরুত্বপূর্ণ: নিচের “লক্ষ্য রিওয়ার্ড” ও ডলার বোনাস কেবল প্রচারমূলক/উদাহরণমূলক হিসাব—এগুলো নিশ্চিত বা গ্যারান্টিযুক্ত আয় নয়। কেনাকাটা ও ব্যালেন্স কাটার নিরাপদ সার্ভার-সাইড লেনদেন এখনো সংযুক্ত হয়নি; তাই এই পেজ থেকে কোনো টাকা কাটা হবে না।</div>
 
-    <h2 class="section-title">এরপর যেসব অংশ যোগ হবে</h2>
-    <section class="steps" aria-label="ফিচার তৈরির ধাপ">
-      <article class="step"><span class="step-num">01</span><div><strong>AI Bot প্যাকেজ</strong><p>পাঁচটি প্যাকেজের মূল্য, রিটার্নের হিসাব ও শর্ত স্পষ্টভাবে দেখানো হবে।</p></div></article>
-      <article class="step"><span class="step-num">02</span><div><strong>কেনাকাটার কনফার্মেশন</strong><p>কেনার আগে প্যাকেজ, মূল্য ও প্রযোজ্য শর্ত দেখে নিশ্চিত করার ব্যবস্থা।</p></div></article>
-      <article class="step"><span class="step-num">03</span><div><strong>রেফারেল ও বট আনলক</strong><p>ভেরিফায়েড রেফারেল যাচাই এবং কমিশনের হিসাব যুক্ত করা হবে।</p></div></article>
-      <article class="step"><span class="step-num">04</span><div><strong>রিটার্ন ও হিস্ট্রি</strong><p>রিটার্নের নিয়ম, প্রাপ্তি এবং প্রতিটি লেনদেনের রেকর্ড দেখা যাবে।</p></div></article>
+    <div class="section-title"><h2>🤖 ৫টি AI Bot Package</h2><span>AI BOT PRO SHOP</span></div>
+    <section class="bots" aria-label="AI Bot packages">
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/6cW9XvRY/m-MIWSKs-Z0l-G2-Bi-NTOY5-CVQHTJQOg-Ly-Qc-L7-P-ur-Ot-Yz-D3em-ZMb4up4-Qx0-Thyvq1-Rg9x-ZNO9a-Qrmc-Tb-0n-O1-BSn.jpg" alt="AI Pulse Bot v2 robot artwork" loading="lazy"><span class="bot-number">BOT 01</span></div>
+        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><button class="buy" type="button" data-bot="pulse">প্যাকেজ দেখুন →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/vC4tDThh/Mz-Q-Ky431ty-GFW4-At6f69-IQIvxl-UCtxmk-WZb1-Ek-Ju-Wq-CHXzhxziykxs-Mjy-Tny-EQTwe3-O4ghw5-PAVXtbdpe-JA3r-Db.jpg" alt="Quantum Core Pro robot artwork" loading="lazy"><span class="bot-number">BOT 02</span></div>
+        <div class="bot-body"><h3>Quantum Core Pro</h3><div class="price-line"><strong class="price">৳100</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳160</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.20</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳5</strong></div></div><button class="buy" type="button" data-bot="quantum">প্যাকেজ দেখুন →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/G3WxCW7x/Ol-By-PN7xs-MYQ-KVVc-WSy-M1-P0-DVYm-QEKz-L23vfnma1-Jp2u-V9-9az-Of-SQIFSt3-INry-Tg-OZfmi-YRu-NGUf7u-K90pf.jpg" alt="Neural Matrix Bot robot artwork" loading="lazy"><span class="bot-number">BOT 03</span></div>
+        <div class="bot-body"><h3>Neural Matrix Bot</h3><div class="price-line"><strong class="price">৳200</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳320</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.40</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳10</strong></div></div><button class="buy" type="button" data-bot="neural">প্যাকেজ দেখুন →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/DDRG594T/PYbai-V6-Td-Zx-M7-Ha-Qwca5-J87-FT06x-CVeagc-Cy-Fmz-EHSjw-Gat-JC8-BCz9ae-Boks-KExa-Ar-S06-Ij502-Z9g4jg-MHi-D.jpg" alt="Cyber Forge Titan robot artwork" loading="lazy"><span class="bot-number">BOT 04</span></div>
+        <div class="bot-body"><h3>Cyber Forge Titan</h3><div class="price-line"><strong class="price">৳300</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳480</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.60</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳15</strong></div></div><button class="buy" type="button" data-bot="cyber">প্যাকেজ দেখুন →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/0RfhmCMV/R5-IYj-HQyi-SMUL7-Aqf-QAby-TFi-Fu-Hd-XMc-APD054b-M1-GVTv4e-TVEJq3-Hm-QCmb-LOOCa-ATIso0t-w-Yv-NWf-JRd7-ks.jpg" alt="Apex Sentinel AI robot artwork" loading="lazy"><span class="bot-number">BOT 05</span></div>
+        <div class="bot-body"><h3>Apex Sentinel AI</h3><div class="price-line"><strong class="price">৳500</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳800</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$1.00</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳25</strong></div></div><button class="buy" type="button" data-bot="apex">প্যাকেজ দেখুন →</button></div>
+      </article>
     </section>
+
+    <div class="section-title"><h2>🎁 ফ্রি বট আনলক</h2></div>
+    <section class="free-card"><div class="free-icon" aria-hidden="true">🔐</div><div><h3>Verified Referral Reward</h3><p>১ জন ভেরিফায়েড রেফার = ১টি ফ্রি বট আনলক। আপনার verified referral সংখ্যা সার্ভার থেকে যাচাই হলে এখানে অগ্রগতি দেখানো হবে।</p></div><span class="free-state">যাচাই প্রয়োজন</span></section>
     <p class="footer">Task Reward Hub · AI Bot Pro Shop</p>
   </main>
+
+  <div class="modal-backdrop" id="bot-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <section class="modal">
+      <h2 id="modal-title">প্যাকেজ কনফার্মেশন</h2>
+      <p id="modal-description">প্যাকেজের তথ্য যাচাই করুন।</p>
+      <div class="modal-summary"><div><span>AI Bot</span><strong id="modal-bot-name">—</strong></div><div><span>প্যাকেজ মূল্য</span><strong id="modal-price">—</strong></div><div><span>রেফারার কমিশন</span><strong id="modal-commission">—</strong></div></div>
+      <div class="ref-field"><label for="collector-id">Refer Code / Collector ID</label><input id="collector-id" value="#16943" autocomplete="off" maxlength="40"></div>
+      <p class="modal-msg" id="modal-message" aria-live="polite">কনফার্ম করার আগে প্যাকেজের শর্ত পড়ুন।</p>
+      <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">কনফার্ম করুন</button></div>
+    </section>
+  </div>
+
   <script src="../js/storage.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      const packages = {
+        pulse:{name:'AI Pulse Bot v2',price:50,commission:2.5},
+        quantum:{name:'Quantum Core Pro',price:100,commission:5},
+        neural:{name:'Neural Matrix Bot',price:200,commission:10},
+        cyber:{name:'Cyber Forge Titan',price:300,commission:15},
+        apex:{name:'Apex Sentinel AI',price:500,commission:25}
+      };
+      const modal=document.getElementById('bot-modal');
+      const message=document.getElementById('modal-message');
+      const confirmBtn=document.getElementById('modal-confirm');
+      let selected=null;
+      function money(n){return '৳'+Number(n).toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
+      function closeModal(){modal.classList.remove('open');selected=null;message.textContent='কনফার্ম করার আগে প্যাকেজের শর্ত পড়ুন।';}
+      document.querySelectorAll('[data-bot]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          selected=packages[btn.dataset.bot];
+          if(!selected)return;
+          document.getElementById('modal-bot-name').textContent=selected.name;
+          document.getElementById('modal-price').textContent=money(selected.price);
+          document.getElementById('modal-commission').textContent=money(selected.commission)+' (৫%)';
+          document.getElementById('collector-id').value='#16943';
+          message.textContent='এটি প্যাকেজের প্রিভিউ। নিরাপদ কেনাকাটা এখনো চালু হয়নি; এই ধাপে কোনো টাকা কাটা হবে না।';
+          modal.classList.add('open');
+          document.getElementById('modal-cancel').focus();
+        });
+      });
+      document.getElementById('modal-cancel').addEventListener('click',closeModal);
+      modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
+      confirmBtn.addEventListener('click',async()=>{
+        if(!selected)return;
+        confirmBtn.disabled=true;
+        try{
+          const user=window.hubUser?await window.hubUser:null;
+          const balance=Number(user&&user.profile&&user.profile.balance||0);
+          if(balance<selected.price){
+            message.textContent='ব্যালেন্স অপ্রতুল (রিচার্জ করুন)। আপনার বর্তমান ব্যালেন্স: '+money(balance)+'.';
+            const old=document.getElementById('modal-actions-recharge');
+            if(!old){
+              const a=document.createElement('a');a.id='modal-actions-recharge';a.href='wallet.html';a.textContent='ওয়ালেটে যান';a.style.cssText='display:block;text-align:center;margin-top:10px;color:#6ee7ff;font-weight:700';
+              document.querySelector('.modal').appendChild(a);
+            }
+            return;
+          }
+          message.textContent='আপনার ব্যালেন্সে প্যাকেজটি নেওয়ার মতো টাকা আছে ('+money(balance)+'), কিন্তু নিরাপদ server-side purchase/transaction এখনো যুক্ত হয়নি। কোনো টাকা কাটা বা বট আনলক করা হয়নি।';
+        }catch(err){
+          message.textContent='ব্যালেন্স যাচাই করা যায়নি। পরে আবার চেষ্টা করুন। কোনো টাকা কাটা হয়নি।';
+        }finally{confirmBtn.disabled=false;}
+      });
+    })();
+  </script>
 </body>
 </html>
