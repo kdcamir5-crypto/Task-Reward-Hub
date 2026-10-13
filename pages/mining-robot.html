@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>AI Bot Pro Shop — Task Reward Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    :root{color-scheme:dark}
+    body{font-family:'Hind Siliguri',sans-serif;background:#07152f;color:#eef5ff;margin:0}
+    .shop{width:min(100% - 28px,720px);margin:0 auto;padding:20px 0 42px}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .back{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #27456f;border-radius:14px;background:#10264a;color:#fff;text-decoration:none;font-size:24px}
+    .brand{font-size:.75rem;color:#9bb5d9;letter-spacing:1.5px;font-weight:700}
+    h1{font-size:clamp(1.55rem,6vw,2.3rem);line-height:1.15;margin:4px 0 0}
+    .hero{position:relative;overflow:hidden;padding:25px 21px;border:1px solid #285184;border-radius:25px;background:radial-gradient(ellipse at 90% 0%,#164e83 0,transparent 48%),linear-gradient(145deg,#10264b,#0b1a37 68%);box-shadow:0 16px 44px #0003}
+    .robot{display:grid;place-items:center;width:66px;height:66px;border:1px solid #46d9ff66;border-radius:21px;background:#19bdf51b;font-size:36px;box-shadow:0 0 28px #27c8ff24;margin-bottom:18px}
+    .eyebrow{font-size:.72rem;letter-spacing:1.7px;color:#4bdcff;font-weight:800;margin:0 0 8px}
+    .hero h2{font-size:1.5rem;margin:0 0 8px}
+    .hero p{line-height:1.7;color:#bfd0e9;margin:0}
+    .status{display:flex;align-items:flex-start;gap:10px;padding:14px;margin-top:18px;border:1px solid #2b4770;border-radius:16px;background:#0b1a34;color:#cad9ee;font-size:.9rem;line-height:1.6}
+    .status-icon{flex:0 0 auto;font-size:20px}
+    .section-title{margin:25px 2px 10px;font-size:1.1rem}
+    .steps{display:grid;gap:10px}
+    .step{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid #1d355b;border-radius:17px;background:#0c1d3a}
+    .step-num{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:11px;background:#153b68;color:#5be1ff;font-weight:800}
+    .step strong{display:block;margin:0 0 3px}
+    .step p{margin:0;color:#aebfda;font-size:.88rem;line-height:1.55}
+    .footer{margin-top:22px;text-align:center;color:#8198bb;font-size:.78rem}
+    @media(prefers-reduced-motion:no-preference){.robot{animation:robotGlow 3.5s ease-in-out infinite alternate}@keyframes robotGlow{to{box-shadow:0 0 32px #27c8ff48;transform:translateY(-2px)}}}
+    @media(prefers-reduced-motion:reduce){.robot{animation:none}}
+  </style>
+</head>
+<body>
+  <main class="shop">
+    <header class="top">
+      <a class="back" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরে যান">‹</a>
+      <div><div class="brand">TASK REWARD HUB</div><h1>AI Bot Pro Shop</h1></div>
+    </header>
+
+    <section class="hero">
+      <div class="robot" aria-hidden="true">🤖</div>
+      <p class="eyebrow">MINING ROBOT SYSTEM</p>
+      <h2>আপনার AI Bot যাত্রা শুরু করুন</h2>
+      <p>এখানে আপনার Mining Robot, বট প্যাকেজ এবং আনলক করা বটের তথ্য এক জায়গায় থাকবে। ফিচারটি ধাপে ধাপে তৈরি হচ্ছে।</p>
+    </section>
+
+    <div class="status" role="status">
+      <span class="status-icon" aria-hidden="true">ℹ️</span>
+      <div><strong>শপ সেটআপ চলছে</strong><br>এই প্রথম ধাপে শুধু শপ পেজ ও নেভিগেশন তৈরি হয়েছে। এখনো কোনো কেনাকাটা, টাকা কাটা, বট আনলক বা রিটার্ন প্রসেস চালু হয়নি।</div>
+    </div>
+
+    <h2 class="section-title">এরপর যেসব অংশ যোগ হবে</h2>
+    <section class="steps" aria-label="ফিচার তৈরির ধাপ">
+      <article class="step"><span class="step-num">01</span><div><strong>AI Bot প্যাকেজ</strong><p>পাঁচটি প্যাকেজের মূল্য, রিটার্নের হিসাব ও শর্ত স্পষ্টভাবে দেখানো হবে।</p></div></article>
+      <article class="step"><span class="step-num">02</span><div><strong>কেনাকাটার কনফার্মেশন</strong><p>কেনার আগে প্যাকেজ, মূল্য ও প্রযোজ্য শর্ত দেখে নিশ্চিত করার ব্যবস্থা।</p></div></article>
+      <article class="step"><span class="step-num">03</span><div><strong>রেফারেল ও বট আনলক</strong><p>ভেরিফায়েড রেফারেল যাচাই এবং কমিশনের হিসাব যুক্ত করা হবে।</p></div></article>
+      <article class="step"><span class="step-num">04</span><div><strong>রিটার্ন ও হিস্ট্রি</strong><p>রিটার্নের নিয়ম, প্রাপ্তি এবং প্রতিটি লেনদেনের রেকর্ড দেখা যাবে।</p></div></article>
+    </section>
+    <p class="footer">Task Reward Hub · AI Bot Pro Shop</p>
+  </main>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+</body>
+</html>
