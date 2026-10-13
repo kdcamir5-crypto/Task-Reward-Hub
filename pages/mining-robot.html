@@ -84,6 +84,29 @@
     @media(min-width:800px){.bots{grid-template-columns:repeat(3,minmax(0,1fr))}.bot-img-wrap{height:200px}}
     @media(max-width:430px){.shop{width:min(100% - 20px,980px)}.bots{grid-template-columns:1fr}.bot{display:grid;grid-template-columns:38% 1fr}.bot-img-wrap{height:100%;min-height:250px}.bot-img{position:absolute;inset:0}.bot-body{padding:13px}.bot h3{font-size:1rem}.price{font-size:1.35rem}.detail{font-size:.77rem}.buy{padding:10px 7px}.free-state{white-space:normal;text-align:right}}
     @media(prefers-reduced-motion:reduce){.bot{transition:none}.bot:hover{transform:none}}
+      /* ---- Live mining progress ---- */
+    .mine-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+    .mine-card{padding:16px;border:1px solid #285184;border-radius:20px;background:linear-gradient(160deg,#10274a,#0a1831);box-shadow:0 12px 26px #0002}
+    .mine-head{display:flex;align-items:center;gap:12px}
+    .mine-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #46d9ff55;border-radius:14px;background:#19bdf51b;font-size:22px}
+    .mine-title{min-width:0;flex:1}
+    .mine-title h3{font-size:1rem;line-height:1.3;margin:0 0 3px}
+    .mine-status{font-size:.74rem;font-weight:800;color:#9fb5d4}
+    .mine-status.running{color:var(--green)}
+    .mine-status.done{color:#ffe08a}
+    .mine-status.error{color:#ff9d9d}
+    .mine-pct{font-size:1.15rem;color:var(--cyan);font-variant-numeric:tabular-nums}
+    .mine-bar{position:relative;height:12px;margin:14px 0;border-radius:999px;background:#07162d;border:1px solid #23436d;overflow:hidden}
+    .mine-bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#4bdcff,#76f3c0);box-shadow:0 0 12px #4bdcff66;transition:width .8s linear}
+    .mine-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mine-grid div{min-width:0;padding:9px 10px;border:1px solid #1f3b61;border-radius:12px;background:#0a1a34}
+    .mine-grid span{display:block;font-size:.7rem;color:#9fb5d4;margin-bottom:3px;line-height:1.3}
+    .mine-grid strong{display:block;font-size:.88rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .mine-grid strong.ok{color:var(--green)}
+    .mine-foot{margin:11px 2px 0;font-size:.72rem;line-height:1.55;color:#8fa6c8}
+    .mine-empty{grid-column:1/-1;margin:0;padding:16px;border:1px dashed #31547c;border-radius:16px;color:#bfd0e9;line-height:1.65;font-size:.88rem}
+    .mine-note{margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:.84rem;line-height:1.6}
+    .mine-note.err{border:1px solid #7a3636;background:#2a1414;color:#ffc9c9}
   </style>
 </head>
 <body>
@@ -102,6 +125,12 @@
     </section>
 
     <div class="notice" role="note">গুরুত্বপূর্ণ: নিচের “লক্ষ্য রিওয়ার্ড” ও ডলার বোনাস কেবল প্রচারমূলক/উদাহরণমূলক হিসাব—এগুলো নিশ্চিত বা গ্যারান্টিযুক্ত আয় নয়। কেনাকাটা ও ব্যালেন্স কাটার নিরাপদ সার্ভার-সাইড লেনদেন এখনো সংযুক্ত হয়নি; তাই এই পেজ থেকে কোনো টাকা কাটা হবে না।</div>
+
+    <div class="section-title"><h2>⛏️ আমার লাইভ মাইনিং</h2><span>LIVE MINING</span></div>
+    <section id="live-mining" aria-label="লাইভ মাইনিং প্রগ্রেস">
+      <p class="mine-note" data-note hidden></p>
+      <div class="mine-list" data-list><p class="mine-empty">মাইনিং ডেটা লোড হচ্ছে...</p></div>
+    </section>
 
     <div class="section-title"><h2>🤖 ৫টি AI Bot Package</h2><span>AI BOT PRO SHOP</span></div>
     <section class="bots" aria-label="AI Bot packages">
@@ -194,6 +223,7 @@
   <script src="../js/storage.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
+  <script type="module" src="../js/mining-progress.js"></script>
   <script>
     (function(){
       'use strict';
