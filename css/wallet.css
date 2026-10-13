@@ -1,17 +1,11 @@
-/* wallet.css - ওয়ালেট ও উইথড্র পেজ (.app, .top, .nav, .task ইত্যাদি অন্য CSS থেকে আসে) */
-.wcard{margin:16px;background:var(--forest);color:var(--on-forest);border-radius:var(--radius);padding:18px}
-.wcard span{opacity:.85;font-size:.85rem}
-.wcard strong{display:block;font-size:2rem}
-.wcard button{margin-top:10px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--lime);color:#0F3D2E}
-.box{margin:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.box h3{font-size:1rem;margin-bottom:8px}
-.box form{display:grid;gap:8px}
-.box input,.box select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%}
-.box .go{border:0;background:var(--forest);color:var(--on-forest);padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
-.warn{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:8px;font-size:.8rem;color:var(--muted)}
-.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
-.row small{display:block;color:var(--muted)}
-.lock{font-size:.75rem;color:var(--muted)}
-.msg2{min-height:1.3em;font-size:.85rem}
-.msg2.ok{color:#1D7A46}.msg2.err{color:var(--danger)}
+/* Wallet, withdrawal and shared boxes */
+.wcard{margin:16px;background:linear-gradient(135deg,#123D8B,#176BFF 65%,#39BFFF);color:#fff;border:1px solid rgba(57,216,255,.3);border-radius:20px;padding:19px;box-shadow:0 10px 24px rgba(23,107,255,.18)}
+.wcard span{opacity:.9;font-size:.85rem}.wcard strong{display:block;font-size:2rem}.wcard button{margin-top:10px;border:0;border-radius:99px;padding:10px 16px;font-weight:700;cursor:pointer;background:#39D8FF;color:#07152F}
+.box{margin:12px 16px;background:#fff;color:#10213F;border:1px solid #DCE6F4;border-radius:18px;padding:15px;box-shadow:0 7px 20px rgba(0,0,0,.1)}
+.box h3{font-size:1rem;margin-bottom:9px;color:#10213F}.box form{display:grid;gap:9px}
+.box input,.box select{padding:11px;border:1px solid #DCE6F4;border-radius:11px;background:#F7FAFF;color:#10213F;width:100%}
+.box .go{border:0;background:linear-gradient(110deg,#176BFF,#39BFFF);color:#fff;padding:11px;border-radius:99px;font-weight:700;cursor:pointer}
+.warn{background:#F1F6FF;border:1px dashed #B8CAE5;border-radius:11px;padding:9px;font-size:.8rem;color:#536783}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #E5ECF7;color:#10213F}.row small{display:block;color:#62718B}
+.lock{font-size:.75rem;color:#62718B}.msg2{min-height:1.3em;font-size:.85rem}.msg2.ok{color:#13824B}.msg2.err{color:#E34D59}
 .hidden{display:none}
