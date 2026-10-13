@@ -71,3 +71,23 @@
 @media(prefers-reduced-motion:reduce){
   .head::before,.art-orbit--one,.art-orbit--two,.art-card,.art-star--one,.art-star--two,.bal--main::after,.quick-card::after,.live-dot,.bal--wallet .wallet-icon,.nav a[aria-current=page] svg,.header-glow{animation:none!important}
 }
+
+
+/* Lightweight dashboard rendering for mobile and Telegram WebView */
+@media (max-width: 760px), (pointer: coarse) {
+  .head, .community-banner, .bal, .stat, .quick-card,
+  .refbox, .activity-empty, .telegram-cta, .nav {
+    box-shadow: 0 4px 14px rgba(0,0,0,.10) !important;
+  }
+  .head::before, .head::after,
+  .community-banner::before, .bal__decoration,
+  .header-glow, .art-orbit, .art-star,
+  .bal--main::after, .quick-card::after {
+    animation: none !important;
+    filter: none !important;
+  }
+  .quick-card:hover, .nav a:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
