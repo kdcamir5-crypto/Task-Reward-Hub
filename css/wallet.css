@@ -300,3 +300,12 @@
 @media(prefers-reduced-motion:reduce){
   .wallet-action,.wallet-panel.box .go{transition:none!important}
 }
+
+
+/* Premium cosmic motion theme — wallet and withdrawals */
+.wallet-balance,.wallet-action,.wallet-panel.box,.wallet-history,.wallet-card{border-color:rgba(93,170,255,.29)!important;box-shadow:0 12px 32px rgba(0,0,0,.2),0 0 20px rgba(45,119,255,.07);transition:border-color .25s,box-shadow .25s,transform .25s}
+.wallet-action:hover,.wallet-panel.box:hover{border-color:rgba(76,225,255,.5)!important;box-shadow:0 14px 35px rgba(0,0,0,.23),0 0 25px rgba(45,170,255,.13)}
+.wallet-balance{background-image:radial-gradient(ellipse at 100% 0,rgba(49,155,255,.12),transparent 60%)}
+.wallet-nav a[aria-current=page]{animation:walletNavGlow 4s ease-in-out infinite}
+@keyframes walletNavGlow{0%,100%{filter:drop-shadow(0 0 1px rgba(72,210,255,.05))}50%{filter:drop-shadow(0 0 7px rgba(72,210,255,.2))}}
+@media(prefers-reduced-motion:reduce){.wallet-nav a[aria-current=page]{animation:none!important}}
