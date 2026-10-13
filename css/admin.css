@@ -4,3 +4,6 @@
 .mini.ok{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
 .mini.no{color:var(--danger);border-color:var(--danger)}
 .box textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%;font:inherit;color:inherit}
+.thumb{display:block;width:90px;margin-top:6px;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
+.thumb.big{width:100%;max-width:360px;cursor:zoom-out}
+.box select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%}
