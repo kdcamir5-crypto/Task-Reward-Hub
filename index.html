@@ -3,44 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07152F">
   <title>Task Reward Hub - সাইন ইন</title>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-  <button class="theme" id="theme" type="button">ডার্ক / লাইট</button>
+  <button class="theme" id="theme" type="button" aria-label="ডার্ক ও লাইট থিম বদলান">◐ ডার্ক / লাইট</button>
   <main class="login">
     <div class="login__box">
       <div class="login__brand">
+        <div class="login__brand-top"><span class="login__mark" aria-hidden="true">TR</span><span class="login__brand-label">COMMUNITY WORKSPACE</span><span class="login__spark" aria-hidden="true">✦</span></div>
+        <p class="login__eyebrow">WELCOME TO</p>
         <h1>Task Reward Hub</h1>
         <p>টাস্ক সম্পন্ন করুন, রিওয়ার্ড জিতুন।</p>
+        <div class="login__features"><span><b>✓</b> সহজ টাস্ক</span><span><b>✦</b> রিওয়ার্ড</span><span><b>↗</b> কমিউনিটি</span></div>
       </div>
       <div class="login__card">
-        <div class="tabs" role="tablist">
+        <div class="login__intro"><h2>আপনার যাত্রা শুরু করুন</h2><p>আপনার অ্যাকাউন্টে প্রবেশ করুন অথবা নতুন অ্যাকাউন্ট তৈরি করুন।</p></div>
+        <div class="tabs" role="tablist" aria-label="অ্যাকাউন্ট অপশন">
           <button type="button" role="tab" data-mode="signin" aria-selected="true">সাইন ইন</button>
           <button type="button" role="tab" data-mode="signup" aria-selected="false">নতুন অ্যাকাউন্ট</button>
         </div>
         <form id="form" novalidate>
-          <div class="field">
-            <label for="email">ইমেইল</label>
-            <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
-          </div>
-          <div class="field">
-            <label for="password">পাসওয়ার্ড</label>
-            <div class="pw">
-              <input id="password" type="password" autocomplete="current-password" placeholder="কমপক্ষে ৬ অক্ষর" required>
-              <button type="button" id="toggle-pw" aria-label="পাসওয়ার্ড দেখান বা লুকান">দেখুন</button>
-            </div>
-          </div>
-          <div class="field hidden" id="confirm-wrap">
-            <label for="confirm">পাসওয়ার্ড আবার লিখুন</label>
-            <input id="confirm" type="password" autocomplete="new-password">
-          </div>
-          <p class="msg" id="msg" role="alert"></p>
-          <button class="btn" id="submit" type="submit">সাইন ইন</button>
+          <div class="field"><label for="email">ইমেইল</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com" required></div>
+          <div class="field"><label for="password">পাসওয়ার্ড</label><div class="pw"><input id="password" type="password" autocomplete="current-password" placeholder="কমপক্ষে ৬ অক্ষর" required><button type="button" id="toggle-pw" aria-label="পাসওয়ার্ড দেখান বা লুকান">দেখুন</button></div></div>
+          <div class="field hidden" id="confirm-wrap"><label for="confirm">পাসওয়ার্ড আবার লিখুন</label><input id="confirm" type="password" autocomplete="new-password"></div>
+          <p class="msg" id="msg" role="alert" aria-live="polite"></p>
+          <button class="btn" id="submit" type="submit">সাইন ইন <span aria-hidden="true">→</span></button>
         </form>
+        <div class="login__secure"><span aria-hidden="true">♢</span><p><strong>আপনার অ্যাকাউন্ট, আপনার নিয়ন্ত্রণে</strong><small>নিরাপদে প্রবেশ করুন এবং আপনার কাজ চালিয়ে যান।</small></p></div>
       </div>
+      <p class="login__footer">© Task Reward Hub · Community Work</p>
     </div>
   </main>
   <script src="js/storage.js"></script>
