@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071329">
   <title>Task Reward Hub - প্রোফাইল</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
@@ -12,58 +13,26 @@
   <link rel="stylesheet" href="../css/profile.css">
 </head>
 <body>
-  <div class="app">
-    <header class="top"><strong>প্রোফাইল ও সেটিংস</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
-    <section class="pcard">
-      <div class="avatar" id="avatar">?</div>
-      <div><h2 id="hname"></h2><p id="hmail"></p></div>
-    </section>
-
-    <section class="box">
-      <h3>আমার রেফারেল কোড</h3>
-      <div class="refrow"><code id="refcode"></code><button id="copy" type="button">কপি</button></div>
-    </section>
-
-    <section class="box">
-      <h3>ব্যক্তিগত তথ্য</h3>
-      <form id="info" novalidate>
-        <label for="name">পুরো নাম</label><input id="name" autocomplete="name">
-        <label for="email">ইমেইল (বদলানো যাবে না)</label><input id="email" readonly>
-        <label for="phone">ফোন নম্বর</label><input id="phone" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX">
-        <label for="tg">Telegram ইউজারনেম</label><input id="tg" placeholder="@username">
-        <button class="go" type="submit">সংরক্ষণ করুন</button>
-        <p class="msg2" id="imsg" role="status"></p>
-      </form>
-    </section>
-
-    <section class="box">
-      <h3>পাসওয়ার্ড বদলান</h3>
-      <form id="pw" novalidate>
-        <input id="cur" type="password" placeholder="বর্তমান পাসওয়ার্ড" autocomplete="current-password" aria-label="বর্তমান পাসওয়ার্ড">
-        <input id="new" type="password" placeholder="নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)" autocomplete="new-password" aria-label="নতুন পাসওয়ার্ড">
-        <input id="cf" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" autocomplete="new-password" aria-label="নতুন পাসওয়ার্ড নিশ্চিত করুন">
-        <button class="go" type="submit">পাসওয়ার্ড আপডেট</button>
-        <p class="msg2" id="pmsg" role="status"></p>
-      </form>
-    </section>
-
-    <section class="box">
-      <p class="warn">নিরাপত্তার জন্য আপনার পাসওয়ার্ড কাউকে বলবেন না।</p>
-      <div style="height:8px"></div>
-      <button class="danger" id="logout" type="button">সাইন আউট</button>
-    </section>
-
-    <div style="height:8px"></div>
-    <nav class="nav" aria-label="প্রধান মেনু">
-      <a href="dashboard.html">হোম</a>
-      <a href="tasks.html">টাস্ক</a>
-      <a href="feed.html">ফিড</a>
-      <a href="profile.html" aria-current="page">প্রোফাইল</a>
-    </nav>
-  </div>
-  <script src="../js/storage.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/guard.js"></script>
-  <script src="../js/profile.js"></script>
+<div class="app profile-app">
+  <header class="top profile-top"><div class="profile-brand"><span class="profile-brand-icon">♙</span><div><strong>আমার প্রোফাইল</strong><small>আপনার অ্যাকাউন্ট ও সেটিংস</small></div></div><a class="icon-btn profile-home-link" href="dashboard.html" style="text-decoration:none">⌂ ড্যাশবোর্ড</a></header>
+  <section class="pcard"><div class="avatar" id="avatar">?</div><div><small style="color:#51d8ff">MEMBER PROFILE</small><h2 id="hname"></h2><p id="hmail"></p><small style="color:#c5eaff">✦ Task Reward Hub Member</small></div></section>
+  <section class="box"><h3>⌁ আমার রেফারেল কোড</h3><p style="color:#92aacc;font-size:.82rem">বন্ধুদের সঙ্গে কোডটি শেয়ার করুন</p><div class="refrow"><code id="refcode"></code><button id="copy" type="button">▢ কপি</button></div></section>
+  <section class="box"><h3>☷ ব্যক্তিগত তথ্য</h3><p style="color:#92aacc;font-size:.82rem">আপনার প্রোফাইলের তথ্য আপডেট করুন</p><form id="info" novalidate>
+    <label for="name">পুরো নাম</label><input id="name" autocomplete="name" placeholder="আপনার পুরো নাম লিখুন">
+    <label for="email">ইমেইল (বদলানো যাবে না)</label><input id="email" readonly>
+    <label for="phone">ফোন নম্বর</label><input id="phone" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" autocomplete="tel">
+    <label for="tg">Telegram ইউজারনেম</label><input id="tg" placeholder="@username" autocomplete="off">
+    <button class="go" type="submit">পরিবর্তন সংরক্ষণ করুন ↗</button><p class="msg2" id="imsg" role="status" aria-live="polite"></p>
+  </form></section>
+  <section class="box"><h3>⌑ পাসওয়ার্ড ও নিরাপত্তা</h3><p style="color:#92aacc;font-size:.82rem">আপনার অ্যাকাউন্ট নিরাপদ রাখুন</p><form id="pw" novalidate>
+    <label for="cur">বর্তমান পাসওয়ার্ড</label><input id="cur" type="password" placeholder="বর্তমান পাসওয়ার্ড" autocomplete="current-password" aria-label="বর্তমান পাসওয়ার্ড">
+    <label for="new">নতুন পাসওয়ার্ড</label><input id="new" type="password" placeholder="কমপক্ষে ৬ অক্ষর" autocomplete="new-password" aria-label="নতুন পাসওয়ার্ড">
+    <label for="cf">নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input id="cf" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" autocomplete="new-password" aria-label="নতুন পাসওয়ার্ড নিশ্চিত করুন">
+    <button class="go" type="submit">পাসওয়ার্ড আপডেট করুন ↗</button><p class="msg2" id="pmsg" role="status" aria-live="polite"></p>
+  </form></section>
+  <section class="box"><p class="warn">🛡 নিরাপত্তা সতর্কতা<br>আপনার পাসওয়ার্ড গোপন রাখুন। অন্য কারও সঙ্গে শেয়ার করবেন না।</p><button class="danger" id="logout" type="button">↪ সাইন আউট</button></section>
+  <nav class="nav" aria-label="প্রধান মেনু"><a href="dashboard.html">⌂<br>হোম</a><a href="tasks.html">▣<br>টাস্ক</a><a href="feed.html">◉<br>ফিড</a><a href="profile.html" aria-current="page">♙<br>প্রোফাইল</a></nav>
+</div>
+<script src="../js/storage.js"></script><script src="../js/auth.js"></script><script src="../js/guard.js"></script><script src="../js/profile.js"></script>
 </body>
 </html>
