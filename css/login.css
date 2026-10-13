@@ -21,3 +21,20 @@
 .theme:hover{border-color:#39D8FF;color:#39D8FF}
 @media(max-width:420px){.login{padding:72px 14px 22px}.login__brand{padding:28px 21px 42px}.login__card{padding:21px 19px 24px}}
 @media(prefers-reduced-motion:reduce){.tabs button,.field input,.btn{transition:none}}
+
+/* Additional polish for the refreshed login layout */
+body{background:radial-gradient(ellipse at 15% 10%,#153a70 0,transparent 35%),radial-gradient(ellipse at 90% 85%,#0d3970 0,transparent 32%),#050d1d!important;font-family:'Hind Siliguri',sans-serif}
+.login__brand-top{position:relative;z-index:1;display:flex;align-items:center;gap:10px;margin-bottom:24px}
+.login__mark{display:grid;place-items:center;width:43px;height:43px;border:1px solid rgba(255,255,255,.35);border-radius:15px;background:linear-gradient(145deg,#39D8FF,#176BFF);font-weight:800;letter-spacing:-1px}
+.login__brand-label{color:#B7EAFF;font-size:.64rem;letter-spacing:1.6px;font-weight:800}
+.login__spark{margin-left:auto;color:#8EEEFF;font-size:1.7rem}
+.login__eyebrow{position:relative;z-index:1;color:#8EEAFF;font-size:.67rem;font-weight:800;letter-spacing:2px}
+.login__features{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;margin-top:19px}
+.login__features span{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border:1px solid rgba(146,216,255,.22);border-radius:99px;background:rgba(4,20,50,.25);color:#D8F3FF;font-size:.72rem}
+.login__features b{color:#65E5FF}
+.login__intro{margin-bottom:18px}.login__intro h2{font-size:1.17rem;font-weight:800;color:#0B2148}.login__intro p{margin-top:4px;color:#72809A;font-size:.82rem;line-height:1.55}
+.login__secure{display:flex;align-items:flex-start;gap:10px;margin-top:20px;padding:12px;border:1px solid #DCECFF;border-radius:13px;background:#F0F7FF}
+.login__secure>span{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:#DCEEFF;color:#176BFF;font-size:1.25rem}
+.login__secure strong{display:block;color:#19365F;font-size:.78rem}.login__secure small{display:block;margin-top:2px;color:#71809A;font-size:.72rem;line-height:1.5}
+.login__footer{padding:15px 8px 0;color:#91A8CA;text-align:center;font-size:.72rem}
+@media(max-width:420px){.login__brand-top{margin-bottom:20px}.login__features span{font-size:.67rem;padding:5px 8px}}
