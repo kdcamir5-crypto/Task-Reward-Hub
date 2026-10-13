@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - রিওয়ার্ড কোড</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+  <link rel="stylesheet" href="../css/rewards.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top"><strong>রিওয়ার্ড কোড</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
+    <section class="claim">
+      <h3>কোড ক্লেইম করুন</h3>
+      <p>অফিসিয়াল চ্যানেলে দেওয়া কোড এখানে বসান।</p>
+      <form id="form">
+        <input id="code" placeholder="যেমন WELCOME1" autocomplete="off" maxlength="20" aria-label="রিওয়ার্ড কোড">
+        <button type="submit">ক্লেইম</button>
+      </form>
+    </section>
+    <p class="result" id="result" role="status"></p>
+    <h3 class="section">আমার ব্যবহার করা কোড</h3>
+    <ul class="hist" id="hist"></ul>
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html">হোম</a>
+      <a href="tasks.html">টাস্ক</a>
+      <a href="#">ফিড</a>
+      <a href="#">প্রোফাইল</a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/codes-data.js"></script>
+  <script src="../js/rewards.js"></script>
+</body>
+</html>
