@@ -1,126 +1,233 @@
 /* 
   Task-Reward-Hub - Global Modern UI Base Styling
-  Theme: Cyber Dynamic Dark
+  Theme: Premium Cosmic Dark 
 */
 
 @import url('https://googleapis.com');
 
 :root {
-    /* Color Grading System */
-    --bg-main: linear-gradient(135deg, #0f172a 0%, #0b0f19 100%);
-    --bg-card: rgba(30, 41, 59, 0.7);
-    --border-color: rgba(255, 255, 255, 0.08);
+    /* উন্নত কালার গ্রেডিং সিস্টেম */
+    --bg-main: #0B0F19; 
+    --bg-card: #151D30;
+    --bg-input: #0D1322;
+    --border-color: rgba(255, 255, 255, 0.06);
     
-    --color-primary: #8b5cf6;      /* Vivid Purple */
-    --color-secondary: #06b6d4;    /* Neon Cyan */
-    --color-accent: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 100%);
+    --color-primary: #8B5CF6;      /* সাইবার পার্পল */
+    --color-secondary: #06B6D4;    /* ইলেকট্রিক সায়ান */
+    --color-accent: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
     
-    --text-main: #f8fafc;          /* High contrast white */
-    --text-muted: #94a3b8;         /* Silver gray */
-    --color-success: #10b981;      /* Neon Green for Earn/Wallet */
+    --text-main: #F8FAFC;          /* উজ্জ্বল সাদা টেক্সট */
+    --text-muted: #94A3B8;         /* হালকা রূপালী টেক্সট */
+    --color-success: #10B981;      /* ব্যালেন্সের জন্য নিয়ন গ্রিন */
     
-    --shadow-glow: 0 8px 32px 0 rgba(139, 92, 246, 0.15);
     --radius-lg: 16px;
-    --radius-md: 12px;
+    --radius-md: 10px;
+    --shadow-glow: 0 4px 20px rgba(6, 182, 212, 0.15);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background: var(--bg-main);
+    background-color: var(--bg-main);
     color: var(--text-main);
     min-height: 100vh;
-    line-height: 1.6;
-    overflow-x: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Glassmorphism Card Effect */
-.card, .dashboard-box, .task-item, .reward-box {
+/* পুরো ইন্টারফেস কন্টেইনার */
+.container, main, #app {
+    width: 100%;
+    max-width: 500px; /* মোবাইল ফ্রেন্ডলি সাইজ */
+    margin: 0 auto;
+}
+
+/* শীর্ষ হেডার ও ইউজার ইনফো */
+header, .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.logo, h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* নোটিফিকেশন ও সাইন আউট বাটন */
+.nav-buttons, header div {
+    display: flex;
+    gap: 8px;
+}
+
+header button, .nav-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+header button:hover, .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-secondary);
+}
+
+/* ইউজার আইডি সেকশন */
+.user-profile {
+    margin-bottom: 25px;
+}
+.user-profile h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+.user-profile p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ব্যালেন্স গ্রিড (মোট ব্যালেন্স এবং উইথড্র) */
+.balance-grid, .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* গ্লাস কার্ড ইফেক্ট (যা আপনার ব্ল্যাক স্ক্রিন ঠিক করবে) */
+.balance-card, .stat-box, .menu-item, .referral-box {
     background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, border-color 0.2s;
 }
 
-.card:hover, .task-item:hover, .reward-box:hover {
-    transform: translateY(-4px);
-    border-color: rgba(6, 182, 212, 0.4);
-    box-shadow: var(--shadow-glow);
+.balance-card:hover, .menu-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(6, 182, 212, 0.3);
 }
 
-/* Attractive Gradient Buttons */
-.btn-primary, button[type="submit"], .claim-btn {
-    background: var(--color-accent);
-    color: #fff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
-    transition: all 0.2s ease;
+.balance-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
 }
 
-.btn-primary:hover, button[type="submit"]:hover {
-    opacity: 0.95;
-    transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
-}
-
-.btn-primary:active {
-    transform: scale(0.98);
-}
-
-/* Earning/Wallet Balance Highlight */
-.balance-text, .points-display {
+.balance-card h3 {
     color: var(--color-success);
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Typography Enhancements */
-h1, h2, h3 {
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* স্ট্যাটাস গ্রিড (টাস্ক, রেফারেল, লেভেল) */
+.stats-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-bottom: 30px;
 }
 
-p {
+.stat-box h4 {
+    font-size: 1.3rem;
+    color: var(--text-main);
+}
+.stat-box p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* সেকশন টাইটেল (যেমন: দ্রুত যান, সাম্প্রতিক কার্যক্রম) */
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-main);
+    border-left: 3px solid var(--color-primary);
+    padding-left: 10px;
+    text-align: left;
+}
+
+/* ৪টি প্রধান মেনু গ্রিড (টাস্ক, রিওয়ার্ড, ওয়ালেট, সাপোর্ট) */
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.menu-item {
+    text-align: left;
+    padding: 20px 16px;
+    cursor: pointer;
+}
+
+.menu-item h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.menu-item p {
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
-/* Beautiful Inputs for Login/Forms */
-input[type="text"], input[type="email"], input[type="password"] {
-    width: 100%;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid var(--border-color);
-    padding: 14px;
-    border-radius: var(--radius-md);
-    color: var(--text-main);
-    font-size: 15px;
-    transition: all 0.2s ease;
+/* রেফারেল লিংক বক্স */
+.referral-box {
+    text-align: left;
+    padding: 20px;
+    margin-bottom: 30px;
 }
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+.referral-box p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.referral-input-group {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    word-break: break-all;
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+    margin-bottom: 12px;
+}
+
+/* আকর্ষণীয় গ্রেডিয়েন্ট বাটন */
+.btn-action {
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: opacity 0.2s;
+}
+
+.btn-action:hover {
+    opacity: 0.9;
 }
