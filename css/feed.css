@@ -62,3 +62,12 @@
 @keyframes feedRise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:480px){.feed-top{padding:15px 13px!important}.feed-brand-icon{width:38px;height:38px;flex-basis:38px}.feed-brand strong{font-size:1rem}.feed-brand small{font-size:.64rem}.feed-home-link{padding:8px 9px!important;font-size:.76rem}.feed-hero{margin:14px 10px;padding:21px 17px;min-height:180px}.feed-hero-art{width:70px;height:70px;flex-basis:70px;border-radius:23px;margin-right:0}.feed-hero-art b{font-size:31px}.feed-hero-art>span{top:3px;right:8px}.feed-hero-art i{width:22px;height:22px;bottom:5px;left:6px;font-size:16px}.feed-hero p{font-size:.82rem}.feed-app .box.feed-compose{margin:0 10px 22px;padding:16px!important}.feed-posts-section{margin:0 10px}.feed-app .post{padding:14px}.feed-app .post__head small{font-size:.69rem}.feed-guideline{margin:16px 10px 0}.feed-app .feed-nav{bottom:8px;width:calc(100% - 16px)}}
 @media(prefers-reduced-motion:reduce){.feed-app *{animation:none!important;transition:none!important}}
+
+
+/* Premium cosmic motion theme — community feed */
+.feed-app .feed-hero,.feed-app .box,.feed-app .post,.feed-guideline{position:relative;border-color:rgba(93,167,255,.27)!important;box-shadow:0 12px 32px rgba(0,0,0,.18),0 0 20px rgba(42,116,255,.07);transition:border-color .25s,box-shadow .25s,transform .25s}
+.feed-app .post:hover,.feed-app .box:hover,.feed-app .feed-hero:hover{border-color:rgba(76,225,255,.5)!important;box-shadow:0 14px 35px rgba(0,0,0,.22),0 0 24px rgba(42,166,255,.13)}
+.feed-app .feed-hero-art{animation:feedCosmicFloat 5.5s ease-in-out infinite;filter:drop-shadow(0 0 15px rgba(56,177,255,.2))}
+.feed-app .feed-nav a[aria-current=page]{box-shadow:0 0 18px rgba(48,190,255,.13)}
+@keyframes feedCosmicFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.feed-app .feed-hero-art{animation:none!important}}
