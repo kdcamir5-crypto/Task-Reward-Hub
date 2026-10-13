@@ -6,6 +6,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const $ = (s) => document.querySelector(s);
+const BOT_PACKAGES = [
+  { id: 'pulse', name: 'AI Pulse Bot v2' },
+  { id: 'quantum', name: 'Quantum Core Pro' },
+  { id: 'neural', name: 'Neural Matrix Bot' },
+  { id: 'cyber', name: 'Cyber Forge Titan' },
+  { id: 'apex', name: 'Apex Sentinel AI' }
+];
+
 const me = await window.hubUser;
 document.documentElement.dataset.theme = Store.get('theme', 'light');
 
@@ -20,13 +28,6 @@ if (!me.profile || me.profile.role !== 'admin') {
 }
 
 
-const BOT_PACKAGES = [
-  { id: 'pulse', name: 'AI Pulse Bot v2' },
-  { id: 'quantum', name: 'Quantum Core Pro' },
-  { id: 'neural', name: 'Neural Matrix Bot' },
-  { id: 'cyber', name: 'Cyber Forge Titan' },
-  { id: 'apex', name: 'Apex Sentinel AI' }
-];
 function randomRedeemCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const bytes = new Uint8Array(12);
