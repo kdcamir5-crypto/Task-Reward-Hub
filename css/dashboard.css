@@ -20,3 +20,54 @@
 @media(min-width:600px){.app{padding-left:12px;padding-right:12px}.head{border-radius:0 0 32px 32px}.dashboard-main{padding-right:8px;padding-left:8px}}
 @media(max-width:380px){.head{padding-right:15px;padding-left:15px}.dashboard-main{padding-right:12px;padding-left:12px}.brand__text strong{font-size:.86rem}.welcome h1{font-size:1.25rem}.balances{gap:8px}.bal{padding:12px;min-height:132px}.bal__label{font-size:.68rem}.community-banner{min-height:226px}.banner-copy{width:76%;padding-left:14px}.banner-copy h2{font-size:1.2rem}.banner-copy p{font-size:.69rem}.art-card{right:10px;width:75px;height:94px}.art-orbit--one{right:-65px}.stats{gap:6px}.stat{padding:10px 8px}.stat strong{font-size:1rem}.stat>span:last-child{font-size:.62rem}.nav{padding-right:3px;padding-left:3px}.nav a{font-size:.58rem}.nav svg{width:18px;height:18px}}
 @media(prefers-reduced-motion:reduce){.quick-card,.nav a{transition:none}}
+
+
+/* NEON MOTION UPGRADE — dashboard only, keeps all existing IDs and behavior */
+.head,.community-banner,.refbox,.activity-empty,.telegram-cta{
+  box-shadow:0 0 0 1px rgba(57,216,255,.06),0 0 24px rgba(23,107,255,.12),0 14px 38px rgba(0,0,0,.22);
+}
+.head::before{animation:dashboardOrbitGlow 12s ease-in-out infinite alternate}
+.header-glow{
+  position:absolute;left:-30%;right:-30%;bottom:0;height:2px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#39D8FF,#A855F7,#39D8FF,transparent);
+  background-size:200% 100%;animation:dashboardLightSweep 7s linear infinite;
+  filter:drop-shadow(0 0 8px #39D8FF);
+}
+.art-orbit--one{animation:dashboardOrbitOne 11s linear infinite}
+.art-orbit--two{animation:dashboardOrbitTwo 8s linear infinite}
+.art-card{animation:dashboardCardFloat 5s ease-in-out infinite}
+.art-star--one{animation:dashboardStarPulse 2.4s ease-in-out infinite}
+.art-star--two{animation:dashboardStarPulse 3.1s ease-in-out infinite reverse}
+.bal--main::after{
+  content:"";position:absolute;inset:-60% auto -60% -45%;width:34%;
+  transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(57,216,255,.2),transparent);
+  animation:dashboardCardShine 7s ease-in-out infinite;pointer-events:none;
+}
+.quick-card{overflow:hidden}
+.quick-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(120deg,transparent 15%,rgba(57,216,255,.45),rgba(168,85,247,.35),transparent 75%);
+  background-size:220% 220%;opacity:.2;pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:dashboardBorderFlow 8s linear infinite;
+}
+.quick-card:hover{box-shadow:0 0 25px rgba(57,216,255,.17),0 12px 24px rgba(0,0,0,.2)}
+.live-dot{animation:dashboardLivePulse 1.8s ease-in-out infinite}
+.bal--wallet .wallet-icon{animation:dashboardIconGlow 3s ease-in-out infinite}
+.nav a[aria-current=page]{text-shadow:0 0 12px rgba(57,216,255,.55)}
+.nav a[aria-current=page] svg{animation:dashboardNavGlow 3s ease-in-out infinite}
+@keyframes dashboardOrbitGlow{from{transform:translate3d(0,0,0) scale(.94);opacity:.5}to{transform:translate3d(-18px,15px,0) scale(1.08);opacity:1}}
+@keyframes dashboardLightSweep{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@keyframes dashboardOrbitOne{from{transform:rotate(-24deg)}to{transform:rotate(336deg)}}
+@keyframes dashboardOrbitTwo{from{transform:rotate(33deg)}to{transform:rotate(-327deg)}}
+@keyframes dashboardCardFloat{0%,100%{translate:0 0;rotate:8deg}50%{translate:0 -9px;rotate:4deg}}
+@keyframes dashboardStarPulse{0%,100%{opacity:.45;filter:drop-shadow(0 0 2px currentColor);transform:scale(.82)}50%{opacity:1;filter:drop-shadow(0 0 9px currentColor);transform:scale(1.18)}}
+@keyframes dashboardCardShine{0%,15%{left:-45%}55%,100%{left:130%}}
+@keyframes dashboardBorderFlow{0%{background-position:0% 50%;opacity:.12}50%{opacity:.6}100%{background-position:220% 50%;opacity:.12}}
+@keyframes dashboardLivePulse{0%,100%{box-shadow:0 0 0 3px rgba(39,200,154,.12),0 0 4px #27C89A}50%{box-shadow:0 0 0 7px rgba(39,200,154,.04),0 0 12px #27C89A}}
+@keyframes dashboardIconGlow{0%,100%{box-shadow:0 0 0 rgba(57,216,255,0)}50%{box-shadow:0 0 20px rgba(57,216,255,.3)}}
+@keyframes dashboardNavGlow{0%,100%{filter:drop-shadow(0 0 2px #39D8FF44)}50%{filter:drop-shadow(0 0 8px #39D8FFAA)}}
+@media(prefers-reduced-motion:reduce){
+  .head::before,.art-orbit--one,.art-orbit--two,.art-card,.art-star--one,.art-star--two,.bal--main::after,.quick-card::after,.live-dot,.bal--wallet .wallet-icon,.nav a[aria-current=page] svg,.header-glow{animation:none!important}
+}
