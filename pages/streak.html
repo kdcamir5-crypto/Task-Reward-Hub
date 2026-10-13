@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>Task Reward Hub — Daily Streak</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/streak.css">
+</head>
+<body>
+  <div class="app streak-app">
+    <header class="head">
+      <div class="head__top">
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম"><span class="brand__mark" aria-hidden="true">TR</span><span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span></a>
+        <a class="icon-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">⌂</a>
+      </div>
+      <div class="welcome">
+        <div><p class="eyebrow">DAILY STREAK CHALLENGE</p><h1>Daily <span>Streak</span> 🔥</h1><p class="user-id">প্রতিদিন ফিরে আসুন, ধারাবাহিকতা তৈরি করুন</p></div>
+        <div class="welcome-avatar" aria-hidden="true">🔥</div>
+      </div>
+      <div class="header-glow" aria-hidden="true"></div>
+    </header>
+    <main class="streak-main">
+      <section class="streak-hero">
+        <div class="streak-flame" aria-hidden="true">🔥</div>
+        <p class="streak-kicker">YOUR CONSISTENCY MATTERS</p>
+        <h2>প্রতিদিন চেক-ইন করুন!</h2>
+        <p>একটানা প্রতিদিন চেক-ইন করে আপনার স্ট্রিক বাড়ান এবং ভার্চুয়াল XP আনলক করুন। XP শুধু গেমের অগ্রগতি—এটি নগদ টাকা বা উইথড্র ব্যালেন্স নয়।</p>
+        <div class="streak-count"><strong id="current-streak">0</strong><span>দিনের স্ট্রিক</span></div>
+        <button id="checkin-button" class="checkin-button" type="button">🔥 আজকের চেক-ইন</button>
+        <p id="streak-status" class="streak-status" role="status" aria-live="polite"></p>
+      </section>
+      <section class="streak-summary">
+        <article><span>সর্বোচ্চ স্ট্রিক</span><strong id="best-streak">0 দিন</strong></article>
+        <article><span>মোট চেক-ইন</span><strong id="total-checkins">0</strong></article>
+        <article><span>মোট XP</span><strong id="streak-xp">0</strong></article>
+      </section>
+      <section class="streak-calendar">
+        <div class="streak-section-head"><div><p class="eyebrow">7 DAY JOURNEY</p><h2>সাপ্তাহিক চ্যালেঞ্জ</h2></div><span id="week-progress">0/7</span></div>
+        <div class="streak-days" id="streak-days">
+          <div class="streak-day"><span>দিন ১</span><b>+10 XP</b></div><div class="streak-day"><span>দিন ২</span><b>+15 XP</b></div><div class="streak-day"><span>দিন ৩</span><b>+20 XP</b></div><div class="streak-day"><span>দিন ৪</span><b>+25 XP</b></div><div class="streak-day"><span>দিন ৫</span><b>+30 XP</b></div><div class="streak-day"><span>দিন ৬</span><b>+40 XP</b></div><div class="streak-day"><span>দিন ৭</span><b>+75 XP</b></div>
+        </div>
+        <p class="streak-note">প্রতিদিনের XP একবারই পাওয়া যাবে। কোনো দিন বাদ পড়লে বর্তমান স্ট্রিক আবার ১ থেকে শুরু হবে।</p>
+      </section>
+      <section class="streak-history">
+        <div class="streak-section-head"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>চেক-ইন ইতিহাস</h2></div></div>
+        <ul id="streak-history-list"><li class="streak-history-empty">এখনো কোনো চেক-ইন করা হয়নি।</li></ul>
+      </section>
+      <a class="streak-back" href="dashboard.html">← ড্যাশবোর্ডে ফিরে যান</a>
+    </main>
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><span aria-hidden="true">⌂</span><span>হোম</span></a>
+      <a href="tasks.html"><span aria-hidden="true">▣</span><span>টাস্ক</span></a>
+      <a href="wallet.html"><span aria-hidden="true">৳</span><span>ওয়ালেট</span></a>
+      <a href="profile.html"><span aria-hidden="true">♙</span><span>প্রোফাইল</span></a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/streak.js"></script>
+</body>
+</html>
