@@ -1,0 +1,46 @@
+/* Lucky Spin — gamification XP only; no cash balance changes */
+.spin-main{padding:24px 18px 112px;max-width:760px;margin:0 auto}
+.spin-intro{padding:22px;border:1px solid var(--line,#dce5f2);border-radius:22px;background:var(--surface,#fff);box-shadow:0 14px 38px #07152f0a}
+.spin-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 11px;border-radius:999px;background:#eafbf4;color:#087f5b;font-size:11px;font-weight:800;letter-spacing:.08em}
+.spin-pill span{width:7px;height:7px;border-radius:50%;background:#14b87a;box-shadow:0 0 0 4px #14b87a20}
+.spin-intro h2{font-size:25px;margin:14px 0 7px;color:var(--text,#10213d)}
+.spin-intro p{font-size:14px;line-height:1.8;margin:0;color:var(--muted,#64748b)}
+.spin-stage{position:relative;width:min(84vw,360px);aspect-ratio:1;margin:32px auto 24px;display:grid;place-items:center;filter:drop-shadow(0 18px 26px #07152f24)}
+.spin-wheel{width:100%;height:100%;position:relative;border-radius:50%;border:9px solid #fff;outline:5px solid #f3b73f;background:conic-gradient(#1768e8 0deg 45deg,#20b8a2 45deg 90deg,#6d54dc 90deg 135deg,#f6b83f 135deg 180deg,#f16d79 180deg 225deg,#22a6db 225deg 270deg,#30b879 270deg 315deg,#eb7c35 315deg 360deg);transition:transform 4.2s cubic-bezier(.12,.72,.12,1);box-shadow:inset 0 0 0 3px #ffffff65}
+.spin-wheel:after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,#fff0 0deg 44deg,#ffffffa8 44.2deg 45deg);pointer-events:none}
+.spin-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:3;width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;border-top:36px solid #f9c74f;filter:drop-shadow(0 3px 2px #07152f55)}
+.wheel-center{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff,#dce8ff);border:5px solid #fff;box-shadow:0 3px 12px #07152f38;color:#173a79;font-size:19px;font-weight:800}
+.wheel-center small{font-size:9px;letter-spacing:.18em}
+.wheel-label{position:absolute;z-index:1;left:50%;top:50%;width:65px;margin-left:-32.5px;margin-top:-10px;text-align:center;color:#fff;font-size:13px;font-weight:800;text-shadow:0 2px 4px #0005}
+.label-1{transform:rotate(22.5deg) translateY(-112px) rotate(-22.5deg)}
+.label-2{transform:rotate(67.5deg) translateY(-112px) rotate(-67.5deg)}
+.label-3{transform:rotate(112.5deg) translateY(-112px) rotate(-112.5deg)}
+.label-4{transform:rotate(157.5deg) translateY(-112px) rotate(-157.5deg)}
+.label-5{transform:rotate(202.5deg) translateY(-112px) rotate(-202.5deg)}
+.label-6{transform:rotate(247.5deg) translateY(-112px) rotate(-247.5deg)}
+.label-7{transform:rotate(292.5deg) translateY(-112px) rotate(-292.5deg)}
+.label-8{transform:rotate(337.5deg) translateY(-112px) rotate(-337.5deg)}
+.spin-result-card{text-align:center;padding:24px 18px;border-radius:24px;background:linear-gradient(145deg,#0a1d3f,#102f63);color:#fff;box-shadow:0 18px 36px #07152f20}
+.spin-caption{margin:0 0 8px;color:#b8d5ff;font-size:12px;font-weight:700;letter-spacing:.06em}
+.spin-result-card>strong{display:block;font-size:22px;line-height:1.5}
+.spin-result-card>p:not(.spin-caption):not(.spin-status){margin:7px 0 18px;color:#d4e2fa;font-size:13px}
+.spin-button{border:0;border-radius:14px;padding:14px 28px;background:linear-gradient(135deg,#ffcf55,#f59b25);color:#182847;font:800 16px inherit;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 7px 0 #b86b18;transition:transform .15s,opacity .15s}
+.spin-button:active{transform:translateY(3px);box-shadow:0 4px 0 #b86b18}
+.spin-button:disabled{opacity:.55;cursor:not-allowed}
+.spin-status{min-height:20px;margin:15px 0 0;font-size:13px;color:#c7f9dd}
+.spin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 30px}
+.spin-stats article{padding:16px 8px;text-align:center;border:1px solid var(--line,#dce5f2);border-radius:16px;background:var(--surface,#fff)}
+.spin-stats span{display:block;color:var(--muted,#64748b);font-size:12px}
+.spin-stats strong{display:block;margin-top:5px;font-size:23px;color:var(--text,#10213d)}
+.spin-history{padding:20px;border:1px solid var(--line,#dce5f2);border-radius:20px;background:var(--surface,#fff)}
+.spin-history-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.spin-history-head .eyebrow{margin:0 0 4px;font-size:10px}
+.spin-history-head h2{margin:0;font-size:20px;color:var(--text,#10213d)}
+.spin-history-head>span{font-size:10px;font-weight:800;letter-spacing:.12em;color:#5a72a1}
+#spin-history-list{list-style:none;margin:0;padding:0}
+#spin-history-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line,#e5eaf2);font-size:13px;color:var(--text,#10213d)}
+#spin-history-list li:last-child{border-bottom:0}
+#spin-history-list small{color:var(--muted,#64748b)}
+#spin-history-list .history-empty{color:var(--muted,#64748b);justify-content:center;padding:20px 0}
+.spin-back{display:block;text-align:center;margin:22px 0;color:var(--muted,#64748b);font-weight:700;text-decoration:none}
+@media(max-width:380px){.spin-main{padding-left:12px;padding-right:12px}.spin-stage{width:82vw}.wheel-label{font-size:11px}.label-1,.label-2,.label-3,.label-4,.label-5,.label-6,.label-7,.label-8{transform-origin:center}.label-1{transform:rotate(22.5deg) translateY(-92px) rotate(-22.5deg)}.label-2{transform:rotate(67.5deg) translateY(-92px) rotate(-67.5deg)}.label-3{transform:rotate(112.5deg) translateY(-92px) rotate(-112.5deg)}.label-4{transform:rotate(157.5deg) translateY(-92px) rotate(-157.5deg)}.label-5{transform:rotate(202.5deg) translateY(-92px) rotate(-202.5deg)}.label-6{transform:rotate(247.5deg) translateY(-92px) rotate(-247.5deg)}.label-7{transform:rotate(292.5deg) translateY(-92px) rotate(-292.5deg)}.label-8{transform:rotate(337.5deg) translateY(-92px) rotate(-337.5deg)}}
