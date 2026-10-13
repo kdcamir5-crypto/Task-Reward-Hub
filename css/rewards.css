@@ -93,3 +93,11 @@
 @media(max-width:380px){.rewards-head{padding-right:14px;padding-left:14px}.rewards-main{padding-right:12px;padding-left:12px}.rewards-hero{padding:16px;min-height:194px}.rewards-hero__copy h2{font-size:1.3rem}.rewards-claim-panel,.rewards-history-panel{padding:14px}.rewards-panel-icon,.rewards-history-icon{width:36px;height:36px;flex-basis:36px}.rewards-panel-heading{gap:9px}.rewards-panel-heading h3{font-size:.94rem}}
 @media(min-width:600px){.rewards-main{padding-right:20px;padding-left:20px}.rewards-hero{padding:22px;min-height:220px}.rewards-claim-panel,.rewards-history-panel{padding:20px}}
 @media(prefers-reduced-motion:reduce){.rewards-submit{transition:none!important}}
+
+
+/* Premium cosmic motion theme — rewards */
+.rewards-hero,.rewards-claim-panel,.rewards-history-panel,.rewards-app .hist{border-color:rgba(92,170,255,.28)!important;box-shadow:0 12px 32px rgba(0,0,0,.2),0 0 22px rgba(53,119,255,.07);transition:border-color .25s,box-shadow .25s,transform .25s}
+.rewards-claim-panel:hover,.rewards-history-panel:hover{border-color:rgba(77,225,255,.48)!important;box-shadow:0 14px 34px rgba(0,0,0,.23),0 0 24px rgba(45,170,255,.12)}
+.rewards-hero__copy h2{ text-shadow:0 0 18px rgba(75,190,255,.18)}
+.rewards-panel-icon,.rewards-history-icon{filter:drop-shadow(0 0 9px rgba(61,180,255,.15))}
+.rewards-nav a[aria-current=page]{box-shadow:0 0 18px rgba(48,190,255,.13)}
