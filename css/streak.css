@@ -1,0 +1,26 @@
+/* Daily Streak Challenge — virtual XP only; never changes cash balance */
+.streak-main{padding:24px 16px 112px;max-width:760px;margin:0 auto}
+.streak-hero{position:relative;overflow:hidden;padding:24px 20px 22px;border-radius:25px;background:linear-gradient(145deg,#0b1d3e,#123e7b);color:#fff;text-align:center;box-shadow:0 18px 36px #07152f20}
+.streak-hero:before{content:"";position:absolute;width:210px;height:210px;right:-95px;top:-105px;border:1px solid #39d8ff44;border-radius:50%;box-shadow:0 0 0 22px #39d8ff0c,0 0 0 44px #39d8ff08;pointer-events:none}
+.streak-flame{position:relative;display:grid;place-items:center;width:76px;height:76px;margin:0 auto 12px;border-radius:25px;background:linear-gradient(145deg,#ffcf6a,#ff7959);font-size:39px;box-shadow:0 9px 26px #ff86594d}
+.streak-kicker{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8deaff}
+.streak-hero h2{margin:9px 0 7px;font-size:25px}
+.streak-hero>p:not(.streak-kicker):not(.streak-status){max-width:440px;margin:0 auto;color:#d3e2f7;font-size:13px;line-height:1.8}
+.streak-count{display:flex;flex-direction:column;align-items:center;justify-content:center;width:126px;height:126px;margin:20px auto 16px;border:2px solid #ffcf6a;border-radius:50%;background:#ffffff0b;box-shadow:inset 0 0 0 7px #ffffff08}
+.streak-count strong{font-size:43px;line-height:1.1;color:#ffcf6a}.streak-count span{margin-top:4px;font-size:12px;color:#d3e2f7}
+.checkin-button{position:relative;border:0;border-radius:14px;padding:14px 25px;background:linear-gradient(135deg,#ffdc76,#ff9f43);color:#2b2340;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #b9672c}
+.checkin-button:active{transform:translateY(2px);box-shadow:0 4px 0 #b9672c}.checkin-button:disabled{opacity:.6;cursor:not-allowed}
+.streak-status{min-height:20px;margin:13px 0 0;font-size:12px;color:#c7f9dd}
+.streak-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0 24px}
+.streak-summary article{min-width:0;padding:15px 7px;text-align:center;border:1px solid var(--line,#dce5f2);border-radius:16px;background:var(--surface,#fff)}
+.streak-summary span{display:block;font-size:11px;color:var(--muted,#64748b)}.streak-summary strong{display:block;margin-top:6px;font-size:21px;color:var(--text,#10213d);overflow-wrap:anywhere}
+.streak-calendar,.streak-history{padding:19px;border:1px solid var(--line,#dce5f2);border-radius:21px;background:var(--surface,#fff);box-shadow:0 10px 28px #07152f08}
+.streak-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.streak-section-head .eyebrow{margin:0 0 4px;font-size:10px}.streak-section-head h2{margin:0;font-size:20px;color:var(--text,#10213d)}.streak-section-head>span{padding:6px 10px;border-radius:10px;background:#eaf4ff;color:#1768d8;font-size:12px;font-weight:800}
+.streak-days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.streak-day{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:13px 11px;border:1px solid var(--line,#dce5f2);border-radius:13px;background:#f8faff;color:var(--text,#10213d);font-size:12px}
+.streak-day b{font-size:12px;color:#1768d8}.streak-day.is-done{border-color:#6bd5ae;background:#eafff4}.streak-day.is-done b{color:#087f5b}.streak-day.is-current{border-color:#ffbe55;background:#fff7e6}
+.streak-note{margin:13px 0 0;font-size:12px;line-height:1.7;color:var(--muted,#64748b)}
+.streak-history{margin-top:16px}#streak-history-list{list-style:none;margin:0;padding:0}#streak-history-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line,#e5eaf2);font-size:13px;color:var(--text,#10213d)}#streak-history-list li:last-child{border-bottom:0}#streak-history-list small{display:block;margin-top:3px;color:var(--muted,#64748b);font-size:11px}#streak-history-list strong{color:#087f5b;white-space:nowrap}#streak-history-list .streak-history-empty{justify-content:center;padding:20px 0;color:var(--muted,#64748b)}
+.streak-back{display:block;text-align:center;margin:22px 0;color:var(--muted,#64748b);font-weight:700;text-decoration:none}
+@media(max-width:380px){.streak-main{padding-left:12px;padding-right:12px}.streak-summary span{font-size:10px}.streak-summary strong{font-size:18px}.streak-days{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){.streak-flame{animation:flame-pulse 2.5s ease-in-out infinite}@keyframes flame-pulse{50%{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 30px #ff86596b}}}
