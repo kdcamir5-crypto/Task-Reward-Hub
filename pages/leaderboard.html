@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#07152F">
+<title>Task Reward Hub — Weekly Champion</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css"><link rel="stylesheet" href="../css/dashboard.css"><link rel="stylesheet" href="../css/leaderboard.css">
+</head>
+<body>
+<div class="app">
+<header class="head">
+  <div class="head__top"><a class="brand" href="dashboard.html"><span class="brand__mark">TR</span><span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span></a><a class="icon-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">⌂</a></div>
+  <div class="welcome"><div><p class="eyebrow">WEEKLY CHAMPIONS</p><h1>Champion <span>Board</span> 🏆</h1><p class="user-id">আপনার গেম XP অনুযায়ী অগ্রগতি দেখুন</p></div><div class="welcome-avatar" aria-hidden="true">🏆</div></div>
+  <div class="header-glow" aria-hidden="true"></div>
+</header>
+<main class="leader-main">
+  <section class="leader-hero"><div class="leader-trophy">🏆</div><p class="leader-kicker">KEEP PLAYING · KEEP GROWING</p><h2>চ্যাম্পিয়ন হওয়ার পথে!</h2><p>লাকি স্পিন ও ডেইলি স্ট্রিকের ভার্চুয়াল XP এখানে যোগ হয়ে র‍্যাঙ্ক দেখাবে। XP নগদ টাকা নয়।</p><div class="leader-hero-stats"><div><span>আপনার র‍্যাঙ্ক</span><strong id="my-rank">—</strong></div><div><span>আপনার XP</span><strong id="my-xp">0</strong></div><div><span>অ্যাকাউন্ট</span><strong id="account-count">1</strong></div></div></section>
+  <section class="leader-board">
+    <div class="leader-section-head"><div><p class="eyebrow">XP RANKING</p><h2>লিডারবোর্ড</h2></div><span class="leader-pill">🏅 TOP PLAYERS</span></div>
+    <div class="leader-notice"><span>ⓘ</span><p>এটি বর্তমানে একই ব্রাউজারে থাকা অ্যাকাউন্টগুলোর লোকাল র‍্যাঙ্কিং। সবার জন্য অনলাইন/গ্লোবাল লিডারবোর্ড করতে পরে Firebase-এ XP সংরক্ষণ ও নিরাপদ সার্ভার-সাইড হিসাব যুক্ত করতে হবে।</p></div>
+    <ol id="leader-list" class="leader-list"><li class="leader-empty">র‍্যাঙ্কিং তৈরি হচ্ছে…</li></ol>
+  </section>
+  <section class="leader-how"><h2>কীভাবে XP বাড়াবেন?</h2><a href="spin.html"><span>🎡</span><span><strong>লাকি স্পিন</strong><small>প্রতিদিন একবার স্পিন করুন</small></span><b>↗</b></a><a href="streak.html"><span>🔥</span><span><strong>ডেইলি স্ট্রিক</strong><small>প্রতিদিন চেক-ইন করুন</small></span><b>↗</b></a></section>
+  <a class="leader-back" href="dashboard.html">← ড্যাশবোর্ডে ফিরে যান</a>
+</main>
+<nav class="nav" aria-label="প্রধান মেনু"><a href="dashboard.html"><span>⌂</span><span>হোম</span></a><a href="tasks.html"><span>▣</span><span>টাস্ক</span></a><a href="wallet.html"><span>৳</span><span>ওয়ালেট</span></a><a href="profile.html"><span>♙</span><span>প্রোফাইল</span></a></nav>
+</div>
+<script src="../js/storage.js"></script><script src="../js/auth.js"></script><script src="../js/guard.js"></script><script src="../js/leaderboard.js"></script>
+</body></html>
