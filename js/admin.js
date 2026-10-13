@@ -1,7 +1,7 @@
 // admin.js - Admin: task submissions, withdrawals, and task management
 import { db } from './firebase-config.js';
 import {
-  collection, getDocs, addDoc, updateDoc, doc, query, where,
+  collection, getDocs, addDoc, updateDoc, doc, setDoc, query, where,
   runTransaction, increment, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -52,7 +52,7 @@ function setupBotCodeGenerators() {
       try {
         const code = randomRedeemCode();
         const now = Date.now();
-        await addDoc(collection(db, 'botRedeemCodes'), {
+        await setDoc(doc(db, 'botRedeemCodes', code), {
           code, botId: bot.id, botName: bot.name,
           createdBy: me.uid, createdAt: serverTimestamp(),
           expiresAtMs: now + 30 * 60 * 1000,
