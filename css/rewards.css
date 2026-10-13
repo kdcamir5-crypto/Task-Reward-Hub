@@ -1,12 +1,8 @@
-/* rewards.css - রিওয়ার্ড কোড পেজ (.app, .top, .nav ড্যাশবোর্ড/টাস্কের CSS থেকে আসে) */
-.claim{margin:16px;background:var(--forest);color:var(--on-forest);border-radius:var(--radius);padding:18px}
-.claim h3{font-size:1.05rem}
-.claim p{opacity:.85;font-size:.9rem;margin:2px 0 12px}
-.claim form{display:flex;gap:8px}
-.claim input{flex:1;min-width:0;padding:11px;border-radius:10px;border:0;text-transform:uppercase;background:var(--card);color:var(--ink)}
-.claim button{border:0;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;background:var(--lime);color:#0F3D2E}
-.result{margin:0 16px;min-height:1.4em;font-size:.9rem}
-.result.ok{color:#1D7A46}.result.err{color:var(--danger)}
-.hist{margin:0 16px;padding:0;list-style:none}
-.hist li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
-.hist small{color:var(--muted);display:block}
+/* Reward codes */
+.claim{margin:16px;background:linear-gradient(135deg,#123D8B,#176BFF 65%,#39BFFF);color:#fff;border:1px solid rgba(57,216,255,.28);border-radius:20px;padding:19px;box-shadow:0 10px 24px rgba(23,107,255,.17)}
+.claim h3{font-size:1.05rem}.claim p{opacity:.9;font-size:.9rem;margin:2px 0 12px}.claim form{display:flex;gap:8px}
+.claim input{flex:1;min-width:0;padding:11px;border-radius:11px;border:1px solid #DCE6F4;text-transform:uppercase;background:#fff;color:#10213F}
+.claim button{border:0;border-radius:99px;padding:0 17px;font-weight:700;cursor:pointer;background:#39D8FF;color:#07152F}
+.result{margin:0 16px;min-height:1.4em;font-size:.9rem;color:#F5FAFF}.result.ok{color:#78F0B2}.result.err{color:#FF9CA4}
+.hist{margin:0 16px;padding:0;list-style:none;background:#fff;color:#10213F;border-radius:15px;padding:0 12px}
+.hist li{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #E5ECF7}.hist small{color:#62718B;display:block}
