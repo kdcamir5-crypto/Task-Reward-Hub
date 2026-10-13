@@ -2,9 +2,10 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Task Reward Hub - ড্যাশবোর্ড</title>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>Task Reward Hub — Community Work</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/dashboard.css">
 </head>
@@ -12,58 +13,111 @@
   <div class="app">
     <header class="head">
       <div class="head__top">
-        <strong>Task Reward Hub</strong>
-        <span>
-          <button class="icon-btn" id="bell" type="button">নোটিফিকেশন<span class="badge">2</span></button>
-          <button class="icon-btn" id="logout" type="button">সাইন আউট</button>
-        </span>
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম">
+          <span class="brand__mark" aria-hidden="true">TR</span>
+          <span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span>
+        </a>
+        <div class="head__actions">
+          <button class="icon-btn bell-btn" id="bell" type="button" aria-label="নোটিফিকেশন খুলুন">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+            <span class="badge">2</span>
+          </button>
+          <button class="icon-btn logout-btn" id="logout" type="button" aria-label="সাইন আউট">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="who"><h2 id="name"></h2><p id="uid"></p></div>
+
+      <div class="welcome">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h1>স্বাগতম, <span id="name">বন্ধু</span>!</h1>
+          <p class="user-id" id="uid">আপনার অ্যাকাউন্ট প্রস্তুত</p>
+        </div>
+        <div class="welcome-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg></div>
+      </div>
+      <div class="header-glow" aria-hidden="true"></div>
     </header>
 
-    <section class="balances">
-      <div class="bal"><span>মোট ব্যালেন্স</span><strong id="balance">৳ 0.00</strong></div>
-      <div class="bal"><span>উইথড্র করা যাবে</span><strong>৳ 0.00</strong></div>
-    </section>
+    <main class="dashboard-main">
+      <section class="balances" aria-label="ব্যালেন্স সারাংশ">
+        <article class="bal bal--main">
+          <div class="bal__top"><span class="bal__icon" aria-hidden="true">৳</span><span class="bal__label">মোট ব্যালেন্স</span><span class="live-dot" aria-label="আপডেটেড"></span></div>
+          <strong id="balance">৳ 0.00</strong>
+          <span class="bal__foot">আপনার বর্তমান আয়</span>
+          <div class="bal__decoration" aria-hidden="true"></div>
+        </article>
+        <a class="bal bal--wallet" href="wallet.html">
+          <span class="bal__label">ওয়ালেট</span>
+          <span class="wallet-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v16H5a2 2 0 0 1-2-2V6.5A2.5 2.5 0 0 1 5.5 4M3 8h17M16 13h4"/></svg></span>
+          <strong>উইথড্র ও ইতিহাস</strong>
+          <span class="bal__foot">পেমেন্ট ব্যবস্থাপনা <span aria-hidden="true">↗</span></span>
+        </a>
+      </section>
 
-    <section class="stats">
-      <div class="stat"><strong id="tasks">0</strong><span>সম্পন্ন টাস্ক</span></div>
-      <div class="stat"><strong id="refs">0</strong><span>রেফারেল</span></div>
-      <div class="stat"><strong>Level 1</strong><span>শুরুর স্তর</span></div>
-    </section>
+      <section class="community-banner" aria-label="কমিউনিটি ও টাস্ক">
+        <div class="banner-copy">
+          <span class="banner-tag"><span></span> COMMUNITY WORK</span>
+          <h2>কাজ করুন।<br><em>রিওয়ার্ড</em> সংগ্রহ করুন।</h2>
+          <p>নতুন টাস্ক দেখুন, কাজ জমা দিন এবং আপনার অগ্রগতি ট্র্যাক করুন।</p>
+          <a class="banner-cta" href="tasks.html">টাস্ক দেখুন <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="banner-art" aria-hidden="true">
+          <div class="art-orbit art-orbit--one"></div>
+          <div class="art-orbit art-orbit--two"></div>
+          <div class="art-card"><span class="art-card__spark">✦</span><span class="art-card__check">✓</span><b>WORK</b><small>REWARD HUB</small></div>
+          <span class="art-star art-star--one">✦</span><span class="art-star art-star--two">✧</span>
+        </div>
+      </section>
 
-    <h3 class="section">দ্রুত যান</h3>
-    <div class="grid">
-      <a class="tile" href="tasks.html"><b>টাস্ক</b><small>কাজ করে আয় করুন</small></a>
-      <a class="tile" href="rewards.html"><b>রিওয়ার্ড কোড</b><small>দৈনিক বোনাস নিন</small></a>
-      <a class="tile" href="wallet.html"><b>ওয়ালেট</b><small>ব্যালেন্স ও উইথড্র</small></a>
-      <a class="tile" href="#"><b>সাপোর্ট</b><small>সাহায্য নিন</small></a>
-    </div>
+      <section class="stats" aria-label="আপনার অগ্রগতি">
+        <article class="stat"><span class="stat__icon stat__icon--blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4M12 3l2.2 1.4 2.6-.1 1.1 2.4 2.2 1.4-.5 2.6.5 2.6-2.2 1.4-1.1 2.4-2.6-.1L12 21l-2.2-1.4-2.6.1-1.1-2.4-2.2-1.4.5-2.6-.5-2.6 2.2-1.4 1.1-2.4 2.6.1Z"/></svg></span><strong id="tasks">0</strong><span>সম্পন্ন টাস্ক</span></article>
+        <article class="stat"><span class="stat__icon stat__icon--cyan" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"/></svg></span><strong id="refs">0</strong><span>রেফারেল</span></article>
+        <article class="stat"><span class="stat__icon stat__icon--violet" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.8 8.7 21 9.6l-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg></span><strong>Level 1</strong><span>শুরুর স্তর</span></article>
+      </section>
 
-    <section class="refbox">
-      <b>আপনার রেফারেল লিংক</b>
-      <code id="reflink"></code>
-      <button id="copy" type="button">লিংক কপি করুন</button>
-    </section>
+      <div class="section-heading"><div><p class="eyebrow">EXPLORE</p><h2>দ্রুত অ্যাকশন</h2></div><span class="heading-mark">৪টি সেবা</span></div>
+      <section class="quick-grid" aria-label="দ্রুত অ্যাকশন">
+        <a class="quick-card quick-card--tasks" href="tasks.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg></span><span class="quick-card__title">ডেইলি টাস্ক</span><span class="quick-card__desc">কাজ দেখুন ও জমা দিন</span><span class="quick-arrow">↗</span></a>
+        <a class="quick-card quick-card--rewards" href="rewards.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5V7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5V7Z"/></svg></span><span class="quick-card__title">রিওয়ার্ড কোড</span><span class="quick-card__desc">কোড থাকলে ক্লেইম করুন</span><span class="quick-arrow">↗</span></a>
+        <a class="quick-card quick-card--wallet" href="wallet.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg></span><span class="quick-card__title">আমার ওয়ালেট</span><span class="quick-card__desc">উইথড্র ও হিস্ট্রি</span><span class="quick-arrow">↗</span></a>
+        <a class="quick-card quick-card--community" href="feed.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></span><span class="quick-card__title">কমিউনিটি</span><span class="quick-card__desc">পোস্ট ও আলোচনা</span><span class="quick-arrow">↗</span></a>
+      </section>
 
-    <h3 class="section">সাম্প্রতিক কার্যক্রম</h3>
-    <p class="empty">এখনো কোনো কার্যক্রম নেই। প্রথম টাস্ক শুরু করুন।</p>
+      <section class="refbox">
+        <div class="refbox__head"><span class="refbox__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"/></svg></span><div><h3>বন্ধুকে আমন্ত্রণ জানান</h3><p>আপনার রেফারেল লিংক শেয়ার করুন</p></div></div>
+        <div class="refbox__link"><code id="reflink">লিংক তৈরি হচ্ছে...</code><button id="copy" type="button" aria-label="রেফারেল লিংক কপি করুন"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>কপি</span></button></div>
+      </section>
+
+      <section class="activity">
+        <div class="section-heading"><div><p class="eyebrow">YOUR JOURNEY</p><h2>সাম্প্রতিক কার্যক্রম</h2></div></div>
+        <div class="activity-empty"><span class="activity-empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><div><strong>আপনার যাত্রা শুরু হোক</strong><p>প্রথম টাস্কটি দেখতে টাস্ক পেজে যান।</p></div><a href="tasks.html" aria-label="টাস্ক দেখুন">→</a></div>
+      </section>
+
+      <section class="telegram-cta">
+        <span class="telegram-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span>
+        <div><strong>কমিউনিটির সঙ্গে যুক্ত থাকুন</strong><p>অফিসিয়াল আপডেট ও ঘোষণার জন্য কমিউনিটি দেখুন।</p></div>
+        <a href="feed.html" aria-label="কমিউনিটি খুলুন">→</a>
+      </section>
+    </main>
 
     <nav class="nav" aria-label="প্রধান মেনু">
-      <a href="dashboard.html" aria-current="page">হোম</a>
-      <a href="tasks.html">টাস্ক</a>
-      <a href="feed.html">ফিড</a>
-      <a href="profile.html">প্রোফাইল</a>
+      <a href="dashboard.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
     </nav>
   </div>
 
-  <div class="sheet" id="sheet">
-    <div class="sheet__body">
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet__body" role="dialog" aria-modal="true" aria-labelledby="notice-title">
       <button class="sheet__close" id="close" type="button">বন্ধ করুন</button>
-      <h3>নোটিফিকেশন</h3>
+      <p class="eyebrow">UPDATES</p>
+      <h3 id="notice-title">নোটিফিকেশন</h3>
       <ul>
-        <li>স্বাগতম!<small>আপনার অ্যাকাউন্ট তৈরি হয়েছে।</small></li>
-        <li>প্রথম টাস্ক<small>টাস্ক সম্পন্ন করে রিওয়ার্ড জিতুন।</small></li>
+        <li><span class="notice-dot"></span><span><strong>স্বাগতম!</strong><small>আপনার অ্যাকাউন্ট তৈরি হয়েছে।</small></span></li>
+        <li><span class="notice-dot"></span><span><strong>প্রথম টাস্ক</strong><small>টাস্ক সম্পন্ন করে রিওয়ার্ডের জন্য জমা দিন।</small></span></li>
       </ul>
     </div>
   </div>
