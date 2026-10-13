@@ -45,18 +45,18 @@ async function processBot(db, userRef, botId, nowMs) {
   const config = PROJECT_BOT_CONFIG[botId];
   const miningRef = userRef.collection('botMining').doc(botId);
 
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const [userSnap, miningSnap] = await Promise.all([
       tx.get(userRef),
       tx.get(miningRef)
     ]);
-    if (!userSnap.exists) return;
+    if (!userSnap.exists) return 'user-missing';
 
     const user = userSnap.data() || {};
     const unlocked = Array.isArray(user.unlockedBots) ? user.unlockedBots : [];
-    if (!unlocked.includes(botId)) return;
+    if (!unlocked.includes(botId)) return 'not-unlocked';
 
-    // Existing unlocked bots start earning from their first worker run after setup.
+    // Create a mining record once for each eligible unlocked bot.
     if (!miningSnap.exists) {
       tx.create(miningRef, {
         botId,
@@ -70,21 +70,20 @@ async function processBot(db, userRef, botId, nowMs) {
         createdAt: Timestamp.fromMillis(nowMs),
         updatedAt: Timestamp.fromMillis(nowMs)
       });
-      return;
+      return 'created';
     }
 
     const mining = miningSnap.data() || {};
-    if (mining.status !== 'running') return;
+    if (mining.status !== 'running') return 'not-running';
 
     const startedMs = timestampMillis(mining.startedAt);
     if (startedMs === null) {
-      // Fail closed if a mining record is malformed; never credit based on client data.
       tx.update(miningRef, {
         status: 'error',
         errorCode: 'INVALID_START_TIME',
         updatedAt: Timestamp.fromMillis(nowMs)
       });
-      return;
+      return 'invalid-start';
     }
 
     const earnedPaisa = Math.max(0, Math.round(Number(mining.earnedReward || 0) * 100));
@@ -111,6 +110,7 @@ async function processBot(db, userRef, botId, nowMs) {
       });
     }
     tx.update(miningRef, updates);
+    return deltaPaisa > 0 ? 'credited' : 'checked-no-credit';
   });
 }
 
@@ -118,17 +118,44 @@ async function main() {
   const db = initFirebase();
   const nowMs = Date.now();
   const usersSnap = await db.collection('users').get();
-  let botsChecked = 0;
+  const counts = {
+    usersChecked: usersSnap.size,
+    unlockedBotsFound: 0,
+    miningRecordsCreated: 0,
+    usersCredited: 0,
+    botsAlreadyRunningOrComplete: 0,
+    invalidMiningRecords: 0,
+    unknownUnlockedBotIds: 0
+  };
+  const unknownIds = new Set();
+
   for (const userDoc of usersSnap.docs) {
     const user = userDoc.data() || {};
     const unlocked = Array.isArray(user.unlockedBots) ? user.unlockedBots : [];
+
+    for (const value of unlocked) {
+      if (typeof value === 'string' && !PROJECT_BOT_CONFIG[value]) {
+        unknownIds.add(value.slice(0, 60));
+      }
+    }
+
     for (const botId of BOT_IDS) {
       if (!unlocked.includes(botId)) continue;
-      await processBot(db, userDoc.ref, botId, nowMs);
-      botsChecked++;
+      counts.unlockedBotsFound++;
+      const result = await processBot(db, userDoc.ref, botId, nowMs);
+      if (result === 'created') counts.miningRecordsCreated++;
+      else if (result === 'credited') counts.usersCredited++;
+      else if (result === 'invalid-start') counts.invalidMiningRecords++;
+      else if (result === 'checked-no-credit' || result === 'not-running') counts.botsAlreadyRunningOrComplete++;
     }
   }
-  console.log(`Auto-mining run complete. Users checked: ${usersSnap.size}; unlocked bots checked: ${botsChecked}.`);
+
+  counts.unknownUnlockedBotIds = unknownIds.size;
+  console.log('Auto-mining diagnostic summary:', JSON.stringify(counts));
+  if (unknownIds.size) {
+    console.log('Unrecognized unlockedBots values (IDs only):', JSON.stringify([...unknownIds]));
+  }
+  console.log('Auto-mining run complete.');
 }
 
 main().catch((error) => {
