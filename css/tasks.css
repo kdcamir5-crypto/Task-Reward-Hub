@@ -1,23 +1,16 @@
-/* tasks.css - টাস্ক পেজের স্টাইল (ড্যাশবোর্ডের .app, .head, .nav ব্যবহার করে) */
-.top{background:var(--forest);color:var(--on-forest);padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+/* Task cards and shared forms - neon blue theme */
+.top{background:linear-gradient(110deg,#07152F,#123D8B 65%,#176BFF);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(57,216,255,.22)}
 .tabs2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 16px}
-.tabs2 button{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px;cursor:pointer;font-weight:600;color:var(--muted)}
-.tabs2 button[aria-pressed="true"]{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
-.task{margin:10px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.task__row{display:flex;justify-content:space-between;gap:10px}
-.task h4{font-size:1rem}
-.task p{color:var(--muted);font-size:.9rem;margin-top:2px}
-.reward{font-weight:700;white-space:nowrap}
-.pill{display:inline-block;font-size:.75rem;padding:2px 10px;border-radius:99px;margin-top:8px;background:var(--bg);border:1px solid var(--line)}
-.pill--pending{color:#8A5A00}.pill--done{color:#1D7A46}.pill--rejected{color:var(--danger)}
-.task form{margin-top:10px;display:grid;gap:8px}
-.task input{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
-.task .go{border:0;background:var(--forest);color:var(--on-forest);padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
-.task .dev{border:1px dashed var(--muted);background:none;border-radius:8px;padding:6px;cursor:pointer;font-size:.8rem;margin-top:8px}
-.note{margin:14px 16px;font-size:.85rem;color:var(--muted)}
-.task a{color:var(--ink);word-break:break-all}
-.linkbtn{display:inline-block;margin-top:10px;padding:8px 14px;border-radius:10px;background:var(--lime);color:#0F3D2E!important;font-weight:700;text-decoration:none}
-.upl{display:block;border:1px dashed var(--muted);border-radius:10px;padding:14px;text-align:center;cursor:pointer;color:var(--muted)}
-.upl input{position:absolute;opacity:0;width:1px;height:1px}
-.prev{max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--line);justify-self:center}
-.hidden{display:none}
+.tabs2 button{border:1px solid #DCE6F4;background:#fff;color:#62718B;border-radius:99px;padding:8px;cursor:pointer;font-weight:600}
+.tabs2 button[aria-pressed="true"]{background:#176BFF;color:#fff;border-color:#176BFF;box-shadow:0 4px 12px rgba(23,107,255,.2)}
+.task{margin:10px 16px;background:#fff;color:#10213F;border:1px solid #DCE6F4;border-radius:18px;padding:15px;box-shadow:0 7px 20px rgba(0,0,0,.1)}
+.task__row{display:flex;justify-content:space-between;gap:10px}.task h4{font-size:1rem;color:#10213F}.task p{color:#62718B;font-size:.9rem;margin-top:2px}.reward{font-weight:700;white-space:nowrap;color:#176BFF}
+.pill{display:inline-block;font-size:.75rem;padding:3px 10px;border-radius:99px;margin-top:8px;background:#F1F6FF;border:1px solid #DCE6F4;color:#4C5E79}
+.pill--pending{color:#A66A00;background:#FFF7E5}.pill--done{color:#13824B;background:#E9FBF1}.pill--rejected{color:#E34D59;background:#FFF0F1}
+.task form{margin-top:10px;display:grid;gap:8px}.task input{padding:10px;border:1px solid #DCE6F4;border-radius:11px;background:#F7FAFF;color:#10213F}
+.task .go,.compose .go{border:0;background:linear-gradient(110deg,#176BFF,#39BFFF);color:#fff;padding:11px;border-radius:99px;font-weight:700;cursor:pointer;box-shadow:0 5px 14px rgba(23,107,255,.17)}
+.task .dev{border:1px dashed #AABBD4;background:#F7FAFF;color:#52647F;border-radius:9px;padding:7px;cursor:pointer;font-size:.8rem;margin-top:8px}
+.note{margin:14px 16px;font-size:.85rem;color:#D1DDF0}
+.task a{color:#176BFF;word-break:break-all}.linkbtn{display:inline-block;margin-top:10px;padding:8px 14px;border-radius:99px;background:#39D8FF;color:#07152F!important;font-weight:700;text-decoration:none}
+.upl{display:block;border:1px dashed #8FA6C7;border-radius:12px;padding:14px;text-align:center;cursor:pointer;color:#62718B;background:#F7FAFF}.upl input{position:absolute;opacity:0;width:1px;height:1px}
+.prev{max-width:100%;max-height:220px;border-radius:12px;border:1px solid #DCE6F4;justify-self:center}.hidden{display:none}
