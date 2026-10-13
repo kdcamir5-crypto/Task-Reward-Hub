@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>নোটিফিকেশন সেন্টার — Task Reward Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+  <main class="notify-app">
+    <header class="notify-head">
+      <a class="back-link" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরে যান">←</a>
+      <div><p class="eyebrow">YOUR UPDATES</p><h1>নোটিফিকেশন সেন্টার</h1><p class="subhead">আপনার কাজ, স্ট্রিক ও ব্যাজের আপডেট এক জায়গায়</p></div>
+      <span class="bell-art" aria-hidden="true">🔔</span>
+    </header>
+    <section class="notify-summary">
+      <div><span class="summary-label">মোট নোটিফিকেশন</span><strong id="totalCount">0</strong></div>
+      <div><span class="summary-label">পড়ার বাকি</span><strong id="unreadCount">0</strong></div>
+      <button id="readAll" type="button">সব পড়া হয়েছে</button>
+    </section>
+    <section class="notify-tools">
+      <div class="filters" role="group" aria-label="নোটিফিকেশন ফিল্টার">
+        <button class="filter active" data-filter="all" type="button">সব</button>
+        <button class="filter" data-filter="unread" type="button">নতুন</button>
+        <button class="filter" data-filter="achievement" type="button">ব্যাজ ও XP</button>
+      </div>
+      <button id="clearAll" class="clear-btn" type="button">সব মুছুন</button>
+    </section>
+    <section id="noticeList" class="notice-list" aria-live="polite"></section>
+    <p class="privacy-note">এই সেন্টারের নোটিফিকেশন এই ব্রাউজারের localStorage-এ থাকে। এগুলো ভার্চুয়াল আপডেট—কোনো বাস্তব ব্যালেন্স পরিবর্তন করে না।</p>
+    <nav class="bottom-nav"><a href="dashboard.html">⌂ <span>হোম</span></a><a href="tasks.html">▤ <span>টাস্ক</span></a><a href="achievements.html">🏅 <span>ব্যাজ</span></a><a href="notifications.html" aria-current="page">♧ <span>নোটিশ</span></a></nav>
+  </main>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/notifications.js"></script>
+</body>
+</html>
