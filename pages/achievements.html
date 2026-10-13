@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#07152F">
+<title>Task Reward Hub — Achievements</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css"><link rel="stylesheet" href="../css/dashboard.css"><link rel="stylesheet" href="../css/achievements.css">
+</head>
+<body>
+<div class="app">
+<header class="head">
+ <div class="head__top"><a class="brand" href="dashboard.html" aria-label="ড্যাশবোর্ড"><span class="brand__mark">TR</span><span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span></a><a class="icon-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">⌂</a></div>
+ <div class="welcome"><div><p class="eyebrow">YOUR MILESTONES</p><h1>Achievement <span>Badges</span> 🏅</h1><p class="user-id">লক্ষ্য পূরণ করুন, নতুন ব্যাজ আনলক করুন</p></div><div class="welcome-avatar" aria-hidden="true">🏆</div></div><div class="header-glow" aria-hidden="true"></div>
+</header>
+<main class="achievement-main">
+ <section class="achievement-hero"><div class="achievement-hero-icon">✨</div><p class="achievement-kicker">EVERY STEP COUNTS</p><h2>আপনার অর্জনের সংগ্রহ</h2><p>গেমের XP, স্পিন, স্ট্রিক ও মিস্ট্রি বক্সের অগ্রগতির মাধ্যমে ব্যাজ আনলক করুন। এগুলো ভার্চুয়াল অর্জন—নগদ টাকা নয়।</p><div class="achievement-progress"><div><span>আনলক করা ব্যাজ</span><strong><span id="unlocked-count">0</span>/<span id="total-count">6</span></strong></div><div class="achievement-progress-track"><span id="progress-fill"></span></div></div></section>
+ <div id="achievement-toast" class="achievement-toast" role="status" aria-live="polite"></div>
+ <section class="achievement-grid" id="achievement-grid" aria-label="অ্যাচিভমেন্ট ব্যাজ"></section>
+ <section class="achievement-note"><span>ⓘ</span><p>অগ্রগতি এই ব্রাউজারের অ্যাকাউন্টে সংরক্ষিত হয়। অন্য ডিভাইসে একই ব্যাজ দেখাতে হলে পরে সার্ভার/ডেটাবেসে সংরক্ষণ যুক্ত করতে হবে।</p></section>
+ <a class="achievement-back" href="dashboard.html">← ড্যাশবোর্ডে ফিরে যান</a>
+</main>
+<nav class="nav" aria-label="প্রধান মেনু"><a href="dashboard.html"><span>⌂</span><span>হোম</span></a><a href="tasks.html"><span>▣</span><span>টাস্ক</span></a><a href="wallet.html"><span>৳</span><span>ওয়ালেট</span></a><a href="profile.html"><span>♙</span><span>প্রোফাইল</span></a></nav>
+</div>
+<script src="../js/storage.js"></script><script src="../js/auth.js"></script><script src="../js/guard.js"></script><script src="../js/achievements.js"></script>
+</body></html>
