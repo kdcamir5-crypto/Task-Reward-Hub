@@ -2,28 +2,63 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
   <title>Task Reward Hub - টাস্ক</title>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="../css/tasks.css">
 </head>
 <body>
-  <div class="app">
-    <header class="top"><strong>টাস্ক</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
-    <div class="tabs2">
-      <button type="button" data-f="all" aria-pressed="true">সব</button>
-      <button type="button" data-f="open" aria-pressed="false">নতুন</button>
-      <button type="button" data-f="mine" aria-pressed="false">আমার জমা</button>
-    </div>
-    <div id="list"></div>
-    <p class="note">প্রমাণ জমা দেওয়ার পর অ্যাডমিন যাচাই করলে রিওয়ার্ড ব্যালেন্সে যোগ হবে।</p>
-    <nav class="nav" aria-label="প্রধান মেনু">
-      <a href="dashboard.html">হোম</a>
-      <a href="tasks.html" aria-current="page">টাস্ক</a>
-      <a href="feed.html">ফিড</a>
-      <a href="profile.html">প্রোফাইল</a>
+  <div class="app tasks-app">
+    <header class="top tasks-top">
+      <a class="tasks-brand" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">
+        <span class="tasks-brand__mark" aria-hidden="true">TR</span>
+        <span class="tasks-brand__copy"><strong>Community Work</strong><small>TASK CENTER</small></span>
+      </a>
+      <a class="icon-btn tasks-home-link" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন" title="ড্যাশবোর্ড">⌂</a>
+    </header>
+
+    <main class="tasks-main">
+      <section class="tasks-hero" aria-labelledby="tasks-title">
+        <div class="tasks-hero__copy">
+          <span class="tasks-kicker"><span></span> EARN BY DOING</span>
+          <h1 id="tasks-title">আপনার পরবর্তী <em>টাস্ক</em></h1>
+          <p>টাস্ক সম্পন্ন করুন, প্রমাণ জমা দিন এবং অনুমোদনের পর রিওয়ার্ড পান।</p>
+        </div>
+        <div class="tasks-hero__art" aria-hidden="true">
+          <span class="tasks-orbit tasks-orbit--a"></span>
+          <span class="tasks-orbit tasks-orbit--b"></span>
+          <span class="tasks-hero__check">✓</span>
+          <span class="tasks-hero__spark">✦</span>
+        </div>
+      </section>
+
+      <section class="tasks-list-section" aria-label="টাস্ক তালিকা">
+        <div class="tasks-section-heading">
+          <div><span class="tasks-section-eyebrow">YOUR WORKSPACE</span><h2>টাস্ক তালিকা</h2></div>
+          <span class="tasks-live"><span></span> লাইভ টাস্ক</span>
+        </div>
+        <div class="tabs2" role="group" aria-label="টাস্ক ফিল্টার">
+          <button type="button" data-f="all" aria-pressed="true">সব টাস্ক</button>
+          <button type="button" data-f="open" aria-pressed="false">নতুন</button>
+          <button type="button" data-f="mine" aria-pressed="false">আমার জমা</button>
+        </div>
+        <div id="list" aria-live="polite"><p class="note">টাস্ক লোড হচ্ছে...</p></div>
+      </section>
+
+      <aside class="tasks-tip">
+        <span class="tasks-tip__icon" aria-hidden="true">✓</span>
+        <div><strong>প্রমাণ জমা দেওয়ার নিয়ম</strong><p>স্ক্রিনশট বা চাওয়া তথ্য সঠিকভাবে জমা দিন। অ্যাডমিন যাচাই করে অনুমোদন করলে রিওয়ার্ড ব্যালেন্সে যোগ হবে।</p></div>
+      </aside>
+    </main>
+
+    <nav class="nav tasks-nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><span aria-hidden="true">⌂</span>হোম</a>
+      <a href="tasks.html" aria-current="page"><span aria-hidden="true">▣</span>টাস্ক</a>
+      <a href="feed.html"><span aria-hidden="true">◉</span>ফিড</a>
+      <a href="profile.html"><span aria-hidden="true">♙</span>প্রোফাইল</a>
     </nav>
   </div>
   <script src="../js/storage.js"></script>
