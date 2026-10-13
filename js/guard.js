@@ -17,9 +17,9 @@
         F.getDoc(F.doc(cfg.db, 'users', u.uid)).then(function (snap) {
           document.documentElement.style.visibility = '';
           resolve({ uid: u.uid, email: u.email, profile: snap.exists() ? snap.data() : null });
-        }).catch(function () {
+        }).catch(function (e) {
           document.documentElement.style.visibility = '';
-          resolve({ uid: u.uid, email: u.email, profile: null });
+          resolve({ uid: u.uid, email: u.email, profile: null, error: e && (e.code || e.message) });
         });
       });
     }).catch(function () { location.href = '../index.html'; });
