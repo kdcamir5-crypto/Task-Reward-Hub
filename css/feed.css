@@ -1,13 +1,9 @@
-/* feed.css - কমিউনিটি ফিড (.app, .top, .nav, .box, .tabs2 অন্য CSS থেকে আসে) */
-.compose textarea{width:100%;min-height:84px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);resize:vertical;font:inherit;color:inherit}
-.compose .bar{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.count{font-size:.8rem;color:var(--muted)}
-.compose .go{border:0;background:var(--forest);color:var(--on-forest);padding:9px 18px;border-radius:10px;font-weight:700;cursor:pointer}
-.post{margin:10px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.post__head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.post__head small{color:var(--muted);white-space:nowrap}
+/* Community feed */
+.compose textarea{width:100%;min-height:84px;padding:11px;border:1px solid #DCE6F4;border-radius:12px;background:#F7FAFF;resize:vertical;font:inherit;color:#10213F}
+.compose .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}.count{font-size:.8rem;color:#62718B}
+.compose .go{border:0;background:linear-gradient(110deg,#176BFF,#39BFFF);color:#fff;padding:9px 18px;border-radius:99px;font-weight:700;cursor:pointer}
+.post{margin:10px 16px;background:#fff;color:#10213F;border:1px solid #DCE6F4;border-radius:18px;padding:15px;box-shadow:0 7px 20px rgba(0,0,0,.1)}
+.post__head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.post__head small{color:#62718B;white-space:nowrap}
 .post__text{margin:6px 0 10px;white-space:pre-wrap;word-break:break-word}
-.reacts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.reacts button{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:4px 10px;cursor:pointer;font-size:.85rem}
-.reacts button[aria-pressed="true"]{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
-.reacts .del{margin-left:auto;color:var(--danger);border-color:var(--danger);background:none}
+.reacts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.reacts button{border:1px solid #DCE6F4;background:#F1F6FF;color:#29415F;border-radius:99px;padding:5px 10px;cursor:pointer;font-size:.85rem}
+.reacts button[aria-pressed="true"]{background:#176BFF;color:#fff;border-color:#176BFF}.reacts .del{margin-left:auto;color:#E34D59;border-color:#E34D59;background:#FFF5F5}
