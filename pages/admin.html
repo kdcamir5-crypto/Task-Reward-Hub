@@ -29,7 +29,9 @@
           <input id="ttitle" maxlength="80" placeholder="শিরোনাম" aria-label="শিরোনাম">
           <textarea id="tdesc" rows="2" maxlength="200" placeholder="বিবরণ" aria-label="বিবরণ"></textarea>
           <input id="treward" type="number" min="0.5" step="0.5" placeholder="রিওয়ার্ড (৳)" aria-label="রিওয়ার্ড">
-          <input id="tproof" maxlength="80" placeholder="ইউজারের কাছে কী প্রমাণ চাইবেন?" aria-label="প্রমাণের নির্দেশ">
+          <input id="tlink" type="url" maxlength="300" placeholder="টাস্কের লিংক (যেমন https://t.me/channel) - ঐচ্ছিক" aria-label="লিংক">
+          <select id="tptype" aria-label="প্রমাণের ধরন"><option value="screenshot">প্রমাণ: স্ক্রিনশট আপলোড</option><option value="text">প্রমাণ: লেখা (লিংক বা কোড)</option></select>
+          <input id="tproof" maxlength="80" placeholder="লেখার প্রমাণ হলে ইউজারকে কী লিখতে বলবেন? (ঐচ্ছিক)" aria-label="প্রমাণের নির্দেশ">
           <button class="go" type="submit">টাস্ক যুক্ত করুন</button>
           <p class="msg2" id="tmsg" role="status"></p>
         </form>
