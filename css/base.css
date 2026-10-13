@@ -26,16 +26,51 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%;scroll-behavior:smooth}
 body{
+  position:relative;
+  isolation:isolate;
   font-family:'Hind Siliguri',system-ui,sans-serif;
   background:
-    radial-gradient(circle at 12% 8%,rgba(57,216,255,.12) 0 1px,transparent 1.8px),
-    radial-gradient(circle at 78% 22%,rgba(57,216,255,.08) 0 1px,transparent 1.8px),
-    radial-gradient(ellipse at top left,rgba(23,107,255,.22),transparent 44%),
-    var(--bg);
-  background-size:24px 24px,32px 32px,auto,auto;
+    radial-gradient(ellipse at 12% 8%,rgba(23,107,255,.22),transparent 38%),
+    radial-gradient(ellipse at 88% 35%,rgba(168,40,255,.12),transparent 34%),
+    radial-gradient(ellipse at 48% 92%,rgba(0,221,255,.10),transparent 38%),
+    #030817;
+  background-size:150% 150%,160% 160%,150% 150%,auto;
+  animation:cosmicBackgroundDrift 24s ease-in-out infinite alternate;
   color:#F4F8FF;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  inset:-20%;
+  z-index:-1;
+  pointer-events:none;
+  overflow:hidden;
+}
+body::before{
+  opacity:.78;
+  background-image:
+    radial-gradient(2px 2px at 7% 18%,#8ff6ff 45%,transparent 70%),
+    radial-gradient(1px 1px at 19% 71%,#fff 45%,transparent 70%),
+    radial-gradient(2px 2px at 32% 33%,#a78bfa 45%,transparent 70%),
+    radial-gradient(1px 1px at 48% 82%,#fff 45%,transparent 70%),
+    radial-gradient(2px 2px at 61% 14%,#54eaff 45%,transparent 70%),
+    radial-gradient(1px 1px at 73% 59%,#fff 45%,transparent 70%),
+    radial-gradient(2px 2px at 86% 37%,#e879f9 45%,transparent 70%),
+    radial-gradient(1px 1px at 94% 76%,#fff 45%,transparent 70%);
+  background-size:290px 250px,330px 300px,410px 370px,260px 310px,370px 330px,300px 270px,430px 390px,350px 340px;
+  animation:starDrift 42s linear infinite,starTwinkle 4.5s ease-in-out infinite alternate;
+}
+body::after{
+  opacity:.45;
+  background:
+    radial-gradient(ellipse at 15% 25%,rgba(0,225,255,.18),transparent 24%),
+    radial-gradient(ellipse at 82% 64%,rgba(183,0,255,.16),transparent 26%),
+    radial-gradient(ellipse at 52% 5%,rgba(43,104,255,.13),transparent 25%);
+  background-size:150% 150%;
+  filter:blur(28px);
+  animation:neonAuroraMove 18s ease-in-out infinite alternate;
 }
 button,input,select,textarea{font:inherit;color:inherit}
 button{transition:background-color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
@@ -44,4 +79,27 @@ button:not(:disabled):active{transform:translateY(1px)}
 input,select,textarea{accent-color:var(--forest)}
 :focus-visible{outline:3px solid var(--lime);outline-offset:3px}
 ::selection{background:var(--forest);color:#fff}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Shared motion layer: slow neon shifts and twinkling stars on every page */
+@keyframes cosmicBackgroundDrift{
+  0%{background-position:0% 0%,100% 20%,50% 100%,0 0}
+  50%{background-position:35% 20%,65% 55%,15% 75%,0 0}
+  100%{background-position:100% 70%,0% 100%,85% 20%,0 0}
+}
+@keyframes starDrift{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-90px,65px,0)}
+}
+@keyframes starTwinkle{
+  0%{opacity:.35}
+  45%{opacity:.85}
+  100%{opacity:.5}
+}
+@keyframes neonAuroraMove{
+  0%{transform:translate3d(-3%,1%,0) rotate(-5deg);opacity:.28}
+  50%{transform:translate3d(3%,-2%,0) rotate(4deg);opacity:.55}
+  100%{transform:translate3d(-1%,3%,0) rotate(-2deg);opacity:.35}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
