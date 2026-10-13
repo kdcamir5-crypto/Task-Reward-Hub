@@ -103,3 +103,46 @@ input,select,textarea{accent-color:var(--forest)}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* SITE-WIDE NEON MOTION — shared by every page that loads base.css */
+main,section,article,aside,.card,.panel,.box,.form-card,.wallet-card,.task-card,
+.reward-card,.profile-card,.community-card,.admin-card,.login__box,.login__brand{
+  position:relative;
+}
+.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.profile-card,
+.community-card,.admin-card,.login__box{
+  border-color:rgba(57,216,255,.20);
+  box-shadow:0 10px 30px rgba(0,0,0,.16),0 0 20px rgba(23,107,255,.07);
+  transition:box-shadow .35s ease,border-color .35s ease,transform .35s ease;
+}
+.card:hover,.panel:hover,.box:hover,.form-card:hover,.wallet-card:hover,.task-card:hover,
+.reward-card:hover,.profile-card:hover,.community-card:hover,.admin-card:hover{
+  border-color:rgba(57,216,255,.5);
+  box-shadow:0 12px 34px rgba(0,0,0,.2),0 0 24px rgba(57,216,255,.13);
+}
+button:not(:disabled),a{
+  transition:color .25s ease,background-color .25s ease,border-color .25s ease,
+    box-shadow .25s ease,filter .25s ease,transform .25s ease;
+}
+button:not(:disabled):hover{
+  filter:brightness(1.08);
+  box-shadow:0 0 18px rgba(57,216,255,.16);
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#39D8FF!important;
+  box-shadow:0 0 0 3px rgba(57,216,255,.13),0 0 18px rgba(57,216,255,.09)!important;
+}
+body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.profile-card,.community-card,.admin-card)::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(115deg,transparent 20%,rgba(57,216,255,.055) 48%,transparent 72%);
+  background-size:220% 100%;opacity:.7;animation:sitePanelLightSweep 12s ease-in-out infinite;
+}
+@keyframes sitePanelLightSweep{
+  0%,100%{background-position:120% 0;opacity:.2}
+  50%{background-position:-120% 0;opacity:.7}
+}
+@media(prefers-reduced-motion:reduce){
+  body{animation:none!important}
+  body::before,body::after{animation:none!important}
+  body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.profile-card,.community-card,.admin-card)::before{animation:none!important}
+}
