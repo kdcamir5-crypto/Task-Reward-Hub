@@ -179,7 +179,7 @@
             const unlocked = Array.isArray(userSnap.data().unlockedBots) ? userSnap.data().unlockedBots : [];
             if (unlocked.includes(botId)) throw new Error('এই বটটি আপনার অ্যাকাউন্টে আগে থেকেই আনলক করা আছে।');
             tx.update(codeRef, { used: true, usedBy: user.uid, usedAt: serverTimestamp() });
-            tx.update(userRef, { unlockedBots: arrayUnion(botId), updatedAt: serverTimestamp() });
+            tx.update(userRef, { unlockedBots: arrayUnion(botId), lastRedeemCode: code, updatedAt: serverTimestamp() });
           });
           status.className = 'redeem-status ok';
           status.textContent = 'সফল! ' + botLabels[botId] + ' আপনার অ্যাকাউন্টে আনলক হয়েছে।';
