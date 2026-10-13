@@ -44,6 +44,6 @@ $('#copy').addEventListener('click', async () => {
   catch { $('#copy').textContent = 'কপি করা গেল না'; }
 });
 
-$('#logout').addEventListener('click', () => { localStorage.removeItem('session'); location.href = '../index.html'; });
+$('#logout').addEventListener('click', () => window.hubLogout());
 document.documentElement.dataset.theme = Store.get('theme', 'light');
 load();
