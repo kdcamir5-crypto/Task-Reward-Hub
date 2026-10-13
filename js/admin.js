@@ -16,6 +16,86 @@ if (!me.profile || me.profile.role !== 'admin') {
 } else {
   $('#panel').classList.remove('hidden');
   loadAll();
+  setupBotCodeGenerators();
+}
+
+
+const BOT_PACKAGES = [
+  { id: 'pulse', name: 'AI Pulse Bot v2' },
+  { id: 'quantum', name: 'Quantum Core Pro' },
+  { id: 'neural', name: 'Neural Matrix Bot' },
+  { id: 'cyber', name: 'Cyber Forge Titan' },
+  { id: 'apex', name: 'Apex Sentinel AI' }
+];
+function randomRedeemCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  let code = 'BOT-';
+  for (let i = 0; i < bytes.length; i++) code += chars[bytes[i] % chars.length];
+  return code;
+}
+function setupBotCodeGenerators() {
+  const host = $('#bot-code-generators');
+  if (!host) return;
+  host.textContent = '';
+  BOT_PACKAGES.forEach(bot => {
+    const card = document.createElement('div');
+    card.style.cssText = 'padding:12px;border:1px solid #8aa2bd55;border-radius:12px;display:grid;gap:8px';
+    const title = document.createElement('strong'); title.textContent = bot.name;
+    const info = document.createElement('small'); info.textContent = 'কোড তৈরি করলে ৩০ মিনিট বৈধ থাকবে';
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'go'; button.textContent = 'এই বটের কোড তৈরি করুন';
+    const output = document.createElement('input'); output.readOnly = true; output.placeholder = 'এখানে নতুন কোড দেখা যাবে'; output.setAttribute('aria-label', bot.name + ' redeem code');
+    const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'mini'; copy.textContent = 'কোড কপি করুন'; copy.disabled = true;
+    button.onclick = async () => {
+      button.disabled = true;
+      try {
+        const code = randomRedeemCode();
+        const now = Date.now();
+        await addDoc(collection(db, 'botRedeemCodes'), {
+          code, botId: bot.id, botName: bot.name,
+          createdBy: me.uid, createdAt: serverTimestamp(),
+          expiresAtMs: now + 30 * 60 * 1000,
+          used: false, usedBy: null, usedAt: null
+        });
+        output.value = code;
+        copy.disabled = false;
+        say('#bot-code-msg', bot.name + ' এর নতুন কোড তৈরি হয়েছে। ৩০ মিনিটের মধ্যে Telegram-এ ইউজারকে পাঠান।', true);
+        await loadBotCodeHistory();
+      } catch (e) {
+        say('#bot-code-msg', 'কোড তৈরি হয়নি: ' + readableError(e) + ' Firestore Rules-এ botRedeemCodes admin permission লাগতে পারে।', false);
+      } finally { button.disabled = false; }
+    };
+    copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(output.value); copy.textContent = 'কপি হয়েছে ✓'; }
+      catch { output.focus(); output.select(); say('#bot-code-msg', 'কোডটি সিলেক্ট হয়েছে—Ctrl+C চাপুন।', true); }
+    };
+    card.append(title, info, button, output, copy);
+    host.appendChild(card);
+  });
+  loadBotCodeHistory();
+}
+async function loadBotCodeHistory() {
+  const host = $('#bot-code-history');
+  if (!host) return;
+  host.textContent = 'সাম্প্রতিক কোড লোড হচ্ছে...';
+  try {
+    const snap = await getDocs(collection(db, 'botRedeemCodes'));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => Number(b.expiresAtMs || 0) - Number(a.expiresAtMs || 0)).slice(0, 15);
+    host.textContent = '';
+    if (!docs.length) { host.textContent = 'এখনো কোনো redeem code তৈরি হয়নি।'; return; }
+    docs.forEach(x => {
+      const line = document.createElement('div');
+      line.style.cssText = 'padding:10px;border:1px solid #8aa2bd44;border-radius:10px;display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap';
+      const textBox = document.createElement('span');
+      const status = x.used ? 'ব্যবহৃত' : (Number(x.expiresAtMs) <= Date.now() ? 'মেয়াদ শেষ' : 'সক্রিয়');
+      textBox.textContent = (x.botName || x.botId) + ' · ' + x.code + ' · ' + status;
+      const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'mini'; copy.textContent = 'কপি';
+      copy.onclick = async () => { try { await navigator.clipboard.writeText(x.code); copy.textContent = 'কপি ✓'; } catch { window.prompt('কোড কপি করুন', x.code); } };
+      line.append(textBox, copy); host.appendChild(line);
+    });
+  } catch (e) { host.textContent = 'কোডের তালিকা লোড হয়নি: ' + readableError(e); }
 }
 
 function say(id, m, ok) { const e = $(id); e.textContent = m; e.className = 'msg2 ' + (ok ? 'ok' : 'err'); }
