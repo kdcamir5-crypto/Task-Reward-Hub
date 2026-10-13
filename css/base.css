@@ -1,262 +1,616 @@
-/* 
-  Task-Reward-Hub - Ultimate Global Base Styling
-  Fixes All Black Screens on Tasks, Feed, and Profile Pages
-*/
 
-@import url('https://googleapis.com');
+/* =========================================================
+   Task-Reward-Hub — Global Base CSS
+   Version: 2.0
+   Shared styling for all application pages
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --bg-main: #090D16; 
-    --bg-card: #131A2B;
-    --bg-input: #0B101D;
-    --border-color: rgba(255, 255, 255, 0.06);
-    
-    --color-primary: #8B5CF6;      
-    --color-secondary: #06B6D4;    
-    --color-accent: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
-    
-    --text-main: #F8FAFC;          
-    --text-muted: #94A3B8;         
-    --color-success: #10B981;      
-    
-    --radius-lg: 16px;
+    color-scheme: dark;
+
+    --bg-main: #090d18;
+    --bg-card: #141d31;
+    --bg-card-hover: #1b2841;
+    --bg-input: #0c1425;
+
+    --border-color: rgba(148, 163, 184, 0.18);
+
+    --color-primary: #8b5cf6;
+    --color-secondary: #06b6d4;
+    --color-accent: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+
+    --text-main: #f8fafc;
+    --text-white: #f8fafc;
+    --text-muted: #a6b4ca;
+
+    --color-success: #10b981;
+    --color-danger: #fb7185;
+    --color-warning: #fbbf24;
+
+    --radius-lg: 18px;
     --radius-md: 12px;
-    --shadow-glow: 0 4px 20px rgba(6, 182, 212, 0.15);
+
+    --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.22);
+    --shadow-glow: 0 4px 24px rgba(6, 182, 212, 0.13);
 }
 
-* {
-    margin: 0;
-    padding: 0;
+/* Reset */
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg-main);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-    background-color: var(--bg-main) !important;
-    color: var(--text-main) !important;
     min-height: 100vh;
-    padding: 20px 20px 90px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0;
+    padding: 20px 16px 100px;
+
+    background-color: var(--bg-main);
+    background-image:
+        radial-gradient(
+            ellipse at 10% 0%,
+            rgba(139, 92, 246, 0.12),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 100% 25%,
+            rgba(6, 182, 212, 0.07),
+            transparent 32%
+        );
+
+    color: var(--text-main);
+    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
+body,
+button,
+input,
+textarea,
+select {
+    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+    font-size: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: var(--color-secondary);
+    -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
+}
+
+::selection {
+    background: rgba(139, 92, 246, 0.4);
+    color: #ffffff;
+}
+
+/* Main application container */
 .app {
     width: 100%;
     max-width: 480px;
+    min-width: 0;
     margin: 0 auto;
 }
 
-/* ==========================================================================
-   ১. কমন হেডার ও পেজ টপ স্টাইলিং (টাস্ক, ফিড, প্রোফাইল সব পেজের জন্য)
-   ========================================================================== */
-header, .header-section, .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    width: 100%;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    color: var(--text-main);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
-h1, h2, h3, .section {
-    color: var(--text-main) !important;
+p {
+    overflow-wrap: anywhere;
+}
+
+h1 {
+    font-size: clamp(1.55rem, 5vw, 2rem);
+}
+
+h2 {
+    font-size: 1.4rem;
+}
+
+h3 {
+    font-size: 1.15rem;
+}
+
+small {
+    color: var(--text-muted);
+}
+
+.section {
+    margin: 25px 0 15px;
+    padding-left: 11px;
+    border-left: 3px solid var(--color-primary);
+    color: var(--text-main);
+    font-size: 1.05rem;
     font-weight: 700;
 }
 
-.icon-btn, .dashboard-btn, header button, .nav-btn, a[href="dashboard.html"] {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--text-white) !important;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-/* ==========================================================================
-   ২. টাস্ক পেজ ফিক্স (`tasks.html` এর জন্য অটো-বক্সিং)
-   ========================================================================== */
-/* টাস্ক ফিল্টার মেনু (সব, নতুন, আমার জমা) */
-.task-tabs, .tabs, .filter-nav {
+/* Common headers */
+header,
+.header-section,
+.page-header {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 25px;
-    background: var(--bg-input);
-    padding: 8px;
-    border-radius: 30px;
-    border: 1px solid var(--border-color);
-}
-
-.task-tabs span, .tabs button, .tab-item {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 6px 16px;
-    border-radius: 20px;
-}
-
-.task-tabs .active, .tabs .active {
-    color: var(--color-secondary) !important;
-    background: rgba(6, 182, 212, 0.1);
-}
-
-/* প্রতিটি টাস্ক আইটেম বক্স */
-.task-item, .task-card, .task, [id^="task"] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
+    width: 100%;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.task-item h4, .task-item b {
-    font-size: 1.1rem;
-    color: var(--text-main);
+header h1,
+header h2,
+.page-header h1,
+.page-header h2 {
+    margin-bottom: 0;
 }
 
-.task-item p, .task-item small {
-    color: var(--text-muted) !important;
-    font-size: 0.85rem;
-}
+/* Shared buttons */
+.icon-btn,
+.dashboard-btn,
+.nav-btn,
+a[href="dashboard.html"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
-/* টাস্কের ভেতরের লিংক ও বাটন */
-.task-item a, .link-btn {
-    color: var(--color-secondary) !important;
+    min-height: 36px;
+    padding: 7px 13px;
+
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+
+    font-size: 0.84rem;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
-/* প্রমান জমা দিন / স্ক্রিনশট বাটন */
-.task-item button, button[type="submit"], #copy, .submit-btn {
-    background: var(--color-accent) !important;
-    color: white !important;
-    border: none;
-    padding: 12px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 5px;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+.icon-btn:hover,
+.dashboard-btn:hover,
+.nav-btn:hover {
+    background: rgba(6, 182, 212, 0.12);
+    border-color: var(--color-secondary);
 }
 
-/* ==========================================================================
-   ৩. কমিউনিটি ফিড পেজ ফিক্স (`feed.html`)
-   ========================================================================== */
-/* টেক্সট এরিয়া ইনপুট বক্স */
-textarea, .feed-input {
-    width: 100%;
-    background: var(--bg-input) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: var(--radius-md);
-    padding: 15px;
-    color: var(--text-main) !important;
-    font-size: 0.9rem;
-    resize: none;
-    margin-bottom: 10px;
-}
-
-textarea:focus {
-    outline: none;
-    border-color: var(--color-primary) !important;
-}
-
-/* ফাকা নোটিশ */
-.empty, .no-data {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-style: italic;
-    background: rgba(255, 255, 255, 0.01);
-    padding: 20px;
-    border-radius: var(--radius-md);
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-    text-align: center;
-    margin-top: 15px;
-}
-
-/* ==========================================================================
-   ৪. প্রোফাইল পেজ ফিক্স (`profile.html`)
-   ========================================================================== */
-/* প্রোফাইল ফর্মের লেবেলসমূহ */
-.profile-section b, .form-group label, .profile-form span {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    display: block;
-    margin-bottom: 6px;
-    margin-top: 15px;
-}
-
-/* ইনপুট বক্সের গ্লোবাল ডিজাইন (ফোন নম্বর, ইউজারনেম) */
-input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
-    width: 100%;
-    background: var(--bg-input) !important;
-    border: 1px solid var(--border-color) !important;
-    padding: 14px;
-    border-radius: var(--radius-md);
-    color: var(--text-main) !important;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    transition: all 0.2s ease;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--color-secondary) !important;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-}
-
-/* রেফারেল কোড কপি করার জন্য ছোট কার্ড */
-.referral-card, .ref-code-box {
+/* Shared cards */
+.card,
+.task-item,
+.task-card,
+.task {
+    color: var(--text-main);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
 }
 
-/* ==========================================================================
-   ৫. গ্লোবাল বটম নেভিগেশন বার (সবার নিচে ফিক্সড থাকবে)
-   ========================================================================== */
+/* Task tabs */
+.task-tabs,
+.tabs,
+.filter-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-bottom: 22px;
+    padding: 7px;
+
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+}
+
+.task-tabs span,
+.tabs button,
+.tab-item {
+    padding: 7px 13px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 22px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.task-tabs .active,
+.tabs .active,
+.tab-item.active {
+    color: #ffffff;
+    background: rgba(139, 92, 246, 0.22);
+}
+
+/* Task cards */
+.task-item,
+.task-card,
+.task {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 18px;
+}
+
+.task-item h4,
+.task-item b,
+.task-card h4 {
+    color: var(--text-main);
+}
+
+.task-item p,
+.task-item small,
+.task-card p {
+    color: var(--text-muted);
+}
+
+.task-item a,
+.link-btn {
+    color: var(--color-secondary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* General form controls */
+input,
+textarea,
+select {
+    max-width: 100%;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 14px;
+
+    color: var(--text-main);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #77869f;
+    opacity: 1;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    width: auto;
+    accent-color: var(--color-primary);
+}
+
+label {
+    color: var(--text-muted);
+}
+
+/* Shared action buttons */
+button[type="submit"],
+.submit-btn,
+.task-item button,
+.task-card button,
+#copy {
+    color: #ffffff;
+    background: var(--color-accent);
+    border: 0;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+button[type="submit"]:hover,
+.submit-btn:hover,
+.task-item button:hover,
+.task-card button:hover,
+#copy:hover {
+    opacity: 0.92;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* Referral cards */
+.referral-card,
+.ref-code-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 18px;
+    padding: 16px;
+
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+code {
+    color: var(--color-secondary);
+    overflow-wrap: anywhere;
+}
+
+/* Empty states */
+.empty,
+.no-data {
+    margin-top: 15px;
+    padding: 20px;
+
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+
+    text-align: center;
+}
+
+/* Bottom navigation */
 .nav {
     position: fixed;
+    z-index: 999;
+    right: 0;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+
     width: 100%;
     max-width: 480px;
-    background: rgba(19, 26, 43, 0.95) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border-color);
+    margin: 0 auto;
+    padding: 11px 0 calc(11px + env(safe-area-inset-bottom));
+
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    padding: 15px 0;
-    z-index: 999;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+
+    background: rgba(15, 23, 42, 0.96);
+    border-top: 1px solid var(--border-color);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .nav a {
-    color: var(--text-muted) !important;
-    text-decoration: none !important;
-    font-size: 0.85rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 3px;
+
+    min-width: 0;
+    padding: 5px 2px;
+
+    color: var(--text-muted);
+    font-size: 0.8rem;
     font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease;
 }
 
-.nav a:hover, .nav a[aria-current="page"] {
-    color: var(--color-secondary) !important;
+.nav a:hover,
+.nav a[aria-current="page"] {
+    color: var(--color-secondary);
     font-weight: 700;
+}
+
+/* Profile forms */
+.profile-section b,
+.form-group label,
+.profile-form span {
+    display: block;
+    margin: 12px 0 6px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Notification and popup layers */
+.sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    padding-top: 20px;
+
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.sheet__body {
+    width: 100%;
+    max-width: 480px;
+    max-height: 85%;
+    max-height: 85dvh;
+    overflow-y: auto;
+
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+}
+
+.sheet__close {
+    float: right;
+    padding: 6px 12px;
+
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.sheet h3 {
+    margin-bottom: 15px;
+    color: var(--text-main);
+}
+
+.sheet ul {
+    padding: 0;
+    list-style: none;
+}
+
+.sheet li {
+    margin-bottom: 10px;
+    padding: 12px;
+
+    color: var(--text-main);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.sheet li small {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-muted);
+}
+
+/* Utility classes */
+.text-muted {
+    color: var(--text-muted);
+}
+
+.text-success {
+    color: var(--color-success);
+}
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Small screens */
+@media (max-width: 360px) {
+    body {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .app {
+        width: 100%;
+    }
+
+    .task-item,
+    .task-card,
+    .task {
+        padding: 14px;
+    }
+
+    .nav a {
+        font-size: 0.72rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
 }
