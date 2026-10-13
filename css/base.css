@@ -190,3 +190,26 @@ body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.prof
     transform: none !important;
   }
 }
+
+
+/* Extra low-cost rendering for slow phones and Telegram's embedded browser */
+@media (max-width: 760px), (pointer: coarse) {
+  html { overflow-x: clip; overscroll-behavior-y: auto; }
+  body { min-width: 0; overflow-x: clip; }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    text-shadow: none !important;
+  }
+  :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,
+      .profile-card,.community-card,.admin-card,.quick-card,.bal,.stat,
+      .refbox,.activity-empty,.telegram-cta,.login__box,.login__card) {
+    box-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  :is(button,a,[role="button"]) {
+    touch-action: manipulation;
+  }
+  img, svg { max-width: 100%; }
+}
