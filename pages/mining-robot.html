@@ -50,6 +50,14 @@
     .buy{width:100%;border:1px solid #2d8bb2;border-radius:12px;padding:11px 12px;color:#06172a;font-weight:800;background:linear-gradient(100deg,#64e5ff,#6df2c2);cursor:pointer}
     .buy:focus-visible,.back:focus-visible,.modal button:focus-visible,.modal a:focus-visible{outline:3px solid #fff;outline-offset:3px}
     .buy:disabled{opacity:.6;cursor:wait}
+.redeem-box{display:grid;gap:8px;margin-top:13px;padding:12px;border:1px solid #31547c;border-radius:14px;background:#07162d}
+    .redeem-box label{font-size:.82rem;font-weight:700;color:#c8def8}
+    .redeem-input{width:100%;min-width:0;padding:10px 11px;border:1px solid #315276;border-radius:10px;background:#0b1e39;color:#fff}
+    .redeem-btn{width:100%;padding:10px;border:1px solid #318da8;border-radius:10px;background:linear-gradient(100deg,#5edfff,#70f0c0);color:#06172a;font-weight:800;cursor:pointer}
+    .redeem-btn:disabled{opacity:.6;cursor:wait}
+    .admin-message{font-size:.85rem;font-weight:700;color:#65dcff;text-decoration:underline;text-align:center}
+    .redeem-status{font-size:.8rem;line-height:1.5;color:#f5d99b;margin:0;overflow-wrap:anywhere}
+    .redeem-status.ok{color:#86f2c3}
     .free-card{display:flex;gap:14px;align-items:center;padding:16px;border:1px dashed #3b7a78;border-radius:18px;background:#0b242f}
     .free-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:16px;background:#123d4b;font-size:26px}
     .free-card h3{font-size:1rem;margin:0 0 4px}
@@ -99,23 +107,28 @@
     <section class="bots" aria-label="AI Bot packages">
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/6cW9XvRY/m-MIWSKs-Z0l-G2-Bi-NTOY5-CVQHTJQOg-Ly-Qc-L7-P-ur-Ot-Yz-D3em-ZMb4up4-Qx0-Thyvq1-Rg9x-ZNO9a-Qrmc-Tb-0n-O1-BSn.jpg" alt="AI Pulse Bot v2 robot artwork" loading="lazy"><span class="bot-number">BOT 01</span></div>
-        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><button class="buy" type="button" data-bot="pulse">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><div class="redeem-box" data-redeem-bot="pulse"><label for="redeem-pulse">Redeem Code</label><input id="redeem-pulse" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="pulse">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="pulse">প্যাকেজ দেখুন →</button></div>
       </article>
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/vC4tDThh/Mz-Q-Ky431ty-GFW4-At6f69-IQIvxl-UCtxmk-WZb1-Ek-Ju-Wq-CHXzhxziykxs-Mjy-Tny-EQTwe3-O4ghw5-PAVXtbdpe-JA3r-Db.jpg" alt="Quantum Core Pro robot artwork" loading="lazy"><span class="bot-number">BOT 02</span></div>
-        <div class="bot-body"><h3>Quantum Core Pro</h3><div class="price-line"><strong class="price">৳100</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳160</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.20</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳5</strong></div></div><button class="buy" type="button" data-bot="quantum">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>Quantum Core Pro</h3><div class="price-line"><strong class="price">৳100</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳160</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.20</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳5</strong></div></div><div class="redeem-box" data-redeem-bot="quantum"><label for="redeem-quantum">Redeem Code</label><input id="redeem-quantum" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="quantum">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="quantum">প্যাকেজ দেখুন →</button></div>
       </article>
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/G3WxCW7x/Ol-By-PN7xs-MYQ-KVVc-WSy-M1-P0-DVYm-QEKz-L23vfnma1-Jp2u-V9-9az-Of-SQIFSt3-INry-Tg-OZfmi-YRu-NGUf7u-K90pf.jpg" alt="Neural Matrix Bot robot artwork" loading="lazy"><span class="bot-number">BOT 03</span></div>
-        <div class="bot-body"><h3>Neural Matrix Bot</h3><div class="price-line"><strong class="price">৳200</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳320</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.40</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳10</strong></div></div><button class="buy" type="button" data-bot="neural">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>Neural Matrix Bot</h3><div class="price-line"><strong class="price">৳200</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳320</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.40</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳10</strong></div></div><div class="redeem-box" data-redeem-bot="neural"><label for="redeem-neural">Redeem Code</label><input id="redeem-neural" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="neural">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="neural">প্যাকেজ দেখুন →</button></div>
       </article>
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/DDRG594T/PYbai-V6-Td-Zx-M7-Ha-Qwca5-J87-FT06x-CVeagc-Cy-Fmz-EHSjw-Gat-JC8-BCz9ae-Boks-KExa-Ar-S06-Ij502-Z9g4jg-MHi-D.jpg" alt="Cyber Forge Titan robot artwork" loading="lazy"><span class="bot-number">BOT 04</span></div>
-        <div class="bot-body"><h3>Cyber Forge Titan</h3><div class="price-line"><strong class="price">৳300</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳480</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.60</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳15</strong></div></div><button class="buy" type="button" data-bot="cyber">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>Cyber Forge Titan</h3><div class="price-line"><strong class="price">৳300</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳480</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.60</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳15</strong></div></div><div class="redeem-box" data-redeem-bot="cyber"><label for="redeem-cyber">Redeem Code</label><input id="redeem-cyber" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="cyber">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="cyber">প্যাকেজ দেখুন →</button></div>
       </article>
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/0RfhmCMV/R5-IYj-HQyi-SMUL7-Aqf-QAby-TFi-Fu-Hd-XMc-APD054b-M1-GVTv4e-TVEJq3-Hm-QCmb-LOOCa-ATIso0t-w-Yv-NWf-JRd7-ks.jpg" alt="Apex Sentinel AI robot artwork" loading="lazy"><span class="bot-number">BOT 05</span></div>
-        <div class="bot-body"><h3>Apex Sentinel AI</h3><div class="price-line"><strong class="price">৳500</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳800</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$1.00</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳25</strong></div></div><button class="buy" type="button" data-bot="apex">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>Apex Sentinel AI</h3><div class="price-line"><strong class="price">৳500</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳800</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$1.00</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳25</strong></div></div><div class="redeem-box" data-redeem-bot="apex"><label for="redeem-apex">Redeem Code</label><input id="redeem-apex" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="apex">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="apex">প্যাকেজ দেখুন →</button></div>
       </article>
     </section>
 
@@ -134,6 +147,49 @@
       <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">কনফার্ম করুন</button></div>
     </section>
   </div>
+
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { doc, runTransaction, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+    const botLabels = {pulse:'AI Pulse Bot v2',quantum:'Quantum Core Pro',neural:'Neural Matrix Bot',cyber:'Cyber Forge Titan',apex:'Apex Sentinel AI'};
+    document.querySelectorAll('[data-redeem]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const botId = button.dataset.redeem;
+        const box = button.closest('.redeem-box');
+        const input = box.querySelector('.redeem-input');
+        const status = box.querySelector('.redeem-status');
+        const code = input.value.trim().toUpperCase();
+        if (!code) { status.textContent = 'আগে অ্যাডমিনের কাছ থেকে পাওয়া redeem code লিখুন।'; return; }
+        button.disabled = true; status.className = 'redeem-status'; status.textContent = 'কোড যাচাই হচ্ছে...';
+        try {
+          const user = window.hubUser ? await window.hubUser : null;
+          if (!user || !user.uid) throw new Error('লগইন তথ্য পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
+          const codeRef = doc(db, 'botRedeemCodes', code);
+          const userRef = doc(db, 'users', user.uid);
+          await runTransaction(db, async tx => {
+            const codeSnap = await tx.get(codeRef);
+            if (!codeSnap.exists()) throw new Error('এই কোডটি সঠিক নয়। অ্যাডমিনের কাছ থেকে নতুন কোড নিন।');
+            const codeData = codeSnap.data();
+            if (codeData.botId !== botId) throw new Error('এই কোডটি ' + (codeData.botName || 'অন্য বট') + ' এর জন্য। সঠিক বটের কোড ব্যবহার করুন।');
+            if (codeData.used) throw new Error('এই কোডটি আগেই ব্যবহার করা হয়েছে।');
+            if (!Number(codeData.expiresAtMs) || Number(codeData.expiresAtMs) <= Date.now()) throw new Error('এই কোডের ৩০ মিনিটের মেয়াদ শেষ। অ্যাডমিনের কাছ থেকে নতুন কোড নিন।');
+            const userSnap = await tx.get(userRef);
+            if (!userSnap.exists()) throw new Error('আপনার ইউজার প্রোফাইল পাওয়া যায়নি।');
+            const unlocked = Array.isArray(userSnap.data().unlockedBots) ? userSnap.data().unlockedBots : [];
+            if (unlocked.includes(botId)) throw new Error('এই বটটি আপনার অ্যাকাউন্টে আগে থেকেই আনলক করা আছে।');
+            tx.update(codeRef, { used: true, usedBy: user.uid, usedAt: serverTimestamp() });
+            tx.update(userRef, { unlockedBots: arrayUnion(botId), updatedAt: serverTimestamp() });
+          });
+          status.className = 'redeem-status ok';
+          status.textContent = 'সফল! ' + botLabels[botId] + ' আপনার অ্যাকাউন্টে আনলক হয়েছে।';
+          input.value = '';
+        } catch (error) {
+          status.textContent = error.message || 'কোড যাচাই করা যায়নি। আবার চেষ্টা করুন।';
+        } finally { button.disabled = false; }
+      });
+    });
+  </script>
 
   <script src="../js/storage.js"></script>
   <script src="../js/auth.js"></script>
