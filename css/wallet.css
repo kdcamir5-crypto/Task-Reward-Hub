@@ -115,3 +115,188 @@
   .wallet-action{padding:14px}
 }
 @media(prefers-reduced-motion:reduce){.wallet-action{transition:none!important}}
+
+
+/* Premium polish — Wallet v4: refined depth, glow, and interaction */
+.wallet-app{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(28,105,221,.15),transparent 37%),
+    linear-gradient(180deg,#07152f 0%,#091a35 42%,#0b1b34 100%);
+}
+.wallet-head{
+  padding:19px 18px 70px;
+  border-bottom:1px solid rgba(108,190,255,.16);
+  background:
+    radial-gradient(ellipse at 90% 0%,rgba(40,180,255,.22),transparent 36%),
+    radial-gradient(ellipse at 10% 65%,rgba(29,94,255,.17),transparent 42%),
+    linear-gradient(140deg,#061128 0%,#0b2450 58%,#0c3975 100%);
+  box-shadow:0 20px 42px rgba(0,0,0,.2);
+}
+.wallet-head:before{
+  content:"";position:absolute;inset:0;z-index:-1;opacity:.19;pointer-events:none;
+  background-image:linear-gradient(rgba(130,202,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(130,202,255,.13) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(to bottom,black,transparent 85%);
+}
+.wallet-head .brand__mark{
+  border:1px solid rgba(255,255,255,.28);
+  background:linear-gradient(145deg,#61e5ff 0%,#258aff 48%,#385bff 100%);
+  box-shadow:0 8px 24px rgba(31,137,255,.4),inset 0 1px 0 rgba(255,255,255,.42);
+}
+.wallet-head .brand__text strong{letter-spacing:-.25px}
+.wallet-head .brand__text small{color:#8cecff;letter-spacing:2.1px}
+.wallet-head .icon-btn{
+  border:1px solid rgba(143,213,255,.24);
+  background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 7px 20px rgba(0,0,0,.12);
+  backdrop-filter:blur(12px);
+}
+.wallet-welcome{position:relative;z-index:1}
+.wallet-welcome .eyebrow{color:#6be3ff;letter-spacing:2.5px}
+.wallet-welcome h1{letter-spacing:-.65px;text-shadow:0 3px 20px rgba(0,0,0,.15)}
+.wallet-welcome h1 span{color:#73dcff}
+.wallet-welcome .user-id{color:#bfd4f2}
+.wallet-avatar{
+  border:1px solid rgba(124,218,255,.33);
+  background:linear-gradient(145deg,rgba(71,206,255,.2),rgba(47,107,255,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 0 30px rgba(39,154,255,.13);
+  backdrop-filter:blur(14px);
+}
+.wallet-dashboard-main{margin-top:-47px}
+.wallet-balance.wcard{
+  border:1px solid rgba(133,220,255,.42);
+  background:
+    radial-gradient(ellipse at 0% 0%,rgba(68,222,255,.18),transparent 46%),
+    radial-gradient(ellipse at 100% 100%,rgba(56,110,255,.25),transparent 48%),
+    linear-gradient(130deg,#0b1d3d 0%,#103c7b 58%,#0b5bb5 100%);
+  box-shadow:0 22px 44px rgba(0,0,0,.27),0 0 0 1px rgba(63,164,255,.07),inset 0 1px 0 rgba(255,255,255,.14);
+}
+.wallet-balance.wcard:before{
+  background:linear-gradient(115deg,rgba(255,255,255,.06),transparent 35%),radial-gradient(circle at 80% 10%,rgba(81,218,255,.12),transparent 35%);
+}
+.wallet-balance.wcard:after{border-color:rgba(255,255,255,.16)}
+.wallet-balance__eyebrow{color:#a1edff}
+.wallet-balance__coin{
+  border:1px solid rgba(158,235,255,.5);
+  background:linear-gradient(145deg,rgba(70,218,255,.24),rgba(48,110,255,.24));
+  box-shadow:0 5px 20px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.15);
+}
+.wallet-balance strong#bal{letter-spacing:-1px;text-shadow:0 0 28px rgba(103,223,255,.2)}
+.wallet-balance__foot{color:#d0e7ff}
+.wallet-actions{gap:12px;margin-bottom:27px}
+.wallet-action{
+  min-height:84px;padding:13px 12px;
+  border-color:rgba(151,202,255,.2);
+  background:linear-gradient(145deg,rgba(22,47,84,.97),rgba(12,31,60,.98));
+  color:#f1f7ff;
+  box-shadow:0 12px 26px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.055);
+  backdrop-filter:blur(14px);
+}
+.wallet-action:hover{
+  transform:translateY(-3px);
+  border-color:rgba(76,203,255,.52);
+  box-shadow:0 17px 30px rgba(0,0,0,.24),0 0 22px rgba(26,139,255,.1);
+}
+.wallet-action__icon{
+  border:1px solid rgba(94,188,255,.18);
+  background:linear-gradient(145deg,rgba(48,153,255,.25),rgba(48,104,255,.12));
+  color:#78dfff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+}
+.wallet-action--withdraw .wallet-action__icon{
+  border-color:rgba(76,231,187,.2);
+  background:linear-gradient(145deg,rgba(36,210,164,.2),rgba(20,133,123,.12));
+  color:#67f0c6;
+}
+.wallet-action strong{color:#f2f7ff}
+.wallet-action small{color:#9fb6d6}
+.wallet-action__arrow{color:#7de2ff}
+.wallet-section-heading{margin-top:26px;margin-bottom:12px}
+.wallet-section-heading .eyebrow{color:#63dfff;letter-spacing:2px}
+.wallet-section-heading h2{color:#f4f8ff;letter-spacing:-.2px}
+.wallet-section-mark{
+  border-color:rgba(102,198,255,.23);
+  background:linear-gradient(135deg,rgba(29,113,218,.22),rgba(18,66,133,.18));
+  color:#b9e8ff;
+}
+.wallet-panel.box{
+  border-color:rgba(142,190,247,.2);
+  background:linear-gradient(145deg,rgba(19,39,70,.98),rgba(11,28,53,.98));
+  color:#eaf3ff;
+  box-shadow:0 15px 32px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.045);
+}
+.wallet-panel__heading{margin-bottom:16px}
+.wallet-panel__icon{
+  border-color:rgba(94,182,255,.22);
+  background:linear-gradient(145deg,rgba(40,138,255,.24),rgba(27,87,183,.16));
+  color:#7bdfff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+}
+.wallet-panel__icon--cyan{border-color:rgba(65,216,255,.2);background:linear-gradient(145deg,rgba(40,209,255,.2),rgba(15,133,179,.13));color:#73eaff}
+.wallet-panel__icon--green{border-color:rgba(69,232,183,.2);background:linear-gradient(145deg,rgba(36,209,158,.2),rgba(12,131,108,.13));color:#70f0c5}
+.wallet-panel__icon--purple{border-color:rgba(182,139,255,.22);background:linear-gradient(145deg,rgba(143,94,255,.22),rgba(83,58,171,.15));color:#c5a8ff}
+.wallet-panel.box h3{color:#f1f7ff}
+.wallet-panel__heading p{color:#9cb2d2}
+.wallet-panel.box .row{border-bottom-color:rgba(148,183,226,.13);color:#edf5ff}
+.wallet-panel.box .row b{color:#f1f7ff}
+.wallet-panel.box .row small{color:#9db4d4}
+.wallet-panel.box .lock{border-color:rgba(70,228,174,.22);background:rgba(23,170,121,.12);color:#73edc1}
+.wallet-panel.box input,.wallet-panel.box select{
+  border-color:rgba(136,181,235,.24);
+  background:linear-gradient(145deg,#0a1a32,#102542);
+  color:#f2f7ff;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.12);
+}
+.wallet-panel.box input:focus,.wallet-panel.box select:focus{
+  border-color:#55cfff;
+  box-shadow:0 0 0 3px rgba(57,216,255,.12),0 0 20px rgba(57,216,255,.06);
+}
+.wallet-panel.box input::placeholder{color:#7088a8}
+.wallet-field{color:#b8cce7}
+.wallet-panel.box .warn{
+  border-color:rgba(111,177,242,.23);
+  background:linear-gradient(145deg,rgba(31,83,145,.19),rgba(18,51,92,.18));
+  color:#b2c7e3;
+}
+.wallet-panel.box .warn>span{color:#67dfff}
+.wallet-panel.box .warn strong{color:#7edfff}
+.wallet-panel.box .go{
+  border:1px solid rgba(160,230,255,.28);
+  background:linear-gradient(105deg,#176bff 0%,#138fff 48%,#35cfff 100%);
+  box-shadow:0 10px 24px rgba(15,110,255,.24),inset 0 1px 0 rgba(255,255,255,.22);
+}
+.wallet-panel.box .go:hover{box-shadow:0 13px 28px rgba(15,110,255,.32),inset 0 1px 0 rgba(255,255,255,.25)}
+.wallet-panel.box .msg2{color:#b5c9e5}
+.wallet-panel.box .msg2.ok{color:#72edbd}
+.wallet-panel.box .msg2.err{color:#ff9cab}
+.wallet-footnote{color:#8fa8cb}
+.wallet-nav{
+  border:1px solid rgba(126,181,255,.18);
+  background:rgba(7,19,39,.92);
+  box-shadow:0 -10px 32px rgba(0,0,0,.17),0 0 28px rgba(24,102,215,.08);
+  backdrop-filter:blur(20px);
+}
+.wallet-nav a[aria-current="page"]{
+  border-radius:13px;
+  background:linear-gradient(145deg,rgba(41,132,255,.19),rgba(42,196,255,.08));
+  color:#7ee5ff;
+}
+.wallet-nav a[aria-current="page"] svg{color:#7ee5ff;filter:drop-shadow(0 0 6px rgba(78,210,255,.3))}
+.wallet-nav a[aria-current="page"] span{color:#d7f7ff}
+@media(min-width:600px){
+  .wallet-dashboard-main{max-width:640px;margin-left:auto;margin-right:auto}
+  .wallet-head{padding-right:max(22px,calc((100% - 600px)/2));padding-left:max(22px,calc((100% - 600px)/2))}
+  .wallet-actions{gap:14px}
+  .wallet-action{min-height:90px}
+}
+@media(max-width:380px){
+  .wallet-head{padding-right:14px;padding-left:14px}
+  .wallet-dashboard-main{margin-top:-40px}
+  .wallet-balance.wcard{padding:17px 16px}
+  .wallet-actions{gap:8px}
+  .wallet-action{min-height:78px;padding:10px 8px}
+  .wallet-panel.box{padding:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .wallet-action,.wallet-panel.box .go{transition:none!important}
+}
