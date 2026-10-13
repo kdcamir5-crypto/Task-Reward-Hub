@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ডিবাগ</title>
+<style>body{font:15px system-ui,sans-serif;max-width:520px;margin:20px auto;padding:0 14px}input,button{display:block;width:100%;padding:10px;margin:8px 0;font:inherit}pre{background:#111;color:#9f9;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all}</style>
+</head><body>
+<h3>Firebase ডিবাগ (পরীক্ষা শেষে মুছে দিন)</h3>
+<input id="e" type="email" placeholder="ইমেইল"><input id="p" type="password" placeholder="পাসওয়ার্ড">
+<button id="go">পরীক্ষা চালান</button>
+<pre id="out">এখানে ফলাফল আসবে...</pre>
+<script type="module">
+import { auth, db } from './js/firebase-config.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const out = document.getElementById('out'); const log = (m) => out.textContent += '\n' + m;
+document.getElementById('go').onclick = async () => {
+  out.textContent = 'প্রজেক্ট: ' + auth.app.options.projectId;
+  try {
+    const c = await signInWithEmailAndPassword(auth, document.getElementById('e').value.trim().toLowerCase(), document.getElementById('p').value);
+    log('১) লগইন সফল। UID = ' + c.user.uid);
+    const ref = doc(db, 'users', c.user.uid);
+    try { const s = await getDoc(ref); log('২) নথি পড়া সফল। নথি আছে? ' + s.exists() + (s.exists() ? ' | role=' + s.data().role : ''));
+      if (!s.exists()) {
+        try { await setDoc(ref, { email: c.user.email, refCode: 'TRH' + c.user.uid.slice(0,6).toUpperCase(), referredBy: null, role: 'user', balance: 0, tasks: 0, referrals: 0, createdAt: serverTimestamp() });
+          log('৩) নথি তৈরি সফল! Firestore → users-এ দেখুন।'); }
+        catch (e) { log('৩) নথি তৈরি ব্যর্থ: ' + e.code + ' | ' + e.message); }
+      }
+    } catch (e) { log('২) নথি পড়া ব্যর্থ: ' + e.code + ' | ' + e.message); }
+  } catch (e) { log('১) লগইন ব্যর্থ: ' + e.code + ' | ' + e.message); }
+};
+</script></body></html>
