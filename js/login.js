@@ -1,4 +1,6 @@
-// login.js - লগইন পেজের UI আচরণ
+// login.js (module) - লগইন পেজের UI আচরণ, এখন Firebase ব্যবহার করে
+import { register, login } from './fb-auth.js';
+
 const $ = (s) => document.querySelector(s);
 let mode = 'signin';
 const ref = new URLSearchParams(location.search).get('ref');
@@ -17,14 +19,16 @@ $('#toggle-pw').addEventListener('click', () => {
   const p = $('#password'); p.type = p.type === 'password' ? 'text' : 'password';
 });
 
-$('#form').addEventListener('submit', (e) => {
+$('#form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = $('#email').value.trim().toLowerCase(), pw = $('#password').value;
   if (pw.length < 6) return ($('#msg').textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।');
   if (mode === 'signup' && pw !== $('#confirm').value) return ($('#msg').textContent = 'দুটো পাসওয়ার্ড মেলেনি।');
-  const err = mode === 'signin' ? Auth.login(email, pw) : Auth.register(email, pw, ref);
+  const btn = $('#submit'); btn.disabled = true; $('#msg').textContent = 'অপেক্ষা করুন...';
+  const err = mode === 'signin' ? await login(email, pw) : await register(email, pw, ref);
+  btn.disabled = false;
   if (err) return ($('#msg').textContent = err);
-  location.href = 'pages/dashboard.html'; // পরের ধাপে বানানো হবে
+  location.href = 'pages/dashboard.html';
 });
 
 const root = document.documentElement;
