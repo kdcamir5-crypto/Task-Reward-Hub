@@ -38,3 +38,15 @@ body{background:radial-gradient(ellipse at 15% 10%,#153a70 0,transparent 35%),ra
 .login__secure strong{display:block;color:#19365F;font-size:.78rem}.login__secure small{display:block;margin-top:2px;color:#71809A;font-size:.72rem;line-height:1.5}
 .login__footer{padding:15px 8px 0;color:#91A8CA;text-align:center;font-size:.72rem}
 @media(max-width:420px){.login__brand-top{margin-bottom:20px}.login__features span{font-size:.67rem;padding:5px 8px}}
+
+
+/* Premium cosmic motion theme — sign in and registration */
+.login__box{animation:loginCosmicEntrance .75s ease-out both}
+.login__card{border-color:rgba(95,174,255,.3)!important;box-shadow:0 18px 48px rgba(0,0,0,.24),0 0 28px rgba(45,119,255,.08);transition:border-color .25s,box-shadow .25s}
+.login__card:hover{border-color:rgba(76,225,255,.46)!important;box-shadow:0 20px 50px rgba(0,0,0,.27),0 0 28px rgba(45,170,255,.13)}
+.login__mark{filter:drop-shadow(0 0 10px rgba(62,187,255,.25))}
+.login__spark{animation:loginSparkTwinkle 3s ease-in-out infinite}
+.login__features b{filter:drop-shadow(0 0 5px rgba(63,207,255,.28))}
+@keyframes loginCosmicEntrance{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes loginSparkTwinkle{0%,100%{opacity:.55;transform:scale(.9) rotate(0)}50%{opacity:1;transform:scale(1.16) rotate(14deg)}}
+@media(prefers-reduced-motion:reduce){.login__box{animation:none!important}.login__spark{animation:none!important}}
