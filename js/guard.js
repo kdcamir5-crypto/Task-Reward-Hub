@@ -3,7 +3,12 @@
 (function () {
   var base = document.currentScript.src;
   var url = function (f) { return new URL(f, base).href; };
-  document.documentElement.style.visibility = 'hidden'; // যাচাই শেষ না হওয়া পর্যন্ত পেজ লুকানো
+  // মোবাইল/Telegram WebView-তে Firebase লোড হওয়া পর্যন্ত পুরো পেজ লুকিয়ে রাখলে
+  // অ্যাপ হ্যাং করেছে বলে মনে হয়। মোবাইলে পেজ সঙ্গে সঙ্গে দেখাই; অথেনটিকেশন
+  // যাচাই শেষে লগইন না থাকলে আগের মতোই লগইন পেজে পাঠানো হবে।
+  var mobileWebView = false;
+  try { mobileWebView = window.matchMedia('(max-width: 760px), (pointer: coarse)').matches; } catch (_) {}
+  if (!mobileWebView) document.documentElement.style.visibility = 'hidden';
 
   window.hubUser = new Promise(function (resolve) {
     Promise.all([
