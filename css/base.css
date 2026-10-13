@@ -146,3 +146,47 @@ body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.prof
   body::before,body::after{animation:none!important}
   body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.profile-card,.community-card,.admin-card)::before{animation:none!important}
 }
+
+
+/* Mobile / Telegram Mini App performance mode.
+   Keep the visual design, but avoid large animated layers and expensive effects
+   on phones and embedded WebViews. Desktop styling remains unchanged. */
+@media (max-width: 760px), (pointer: coarse) {
+  html, body { scroll-behavior: auto !important; }
+  body {
+    animation: none !important;
+    background: #030817 !important;
+    background-size: auto !important;
+  }
+  body::before,
+  body::after {
+    display: none !important;
+    animation: none !important;
+    filter: none !important;
+    background: none !important;
+  }
+  *, *::before, *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-duration: .12s !important;
+    transition-delay: 0s !important;
+  }
+  body :is(.card,.panel,.box,.form-card,.wallet-card,.task-card,.reward-card,.profile-card,.community-card,.admin-card)::before {
+    display: none !important;
+    animation: none !important;
+    background: none !important;
+  }
+  .card, .panel, .box, .form-card, .wallet-card, .task-card,
+  .reward-card, .profile-card, .community-card, .admin-card {
+    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
+  }
+  button:not(:disabled):hover,
+  a:hover {
+    filter: none !important;
+    box-shadow: none;
+  }
+  button:not(:disabled):active,
+  a:active {
+    transform: none !important;
+  }
+}
