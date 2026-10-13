@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Reward Hub - কমিউনিটি ফিড</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+  <link rel="stylesheet" href="../css/wallet.css">
+  <link rel="stylesheet" href="../css/feed.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top"><strong>কমিউনিটি ফিড</strong><a class="icon-btn" href="dashboard.html" style="text-decoration:none">ড্যাশবোর্ড</a></header>
+
+    <section class="box compose">
+      <form id="form" novalidate>
+        <textarea id="text" maxlength="280" placeholder="আপনার অভিজ্ঞতা বা প্রশ্ন শেয়ার করুন..." aria-label="নতুন পোস্ট"></textarea>
+        <div class="bar"><span class="count" id="cnt"></span><button class="go" type="submit">পোস্ট করুন</button></div>
+        <p class="msg2 err" id="fmsg" role="status"></p>
+      </form>
+    </section>
+
+    <div class="tabs2" style="grid-template-columns:repeat(2,1fr)">
+      <button type="button" data-f="all" aria-pressed="true">সবার পোস্ট</button>
+      <button type="button" data-f="mine" aria-pressed="false">আমার পোস্ট</button>
+    </div>
+
+    <div id="list"></div>
+    <p class="note">ভদ্র ভাষায় লিখুন। ভুয়া পেমেন্ট প্রমাণ বা বিজ্ঞাপন পোস্ট করবেন না।</p>
+
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html">হোম</a>
+      <a href="tasks.html">টাস্ক</a>
+      <a href="feed.html" aria-current="page">ফিড</a>
+      <a href="profile.html">প্রোফাইল</a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/feed.js"></script>
+</body>
+</html>
