@@ -1,11 +1,11 @@
-
 // dashboard.js - ড্যাশবোর্ডে ইউজারের তথ্য বসায়, নোটিফিকেশন শিট খোলে
 const $ = (s) => document.querySelector(s);
 const email = Store.get('session');
 const user = Auth.users()[email] || { id: 'TRH00000' };
 const wallet = Store.get('wallet:' + email, { balance: 0, tasks: 0, referrals: 0 });
 
-$('#name').textContent = email.split('@')[0];
+const prof = Store.get('profile:' + email, {});
+$('#name').textContent = prof.name || email.split('@')[0];
 $('#uid').textContent = 'আইডি: ' + user.id;
 $('#balance').textContent = '৳ ' + wallet.balance.toFixed(2);
 $('#tasks').textContent = wallet.tasks;
