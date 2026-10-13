@@ -1,9 +1,7 @@
-/* admin.css - অ্যাডমিন প্যানেল (বাকিটা wallet.css ও tasks.css থেকে আসে) */
-.acts{display:flex;gap:6px;flex:none}
-.mini{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.8rem}
-.mini.ok{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
-.mini.no{color:var(--danger);border-color:var(--danger)}
-.box textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%;font:inherit;color:inherit}
-.thumb{display:block;width:90px;margin-top:6px;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
-.thumb.big{width:100%;max-width:360px;cursor:zoom-out}
-.box select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);width:100%}
+/* Admin panel controls */
+.acts{display:flex;gap:6px;flex:none;flex-wrap:wrap}
+.mini{border:1px solid #DCE6F4;background:#F1F6FF;color:#29415F;border-radius:9px;padding:6px 10px;cursor:pointer;font-size:.8rem}
+.mini.ok{background:#176BFF;color:#fff;border-color:#176BFF}.mini.no{color:#C52F3B;border-color:#E34D59;background:#FFF5F5}
+.box textarea{padding:11px;border:1px solid #DCE6F4;border-radius:11px;background:#F7FAFF;width:100%;font:inherit;color:#10213F}
+.thumb{display:block;width:90px;margin-top:6px;border-radius:9px;border:1px solid #DCE6F4;cursor:zoom-in}.thumb.big{width:100%;max-width:360px;cursor:zoom-out}
+.box select{padding:11px;border:1px solid #DCE6F4;border-radius:11px;background:#F7FAFF;color:#10213F;width:100%}
