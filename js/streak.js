@@ -24,7 +24,7 @@
   data.history = Array.isArray(data.history) ? data.history : [];
   const today = dateKey();
   const last = data.lastDate;
-  const already = last === today;
+  let already = last === today;
   let streak = Number(data.current || 0);
   if (last && last !== today && last !== shiftDate(today, -1)) streak = 0;
   data.current = streak;
@@ -79,6 +79,7 @@
     data.total = Number(data.total || 0) + 1;
     data.xp = Number(data.xp || 0) + reward;
     data.lastDate = today;
+    already = true;
     data.history.unshift({ day: data.current, xp: reward, date: new Date().toLocaleDateString('bn-BD') });
     data.history = data.history.slice(0, 30);
     Store.set(KEY, data);
