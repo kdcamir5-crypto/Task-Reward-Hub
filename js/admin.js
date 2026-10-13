@@ -30,7 +30,11 @@ async function loadSubs() {
       const sm = r.querySelectorAll('small');
       r.querySelector('b').textContent = x.taskTitle + ' (৳ ' + x.reward + ')';
       sm[0].textContent = x.email;
-      sm[1].textContent = 'প্রমাণ: ' + x.proof;
+      sm[1].textContent = x.image ? 'প্রমাণ: স্ক্রিনশট (ছবিতে চাপলে বড় হবে)' : 'প্রমাণ: ' + x.proof;
+      if (x.image && x.image.startsWith('data:image/jpeg;base64,')) {
+        const im = document.createElement('img'); im.src = x.image; im.alt = 'স্ক্রিনশট'; im.className = 'thumb';
+        im.onclick = () => im.classList.toggle('big'); r.querySelector('span').appendChild(im);
+      }
       const ok = document.createElement('button'); ok.className = 'mini ok'; ok.textContent = 'অনুমোদন';
       const no = document.createElement('button'); no.className = 'mini no'; no.textContent = 'বাতিল';
       ok.onclick = () => approve(d.id, ok, no); no.onclick = () => reject(d.id, ok, no);
@@ -79,10 +83,12 @@ async function loadTasks() {
 $('#tform').addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = $('#ttitle').value.trim(), desc = $('#tdesc').value.trim(),
-        reward = Number($('#treward').value), proof = $('#tproof').value.trim();
+        reward = Number($('#treward').value), proof = $('#tproof').value.trim(),
+        link = $('#tlink').value.trim(), proofType = $('#tptype').value;
   if (title.length < 3 || !(reward > 0)) return say('#tmsg', 'শিরোনাম ও সঠিক রিওয়ার্ড দিন।', false);
+  if (link) { try { const u = new URL(link); if (!['http:', 'https:'].includes(u.protocol)) throw 0; } catch { return say('#tmsg', 'লিংক http:// বা https:// দিয়ে শুরু হতে হবে।', false); } }
   try {
-    await addDoc(collection(db, 'tasks'), { title, desc, reward, proof, active: true, createdAt: serverTimestamp() });
+    await addDoc(collection(db, 'tasks'), { title, desc, reward, proof, link, proofType, active: true, createdAt: serverTimestamp() });
     $('#tform').reset(); say('#tmsg', 'টাস্ক যুক্ত হয়েছে।', true); loadTasks();
   } catch (e) { say('#tmsg', 'ব্যর্থ: ' + (e.code || e.message), false); }
 });
