@@ -220,6 +220,19 @@
       <p id="modal-description">নির্বাচিত বটের মূল্য ও কমিশন দেখে পরবর্তী ধাপ যাচাই করুন।</p>
       <div class="modal-summary"><div><span>AI Bot</span><strong id="modal-bot-name">—</strong></div><div><span>প্যাকেজ মূল্য</span><strong id="modal-price">—</strong></div><div><span>রেফারার কমিশন</span><strong id="modal-commission">—</strong></div></div>
       <p class="modal-msg" id="modal-message" aria-live="polite">পেমেন্ট ও বট আনলক কেবল অনুমোদিত লেনদেনের মাধ্যমেই সম্পন্ন হবে।</p>
+      <div id="purchase-fields" style="display:grid;gap:9px;margin:12px 0">
+        <label for="purchase-method">পেমেন্ট পদ্ধতি</label>
+        <select id="purchase-method" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <option value="wallet">Wallet Balance</option><option value="bKash">bKash</option><option value="Nagad">Nagad</option>
+        </select>
+        <div id="direct-payment-fields" class="hidden" style="display:grid;gap:9px">
+          <label for="purchase-sender">যে নম্বর থেকে পেমেন্ট করেছেন</label>
+          <input id="purchase-sender" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <label for="purchase-trx">Transaction ID (TrxID)</label>
+          <input id="purchase-trx" maxlength="100" placeholder="TrxID লিখুন" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <p style="font-size:.8rem;color:#f7dfad;margin:0">শুধু অফিসিয়াল নম্বরে পেমেন্ট করার পর আবেদন জমা দিন।</p>
+        </div>
+      </div>
       <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">ব্যালেন্স যাচাই করুন</button></div>
     </section>
   </div>
@@ -271,7 +284,9 @@
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
   <script type="module" src="../js/mining-progress.js"></script>
-  <script>
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { collection, doc, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
     (function(){
       'use strict';
       const packages = {
@@ -281,48 +296,53 @@
         cyber:{name:'Cyber Forge Titan',price:300,commission:15},
         apex:{name:'Apex Sentinel AI',price:500,commission:25}
       };
-      const modal=document.getElementById('bot-modal');
-      const message=document.getElementById('modal-message');
-      const confirmBtn=document.getElementById('modal-confirm');
+      const modal=document.getElementById('bot-modal'),message=document.getElementById('modal-message'),confirmBtn=document.getElementById('modal-confirm');
+      const methodSelect=document.getElementById('purchase-method'),directFields=document.getElementById('direct-payment-fields');
+      const senderInput=document.getElementById('purchase-sender'),trxInput=document.getElementById('purchase-trx');
       let selected=null;
       function money(n){return '৳'+Number(n).toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
-      function closeModal(){modal.classList.remove('open');selected=null;message.textContent='পেমেন্ট ও বট আনলক কেবল অনুমোদিত লেনদেনের মাধ্যমেই সম্পন্ন হবে।';}
-      document.querySelectorAll('[data-bot]').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          selected=packages[btn.dataset.bot];
-          if(!selected)return;
-          document.getElementById('modal-bot-name').textContent=selected.name;
-          document.getElementById('modal-price').textContent=money(selected.price);
-          document.getElementById('modal-commission').textContent=money(selected.commission)+' (৫%)';
-          message.textContent='এটি প্যাকেজের প্রিভিউ। নিরাপদ কেনাকাটা এখনো চালু হয়নি; এই ধাপে কোনো টাকা কাটা হবে না।';
-          modal.classList.add('open');
-          document.getElementById('modal-cancel').focus();
-        });
-      });
+      function showMethod(){const direct=methodSelect.value!=='wallet';directFields.classList.toggle('hidden',!direct);confirmBtn.textContent=direct?'পেমেন্ট আবেদন জমা দিন':'Wallet Purchase আবেদন দিন';}
+      function closeModal(){modal.classList.remove('open');selected=null;message.textContent='পেমেন্ট যাচাইয়ের পর Admin অনুমোদন দিলে বট আনলক হবে।';}
+      methodSelect.addEventListener('change',showMethod);
+      document.querySelectorAll('[data-bot]').forEach(btn=>btn.addEventListener('click',()=>{
+        selected={id:btn.dataset.bot,...packages[btn.dataset.bot]};if(!selected.name)return;
+        document.getElementById('modal-bot-name').textContent=selected.name;document.getElementById('modal-price').textContent=money(selected.price);
+        document.getElementById('modal-commission').textContent=money(selected.commission)+' (৫%)';
+        methodSelect.value='wallet';senderInput.value='';trxInput.value='';showMethod();
+        confirmBtn.disabled=false;message.textContent='আবেদন জমা দিলে Admin যাচাই করবেন। অনুমোদনের আগে Wallet থেকে টাকা কাটা বা বট আনলক হবে না.';
+        modal.classList.add('open');document.getElementById('modal-cancel').focus();
+      }));
       document.getElementById('modal-cancel').addEventListener('click',closeModal);
       modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
       document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
       confirmBtn.addEventListener('click',async()=>{
-        if(!selected)return;
+        if(!selected||confirmBtn.disabled)return;
         confirmBtn.disabled=true;
         try{
-          const user=window.hubUser?await window.hubUser:null;
-          const balance=Number(user&&user.profile&&user.profile.balance||0);
-          if(balance<selected.price){
-            message.textContent='আপনার Wallet Balance পর্যাপ্ত নয়। বর্তমান ব্যালেন্স: '+money(balance)+'. Deposit করতে Wallet পেজে যান।';
-            const old=document.getElementById('modal-actions-recharge');
-            if(!old){
-              const a=document.createElement('a');a.id='modal-actions-recharge';a.href='wallet.html';a.textContent='ওয়ালেটে যান';a.style.cssText='display:block;text-align:center;margin-top:10px;color:#6ee7ff;font-weight:700';
-              document.querySelector('.modal').appendChild(a);
-            }
-            return;
+          const user=window.hubUser?await window.hubUser:null;if(!user||!user.uid)throw new Error('লগইন পাওয়া যায়নি। আবার লগইন করুন।');
+          const method=methodSelect.value,senderNumber=senderInput.value.trim(),trxId=trxInput.value.trim().replace(/\s+/g,'');
+          if(!['wallet','bKash','Nagad'].includes(method))throw new Error('সঠিক পেমেন্ট পদ্ধতি নির্বাচন করুন।');
+          if(method!=='wallet'){
+            if(!/^01[3-9]\d{8}$/.test(senderNumber))throw new Error('সঠিক ১১ ডিজিটের পেমেন্ট নম্বর লিখুন।');
+            if(trxId.length<5||trxId.length>100)throw new Error('সঠিক TrxID লিখুন।');
+            if(!confirm('আপনি কি অফিসিয়াল নম্বরে পেমেন্ট সম্পন্ন করেছেন এবং TrxID সঠিক?'))return;
           }
-          message.textContent='আপনার বর্তমান Wallet Balance '+money(balance)+'। Bot Purchase ও Admin Approval সংযুক্তির কাজ চলমান; এই ধাপে কোনো টাকা কাটা বা বট আনলক করা হবে না।';
-        }catch(err){
-          message.textContent='ব্যালেন্স যাচাই করা যায়নি। পরে আবার চেষ্টা করুন। কোনো টাকা কাটা হয়নি।';
-        }finally{confirmBtn.disabled=false;}
+          await runTransaction(db,async tx=>{
+            const userRef=doc(db,'users',user.uid),userSnap=await tx.get(userRef);
+            if(!userSnap.exists())throw new Error('ইউজার প্রোফাইল পাওয়া যায়নি।');
+            const profile=userSnap.data(),unlocked=Array.isArray(profile.unlockedBots)?profile.unlockedBots:[];
+            if(unlocked.includes(selected.id))throw new Error('এই বটটি আগে থেকেই আনলক করা আছে।');
+            if(method==='wallet'&&Number(profile.balance||0)<selected.price)throw new Error('Wallet Balance পর্যাপ্ত নয়।');
+            const requestRef=doc(collection(db,'botPurchaseRequests'));
+            tx.set(requestRef,{uid:user.uid,userName:String(profile.name||profile.displayName||user.displayName||'নাম নেই').slice(0,100),
+              email:String(user.email||profile.email||'').slice(0,160),botId:selected.id,botName:selected.name,amount:selected.price,
+              paymentMethod:method,senderNumber:method==='wallet'?'':senderNumber,trxId:method==='wallet'?'':trxId,
+              status:'pending',createdAt:serverTimestamp()});
+          });
+          message.textContent='Bot Purchase আবেদন জমা হয়েছে। Admin যাচাই করে অনুমোদন দিলে বট আনলক হবে'+(method==='wallet'?' এবং Wallet থেকে মূল্য কাটা হবে।':'।');
+          confirmBtn.disabled=true;
+        }catch(err){message.textContent=err.message||'আবেদন জমা হয়নি। Firestore Rules যাচাই করুন।';confirmBtn.disabled=false;}
       });
     })();
-  </script>
-</body>
+  </script></body>
 </html>
