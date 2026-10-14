@@ -105,7 +105,72 @@ function readableError(e) {
   if (e.code === 'permission-denied') return 'Firestore অনুমতি দেয়নি। Rules যাচাই করুন।';
   return e.message || e.code || 'অজানা সমস্যা';
 }
-async function loadAll() { await Promise.all([loadSubs(), loadWithdrawals(), loadWalletDeposits(), loadTasks()]); }
+async function loadAll() { await Promise.all([loadSubs(), loadWithdrawals(), loadWalletDeposits(), loadBotPurchaseRequests(), loadTasks()]); }
+
+async function loadBotPurchaseRequests() {
+  const box = $('#bot-purchase-requests');
+  if (!box) return;
+  box.textContent = 'Bot Purchase আবেদন লোড হচ্ছে...';
+  try {
+    const snap = await getDocs(query(collection(db, 'botPurchaseRequests'), where('status', '==', 'pending')));
+    box.textContent = '';
+    if (snap.empty) { box.textContent = 'অপেক্ষায় কোনো Bot Purchase আবেদন নেই।'; return; }
+    snap.docs.forEach(d => {
+      const x = d.data(), item = document.createElement('div'); item.className = 'row';
+      const details = document.createElement('span');
+      const title = document.createElement('b'); title.textContent = String(x.botName || x.botId || 'Bot') + ' · ৳' + Number(x.amount || 0);
+      const user = document.createElement('small'); user.textContent = 'ইউজার: ' + String(x.userName || 'নাম নেই') + ' · UID: ' + String(x.uid || 'নেই');
+      const method = document.createElement('small'); method.textContent = 'পেমেন্ট: ' + String(x.paymentMethod || 'অজানা');
+      const sender = document.createElement('small'); sender.textContent = x.paymentMethod === 'wallet' ? 'Wallet Balance থেকে কাটা হবে' : 'প্রেরক নম্বর: ' + String(x.senderNumber || 'নেই');
+      const trx = document.createElement('small'); trx.textContent = x.paymentMethod === 'wallet' ? 'Wallet Purchase' : 'TrxID: ' + String(x.trxId || 'নেই'); trx.style.overflowWrap = 'anywhere';
+      details.append(title, user, method, sender, trx);
+      const actions = document.createElement('span'); actions.className = 'acts';
+      const approveBtn = document.createElement('button'); approveBtn.type = 'button'; approveBtn.className = 'mini ok'; approveBtn.textContent = 'Approve & Unlock';
+      const rejectBtn = document.createElement('button'); rejectBtn.type = 'button'; rejectBtn.className = 'mini no'; rejectBtn.textContent = 'Reject';
+      approveBtn.onclick = () => settleBotPurchase(d.id, 'approved', approveBtn, rejectBtn);
+      rejectBtn.onclick = () => settleBotPurchase(d.id, 'rejected', approveBtn, rejectBtn);
+      actions.append(approveBtn, rejectBtn); item.append(details, actions); box.appendChild(item);
+    });
+  } catch (e) { box.textContent = 'Bot Purchase আবেদন লোড হয়নি: ' + readableError(e) + ' Firestore Rules-এ botPurchaseRequests admin read অনুমতি যাচাই করুন।'; }
+}
+
+async function settleBotPurchase(id, outcome, approveBtn, rejectBtn) {
+  if (!['approved', 'rejected'].includes(outcome)) return;
+  if (outcome === 'approved' && !confirm('পেমেন্ট/TrxID যাচাই করেছেন? Approve করলে বট আনলক হবে এবং Wallet Purchase হলে টাকা কাটা হবে।')) return;
+  approveBtn.disabled = rejectBtn.disabled = true;
+  try {
+    await runTransaction(db, async tx => {
+      const requestRef = doc(db, 'botPurchaseRequests', id);
+      const requestSnap = await tx.get(requestRef);
+      if (!requestSnap.exists() || requestSnap.data().status !== 'pending') throw new Error('এই আবেদন আগেই নিষ্পত্তি হয়েছে।');
+      const x = requestSnap.data();
+      if (outcome === 'approved') {
+        const prices = { pulse: 50, quantum: 100, neural: 200, cyber: 300, apex: 500 };
+        if (!x.uid || !Object.prototype.hasOwnProperty.call(prices, x.botId) || Number(x.amount) !== prices[x.botId] || !['wallet', 'bKash', 'Nagad'].includes(x.paymentMethod))
+          throw new Error('Bot Purchase আবেদনের তথ্য সঠিক নয়।');
+        if (x.paymentMethod !== 'wallet' && (!/^01[3-9]\d{8}$/.test(String(x.senderNumber || '')) || String(x.trxId || '').trim().length < 5))
+          throw new Error('পেমেন্ট নম্বর বা TrxID সঠিক নয়।');
+        const userRef = doc(db, 'users', x.uid), userSnap = await tx.get(userRef);
+        if (!userSnap.exists()) throw new Error('ইউজার প্রোফাইল পাওয়া যায়নি।');
+        const user = userSnap.data(), unlocked = Array.isArray(user.unlockedBots) ? user.unlockedBots : [];
+        if (unlocked.includes(x.botId)) throw new Error('এই বটটি ইউজারের অ্যাকাউন্টে ইতিমধ্যে আনলক আছে।');
+        const changes = { unlockedBots: [...unlocked, x.botId], updatedAt: serverTimestamp() };
+        if (x.paymentMethod === 'wallet') {
+          const balance = Number(user.balance || 0);
+          if (!Number.isFinite(balance) || balance < x.amount) throw new Error('ইউজারের Wallet Balance পর্যাপ্ত নয়; কোনো টাকা কাটা হয়নি।');
+          changes.balance = balance - x.amount;
+        }
+        tx.update(userRef, changes);
+      }
+      tx.update(requestRef, { status: outcome, reviewedBy: me.uid, reviewedAt: serverTimestamp() });
+    });
+    await loadBotPurchaseRequests();
+    alert(outcome === 'approved' ? 'Bot Purchase অনুমোদিত; বট আনলক হয়েছে।' : 'Bot Purchase আবেদন বাতিল হয়েছে; কোনো Wallet টাকা কাটা হয়নি।');
+  } catch (e) {
+    alert('Bot Purchase নিষ্পত্তি হয়নি: ' + readableError(e));
+    approveBtn.disabled = rejectBtn.disabled = false;
+  }
+}
 
 async function loadWalletDeposits() {
   const box = $('#wallet-deposits');
