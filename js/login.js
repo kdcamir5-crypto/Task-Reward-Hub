@@ -1,9 +1,21 @@
-// login.js (module) - লগইন পেজের UI আচরণ, এখন Firebase ব্যবহার করে
+// login.js - লগইন পেজের UI আচরণ ও আগের লগইন সেশন যাচাই
 import { register, login } from './fb-auth.js';
+import { auth } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const $ = (s) => document.querySelector(s);
 let mode = 'signin';
+let authCheckFinished = false;
 const ref = new URLSearchParams(location.search).get('ref');
+
+// আগে লগইন করা থাকলে পাসওয়ার্ড না চেয়ে সরাসরি ড্যাশবোর্ডে পাঠায়।
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    location.replace('pages/dashboard.html');
+    return;
+  }
+  authCheckFinished = true;
+});
 
 function setMode(m) {
   mode = m;
@@ -28,7 +40,7 @@ $('#form').addEventListener('submit', async (e) => {
   const err = mode === 'signin' ? await login(email, pw) : await register(email, pw, ref);
   btn.disabled = false;
   if (err) return ($('#msg').textContent = err);
-  location.href = 'pages/dashboard.html';
+  location.replace('pages/dashboard.html');
 });
 
 const root = document.documentElement;
