@@ -1,0 +1,185 @@
+/* Task Reward Hub — shared compact design system
+   Matches authenticated pages to the Dashboard's 520px layout and compact scale.
+   Layout-only overrides: preserves existing IDs, forms, and feature scripts. */
+:root {
+  --trh-page-bg: #EEF2F9;
+  --trh-card-bg: #FFFFFF;
+  --trh-text: #0F1B3D;
+  --trh-muted: #6B7A99;
+  --trh-border: #E3E9F4;
+  --trh-blue: #2563EB;
+  --trh-radius: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body:not(.home) {
+  margin: 0 !important;
+  background: var(--trh-page-bg) !important;
+  color: var(--trh-text);
+  font-family: 'Plus Jakarta Sans', 'Hind Siliguri', system-ui, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+body:not(.home) .app,
+body:not(.home) .notify-app,
+body:not(.home) .adm .wrap {
+  width: 100% !important;
+  max-width: 520px !important;
+  min-width: 0;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+body:not(.home) main,
+body:not(.home) .tasks-main,
+body:not(.home) .wallet-main,
+body:not(.home) .rewards-main,
+body:not(.home) .profile-main,
+body:not(.home) .feed-main,
+body:not(.home) .achievement-main,
+body:not(.home) .leader-main,
+body:not(.home) .spin-main,
+body:not(.home) .streak-main,
+body:not(.home) .mystery-main,
+body:not(.home) .notify-main,
+body:not(.home) .robot-main {
+  min-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+body:not(.home) h1 { font-size: clamp(1.25rem, 4.5vw, 1.5rem) !important; line-height: 1.3 !important; }
+body:not(.home) h2 { font-size: clamp(1.05rem, 3.8vw, 1.2rem) !important; line-height: 1.35 !important; }
+body:not(.home) h3 { font-size: 1rem !important; line-height: 1.4 !important; }
+body:not(.home) p { line-height: 1.55; }
+body:not(.home) img { max-width: 100%; }
+body:not(.home) input,
+body:not(.home) select,
+body:not(.home) textarea,
+body:not(.home) button { font-family: inherit; }
+body:not(.home) input,
+body:not(.home) select,
+body:not(.home) textarea { max-width: 100%; min-width: 0; }
+body:not(.home) .tasks-hero,
+body:not(.home) .feed-hero,
+body:not(.home) .rewards-hero,
+body:not(.home) .achievement-hero,
+body:not(.home) .leader-hero,
+body:not(.home) .streak-hero,
+body:not(.home) .hero {
+  min-height: 0;
+  border-radius: 20px;
+}
+body:not(.home) .tasks-hero { padding: 16px !important; margin-top: 14px !important; }
+body:not(.home) .tasks-list-section,
+body:not(.home) .feed-posts-section,
+body:not(.home) .wallet-section,
+body:not(.home) .rewards-section,
+body:not(.home) .achievement-section,
+body:not(.home) .leader-section { margin-top: 18px !important; }
+body:not(.home) .task,
+body:not(.home) .wcard,
+body:not(.home) .wallet-panel,
+body:not(.home) .pcard,
+body:not(.home) .feed-card,
+body:not(.home) .post,
+body:not(.home) .rewards-claim-panel,
+body:not(.home) .rewards-history-panel,
+body:not(.home) .achievement-card,
+body:not(.home) .leader-row,
+body:not(.home) .spin-result-card,
+body:not(.home) .mystery-result-card,
+body:not(.home) .notice,
+body:not(.home) .notice-card {
+  min-width: 0;
+  border-radius: var(--trh-radius);
+}
+body:not(.home) .nav,
+body:not(.home) .bottom-nav {
+  width: min(100%, 520px) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+}
+body:not(.home) .nav a,
+body:not(.home) .bottom-nav a { min-width: 0; font-size: .72rem; }
+body:not(.home) .nav svg,
+body:not(.home) .bottom-nav svg { max-width: 22px; }
+
+/* Bot Shop: two compact cards per row, with smaller contained artwork. */
+body:not(.home) .bots {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: stretch;
+  gap: 10px !important;
+}
+body:not(.home) .bot {
+  display: flex;
+  flex-direction: column;
+  min-width: 0 !important;
+  padding: 10px !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+body:not(.home) .bot-img-wrap {
+  display: grid;
+  place-items: center;
+  height: 88px !important;
+  min-height: 88px !important;
+  margin: 0 0 8px !important;
+  overflow: hidden;
+}
+body:not(.home) .bot-img {
+  display: block;
+  width: 100% !important;
+  height: 82px !important;
+  max-height: 82px !important;
+  object-fit: contain !important;
+}
+body:not(.home) .bot-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 7px;
+}
+body:not(.home) .bot-body h3 { font-size: .9rem !important; line-height: 1.3 !important; overflow-wrap: anywhere; }
+body:not(.home) .bot-body .price-line { gap: 5px; flex-wrap: wrap; }
+body:not(.home) .bot-body .price { font-size: 1.1rem !important; }
+body:not(.home) .bot-body .price-caption { font-size: .62rem !important; }
+body:not(.home) .bot-body .details {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px !important;
+}
+body:not(.home) .bot-body .detail {
+  min-width: 0;
+  padding: 6px !important;
+  border-radius: 9px;
+}
+body:not(.home) .bot-body .detail span { font-size: .62rem !important; line-height: 1.3; }
+body:not(.home) .bot-body .detail strong { font-size: .78rem !important; overflow-wrap: anywhere; }
+body:not(.home) .redeem-box { min-width: 0; padding: 8px !important; margin-top: auto; }
+body:not(.home) .redeem-box label { font-size: .72rem !important; }
+body:not(.home) .redeem-input,
+body:not(.home) .redeem-btn,
+body:not(.home) .admin-message { font-size: .72rem !important; }
+body:not(.home) .redeem-input { width: 100%; min-width: 0; padding: 8px !important; }
+body:not(.home) .redeem-btn { width: 100%; min-height: 36px; padding: 8px 6px !important; }
+body:not(.home) .free-card { padding: 12px !important; margin-top: 14px !important; }
+body:not(.home) .modal { width: min(100% - 24px, 460px) !important; max-height: 88dvh; overflow-y: auto; padding: 16px !important; }
+
+@media (max-width: 360px) {
+  body:not(.home) main,
+  body:not(.home) .tasks-main,
+  body:not(.home) .wallet-main,
+  body:not(.home) .rewards-main,
+  body:not(.home) .profile-main,
+  body:not(.home) .feed-main { padding-left: 12px; padding-right: 12px; }
+  body:not(.home) .bots { gap: 8px !important; }
+  body:not(.home) .bot { padding: 8px !important; }
+  body:not(.home) .bot-img-wrap { height: 72px !important; min-height: 72px !important; }
+  body:not(.home) .bot-img { height: 68px !important; max-height: 68px !important; }
+  body:not(.home) .bot-body h3 { font-size: .82rem !important; }
+}
