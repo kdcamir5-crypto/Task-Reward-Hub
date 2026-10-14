@@ -107,6 +107,54 @@
     .mine-empty{grid-column:1/-1;margin:0;padding:16px;border:1px dashed #31547c;border-radius:16px;color:#bfd0e9;line-height:1.65;font-size:.88rem}
     .mine-note{margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:.84rem;line-height:1.6}
     .mine-note.err{border:1px solid #7a3636;background:#2a1414;color:#ffc9c9}
+
+    /* Premium shop refinement */
+    :root{--bg:#050d20;--panel:#0b1931;--line:#263f67;--text:#f4f8ff;--muted:#a9bad4;--cyan:#67e8f9;--green:#8af0c7}
+    body{background:radial-gradient(ellipse at 50% -14%,#153f73 0,transparent 48%),linear-gradient(180deg,#07142b 0%,#050d20 72%);letter-spacing:.005em}
+    .shop{width:min(100% - 32px,1080px);padding-top:24px}
+    .top{margin-bottom:24px}
+    .back{border-color:#294a75;background:#0c2141;box-shadow:0 8px 22px #0002;transition:transform .18s,border-color .18s}
+    .back:hover{transform:translateY(-2px);border-color:#67e8f9}
+    .brand{letter-spacing:2px;color:#9db9df}
+    .hero{padding:clamp(20px,4vw,32px);border-color:#2b5686;border-radius:26px;background:radial-gradient(ellipse at 100% 0%,#1a5487 0,transparent 44%),linear-gradient(135deg,#10294d 0%,#0a1832 72%);box-shadow:0 20px 60px #0003}
+    .robot{border-radius:21px;background:linear-gradient(145deg,#123d60,#0c2947);border-color:#4bdcff70}
+    .unlock{background:linear-gradient(110deg,#0a292d,#0a242f);border-color:#24635d}
+    .notice{background:linear-gradient(110deg,#111f3a,#10223d);border-color:#31557e;color:#d2e3f8;border-radius:16px}
+    .notice strong{display:inline-block;margin-bottom:3px;color:#83e9ff;font-size:.9rem}
+    .section-title{margin-top:30px;margin-bottom:14px}
+    .section-title h2{font-size:clamp(1.1rem,3vw,1.35rem);letter-spacing:-.01em}
+    .section-title span{letter-spacing:1px;font-size:.7rem;font-weight:800}
+    .bots{gap:18px}
+    .bot{border-color:#233e65;border-radius:22px;background:linear-gradient(155deg,#102342 0%,#09162c 100%);box-shadow:0 14px 36px #0002}
+    .bot:hover{transform:translateY(-4px);border-color:#4ab9df;box-shadow:0 20px 42px #0003,0 0 0 1px #4bdcff12}
+    .bot-img-wrap{background:radial-gradient(ellipse at 50% 35%,#19476d,#09172e 74%)}
+    .bot-img{transition:transform .35s}
+    .bot:hover .bot-img{transform:scale(1.035)}
+    .bot-number{background:#061328e8;border-color:#8bb9e455;letter-spacing:.8px}
+    .bot-body{padding:17px}
+    .bot h3{font-size:1.12rem;letter-spacing:-.01em}
+    .price{color:#f7fbff;font-size:1.7rem;letter-spacing:-.03em}
+    .price-caption{color:#a9bddb}
+    .details{gap:9px;padding:12px;border:1px solid #203b5d;border-radius:14px;background:#07162b;margin-bottom:14px}
+    .detail{font-size:.8rem}
+    .detail span{color:#a7bad6}
+    .detail strong{color:#e6f0ff}
+    .detail .commission{color:#8af0c7}
+    .buy,.redeem-btn{border:0;border-radius:13px;background:linear-gradient(105deg,#6ee7f9,#86f0c6);box-shadow:0 7px 18px #3ed5d51a;transition:filter .18s,transform .18s}
+    .buy:hover,.redeem-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+    .redeem-box{gap:9px;border-color:#29486e;border-radius:15px;background:#07152a}
+    .redeem-input,.ref-field input{border-color:#2d4b70;background:#091a33;border-radius:11px}
+    .admin-message{color:#79e8ff;text-decoration:none}
+    .admin-message:hover{text-decoration:underline}
+    .free-card{border-color:#3d8279;background:linear-gradient(110deg,#0b252f,#0b1f30)}
+    .modal{border-color:#315783;border-radius:24px;background:linear-gradient(145deg,#102342,#09172e);box-shadow:0 28px 90px #0009}
+    .modal-summary{border-color:#28466c;background:#07162b}
+    .modal-actions button,.modal-actions a{border-radius:13px}
+    .confirm{background:linear-gradient(105deg,#6ee7f9,#86f0c6)}
+    .footer{padding-top:14px;border-top:1px solid #1b3150;color:#8da4c6}
+    @media(max-width:430px){.shop{width:min(100% - 22px,1080px);padding-top:14px}.hero{border-radius:20px}.bot-body{padding:12px}.details{padding:10px}}
+    @media(prefers-reduced-motion:reduce){.back,.bot,.bot-img,.buy,.redeem-btn{transition:none}.back:hover,.buy:hover,.redeem-btn:hover,.bot:hover{transform:none}.bot:hover .bot-img{transform:none}}
+
   </style>
 </head>
 <body>
@@ -119,25 +167,25 @@
     <section class="hero">
       <div class="hero-top">
         <div class="robot" aria-hidden="true">🤖</div>
-        <div><p class="eyebrow">AI MINING ROBOT SYSTEM</p><h2>আপনার বট কালেকশন তৈরি করুন</h2><p>পাঁচটি AI bot package, প্যাকেজের মূল্য, প্রচারমূলক বোনাস ও রেফারেল তথ্য এক জায়গায়।</p></div>
+        <div><p class="eyebrow">AI MINING ROBOT SYSTEM</p><h2>আপনার বট কালেকশন তৈরি করুন</h2><p>আপনার প্রয়োজন অনুযায়ী AI Bot নির্বাচন করুন। প্রতিটি প্যাকেজের মূল্য ও সুবিধা নিচে পরিষ্কারভাবে দেওয়া হয়েছে।</p></div>
       </div>
       <div class="unlock"><span aria-hidden="true">🔓</span><div><b>১টা Verified Referral = ১টা Free Bot Unlock</b><br>রেফারেল সত্যিই ভেরিফাই হওয়ার পরই ফ্রি বট আনলক হবে। ভেরিফিকেশন সার্ভার থেকে নিশ্চিত না হওয়া পর্যন্ত এই পেজ নিজে থেকে কাউকে verified দেখাবে না।</div></div>
     </section>
 
-    <div class="notice" role="note">গুরুত্বপূর্ণ: নিচের “লক্ষ্য রিওয়ার্ড” ও ডলার বোনাস কেবল প্রচারমূলক/উদাহরণমূলক হিসাব—এগুলো নিশ্চিত বা গ্যারান্টিযুক্ত আয় নয়। কেনাকাটা ও ব্যালেন্স কাটার নিরাপদ সার্ভার-সাইড লেনদেন এখনো সংযুক্ত হয়নি; তাই এই পেজ থেকে কোনো টাকা কাটা হবে না।</div>
+    <div class="notice" role="note"><strong>পেমেন্ট নিরাপত্তা</strong><br>বট কেনা, Wallet Deposit এবং সরাসরি bKash/Nagad পেমেন্টের অনুমোদন ব্যবস্থা প্রস্তুত করা হচ্ছে। পেমেন্ট যাচাই ও Admin অনুমোদন সম্পন্ন না হওয়া পর্যন্ত কোনো Bot Purchase সম্পন্ন হয়েছে বলে গণ্য হবে না।</div>
 
-    <div class="section-title"><h2>⛏️ আমার লাইভ মাইনিং</h2><span>LIVE MINING</span></div>
+    <div class="section-title"><h2>আপনার মাইনিং অ্যাক্টিভিটি</h2><span>LIVE ACTIVITY</span></div>
     <section id="live-mining" aria-label="লাইভ মাইনিং প্রগ্রেস">
       <p class="mine-note" data-note hidden></p>
       <div class="mine-list" data-list><p class="mine-empty">মাইনিং ডেটা লোড হচ্ছে...</p></div>
     </section>
 
-    <div class="section-title"><h2>🤖 ৫টি AI Bot Package</h2><span>AI BOT PRO SHOP</span></div>
+    <div class="section-title"><h2>AI Bot Collection</h2><span>৫টি প্যাকেজ</span></div>
     <section class="bots" aria-label="AI Bot packages">
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/6cW9XvRY/m-MIWSKs-Z0l-G2-Bi-NTOY5-CVQHTJQOg-Ly-Qc-L7-P-ur-Ot-Yz-D3em-ZMb4up4-Qx0-Thyvq1-Rg9x-ZNO9a-Qrmc-Tb-0n-O1-BSn.jpg" alt="AI Pulse Bot v2 robot artwork" loading="lazy"><span class="bot-number">BOT 01</span></div>
-        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>লক্ষ্য রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>ডলার বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><div class="redeem-box" data-redeem-bot="pulse"><label for="redeem-pulse">Redeem Code</label><input id="redeem-pulse" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="pulse">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
-        <button class="buy" type="button" data-bot="pulse">প্যাকেজ দেখুন →</button></div>
+        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><div class="redeem-box" data-redeem-bot="pulse"><label for="redeem-pulse">Redeem Code</label><input id="redeem-pulse" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="pulse">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="pulse">প্যাকেজের বিস্তারিত →</button></div>
       </article>
       <article class="bot">
         <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/vC4tDThh/Mz-Q-Ky431ty-GFW4-At6f69-IQIvxl-UCtxmk-WZb1-Ek-Ju-Wq-CHXzhxziykxs-Mjy-Tny-EQTwe3-O4ghw5-PAVXtbdpe-JA3r-Db.jpg" alt="Quantum Core Pro robot artwork" loading="lazy"><span class="bot-number">BOT 02</span></div>
@@ -168,12 +216,12 @@
 
   <div class="modal-backdrop" id="bot-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <section class="modal">
-      <h2 id="modal-title">প্যাকেজ কনফার্মেশন</h2>
-      <p id="modal-description">প্যাকেজের তথ্য যাচাই করুন।</p>
+      <h2 id="modal-title">প্যাকেজের বিস্তারিত</h2>
+      <p id="modal-description">নির্বাচিত বটের মূল্য ও কমিশন দেখে পরবর্তী ধাপ যাচাই করুন।</p>
       <div class="modal-summary"><div><span>AI Bot</span><strong id="modal-bot-name">—</strong></div><div><span>প্যাকেজ মূল্য</span><strong id="modal-price">—</strong></div><div><span>রেফারার কমিশন</span><strong id="modal-commission">—</strong></div></div>
       <div class="ref-field"><label for="collector-id">Refer Code / Collector ID</label><input id="collector-id" value="#16943" autocomplete="off" maxlength="40"></div>
-      <p class="modal-msg" id="modal-message" aria-live="polite">কনফার্ম করার আগে প্যাকেজের শর্ত পড়ুন।</p>
-      <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">কনফার্ম করুন</button></div>
+      <p class="modal-msg" id="modal-message" aria-live="polite">পেমেন্ট ও বট আনলক কেবল অনুমোদিত লেনদেনের মাধ্যমেই সম্পন্ন হবে।</p>
+      <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">ব্যালেন্স যাচাই করুন</button></div>
     </section>
   </div>
 
@@ -239,7 +287,7 @@
       const confirmBtn=document.getElementById('modal-confirm');
       let selected=null;
       function money(n){return '৳'+Number(n).toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
-      function closeModal(){modal.classList.remove('open');selected=null;message.textContent='কনফার্ম করার আগে প্যাকেজের শর্ত পড়ুন।';}
+      function closeModal(){modal.classList.remove('open');selected=null;message.textContent='পেমেন্ট ও বট আনলক কেবল অনুমোদিত লেনদেনের মাধ্যমেই সম্পন্ন হবে।';}
       document.querySelectorAll('[data-bot]').forEach(btn=>{
         btn.addEventListener('click',()=>{
           selected=packages[btn.dataset.bot];
@@ -263,7 +311,7 @@
           const user=window.hubUser?await window.hubUser:null;
           const balance=Number(user&&user.profile&&user.profile.balance||0);
           if(balance<selected.price){
-            message.textContent='ব্যালেন্স অপ্রতুল (রিচার্জ করুন)। আপনার বর্তমান ব্যালেন্স: '+money(balance)+'.';
+            message.textContent='আপনার Wallet Balance পর্যাপ্ত নয়। বর্তমান ব্যালেন্স: '+money(balance)+'. Deposit করতে Wallet পেজে যান।';
             const old=document.getElementById('modal-actions-recharge');
             if(!old){
               const a=document.createElement('a');a.id='modal-actions-recharge';a.href='wallet.html';a.textContent='ওয়ালেটে যান';a.style.cssText='display:block;text-align:center;margin-top:10px;color:#6ee7ff;font-weight:700';
@@ -271,7 +319,7 @@
             }
             return;
           }
-          message.textContent='আপনার ব্যালেন্সে প্যাকেজটি নেওয়ার মতো টাকা আছে ('+money(balance)+'), কিন্তু নিরাপদ server-side purchase/transaction এখনো যুক্ত হয়নি। কোনো টাকা কাটা বা বট আনলক করা হয়নি।';
+          message.textContent='আপনার বর্তমান Wallet Balance '+money(balance)+'। Bot Purchase ও Admin Approval সংযুক্তির কাজ চলমান; এই ধাপে কোনো টাকা কাটা বা বট আনলক করা হবে না।';
         }catch(err){
           message.textContent='ব্যালেন্স যাচাই করা যায়নি। পরে আবার চেষ্টা করুন। কোনো টাকা কাটা হয়নি।';
         }finally{confirmBtn.disabled=false;}
