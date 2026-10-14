@@ -53,7 +53,11 @@
       <div class="wallet-section-heading"><div><p class="eyebrow">ADD FUNDS</p><h2>ওয়ালেটে টাকা জমা</h2></div><span class="wallet-section-mark">MANUAL REVIEW</span></div>
       <section class="box wallet-panel wallet-deposit-panel" id="deposit-panel">
         <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>ডিপোজিট রিকোয়েস্ট</h3><p>bKash বা Nagad-এ টাকা পাঠিয়ে তথ্য জমা দিন</p></div></div>
-        <p style="color:#ff4b55;font-weight:700;line-height:1.6;margin:0 0 12px">এই নম্বরে পেমেন্ট করুন: 01720236858 (শুধুমাত্র Send Money গ্রহণযোগ্য)</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px">
+          <p style="color:#ff4b55;font-weight:700;line-height:1.6;margin:0">এই Bkash নম্বরে পেমেন্ট করুন: <span id="fixed-bkash-number">01720236858</span> (শুধুমাত্র Send Money গ্রহণযোগ্য)</p>
+          <button type="button" id="copy-fixed-bkash" style="border:0;border-radius:8px;padding:8px 13px;background:#ff4b55;color:#fff;font:inherit;font-weight:700;cursor:pointer">নম্বর কপি করুন</button>
+          <span id="copy-fixed-bkash-status" role="status" aria-live="polite" style="font-size:.85rem;color:#ff4b55"></span>
+        </div>
         <p class="warn"><span aria-hidden="true">ⓘ</span> শুধু অ্যাডমিনের দেওয়া অফিসিয়াল নম্বরে টাকা পাঠাবেন। Transaction ID যাচাই করে অনুমোদন না দেওয়া পর্যন্ত ব্যালেন্সে টাকা যোগ হবে না।</p>
         <form id="deposit-form" novalidate>
           <label class="wallet-field"><span>পেমেন্ট মাধ্যম</span><select id="deposit-type" required><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select></label>
@@ -121,6 +125,35 @@
   <script src="../js/storage.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
+  <script>
+    (function () {
+      var button = document.getElementById('copy-fixed-bkash');
+      var number = document.getElementById('fixed-bkash-number');
+      var status = document.getElementById('copy-fixed-bkash-status');
+      if (!button || !number || !status) return;
+      button.addEventListener('click', async function () {
+        var value = number.textContent.trim();
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            var input = document.createElement('textarea');
+            input.value = value;
+            input.style.position = 'fixed';
+            input.style.opacity = '0';
+            document.body.appendChild(input);
+            input.select();
+            var copied = document.execCommand('copy');
+            input.remove();
+            if (!copied) throw new Error('copy failed');
+          }
+          status.textContent = 'নম্বর কপি হয়েছে!';
+        } catch (error) {
+          status.textContent = 'কপি হয়নি—নম্বরটি চেপে ধরে কপি করুন।';
+        }
+      });
+    })();
+  </script>
   <script type="module" src="../js/wallet.js"></script>
 </body>
 </html>
