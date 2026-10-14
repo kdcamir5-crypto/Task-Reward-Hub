@@ -286,6 +286,8 @@ body:not(.home) .modal-redeem-area .admin-message {
 body:not(.home) .modal-redeem-area .redeem-status {
   font-size:11px !important;
 }
+/* Keep redeem controls out of the main bot cards; they are moved into the details modal by mining-robot.html. */
+body:not(.home) .bot-body > .redeem-box { display:none !important; }
 body:not(.home) .redeem-box {
   display:grid !important;
   gap:6px !important;
