@@ -9,7 +9,7 @@ const me = await window.hubUser;
 const MIN_WITHDRAW = 100, MAX_WITHDRAW = 5000, MAX_WALLETS = 5;
 const paymentTypes = ['bKash', 'Nagad', 'Rocket'];
 const statusLabel = { pending: 'অপেক্ষায়', paid: 'পরিশোধিত', rejected: 'বাতিল' };
-let methods = [], requests = [], currentBalance = 0;
+let methods = [], requests = [], deposits = [], currentBalance = 0;
 
 function say(id, msg, ok) {
   const el = $(id);
@@ -55,24 +55,79 @@ function render() {
     state.textContent = statusLabel[r.status] || r.status || 'অজানা';
     d.append(span, state); hist.appendChild(d);
   });
+  const depositHistory = $('#deposit-history');
+  if (depositHistory) {
+    depositHistory.textContent = '';
+    if (!deposits.length) depositHistory.innerHTML = '<p class="lock">এখনো কোনো ডিপোজিট রিকোয়েস্ট নেই।</p>';
+    deposits.forEach(item => {
+      const d = document.createElement('div'); d.className = 'row';
+      const left = document.createElement('span');
+      const title = document.createElement('b'); title.textContent = '৳ ' + Number(item.amount).toFixed(2) + ' · ' + item.type;
+      const meta = document.createElement('small'); meta.textContent = 'TrxID: ' + item.trxId;
+      const date = document.createElement('small');
+      const when = item.createdAt && item.createdAt.toDate ? item.createdAt.toDate() : null;
+      date.textContent = when ? when.toLocaleDateString('bn-BD') : 'তারিখ প্রক্রিয়াধীন';
+      left.append(title, meta, date);
+      const state = document.createElement('span'); state.className = 'lock';
+      state.textContent = statusLabel[item.status] || (item.status === 'approved' ? 'অনুমোদিত' : item.status === 'rejected' ? 'বাতিল' : 'অপেক্ষায়');
+      d.append(left, state); depositHistory.appendChild(d);
+    });
+  }
 }
 async function loadData() {
-  const [userSnap, methodSnap, requestSnap] = await Promise.all([
+  const [userSnap, methodSnap, requestSnap, depositSnap] = await Promise.all([
     getDoc(doc(db, 'users', me.uid)),
     getDocs(query(collection(db, 'wallets'), where('uid', '==', me.uid))),
-    getDocs(query(collection(db, 'withdrawals'), where('uid', '==', me.uid)))
+    getDocs(query(collection(db, 'withdrawals'), where('uid', '==', me.uid))),
+    getDocs(query(collection(db, 'walletDeposits'), where('uid', '==', me.uid)))
   ]);
   if (!userSnap.exists()) throw new Error('আপনার ইউজার প্রোফাইল পাওয়া যায়নি।');
   currentBalance = Number(userSnap.data().balance || 0);
   methods = methodSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   requests = requestSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  deposits = depositSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   requests.sort((a, b) => {
+    const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+    const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+    return tb - ta;
+  });
+  deposits.sort((a, b) => {
     const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
     const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
     return tb - ta;
   });
   render();
 }
+$('#deposit-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const type = $('#deposit-type').value;
+  const amount = Number($('#deposit-amount').value);
+  const senderNumber = $('#deposit-sender').value.trim();
+  const trxId = $('#deposit-trx').value.trim().replace(/\s+/g, '');
+  if (!['bKash', 'Nagad'].includes(type)) return say('#deposit-msg', 'শুধু bKash বা Nagad নির্বাচন করুন।', false);
+  if (!Number.isFinite(amount) || amount < 10 || amount > 50000 || !Number.isInteger(amount))
+    return say('#deposit-msg', 'জমার পরিমাণ ৳10 থেকে ৳50,000-এর মধ্যে পূর্ণ সংখ্যা হতে হবে।', false);
+  if (!/^01[3-9]\d{8}$/.test(senderNumber)) return say('#deposit-msg', 'সঠিক ১১ ডিজিটের প্রেরক নম্বর দিন।', false);
+  if (trxId.length < 5 || trxId.length > 100) return say('#deposit-msg', 'সঠিক Transaction ID লিখুন।', false);
+  const btn = $('#deposit-submit'); btn.disabled = true;
+  try {
+    const userSnap = await getDoc(doc(db, 'users', me.uid));
+    if (!userSnap.exists()) throw new Error('আপনার ইউজার প্রোফাইল পাওয়া যায়নি।');
+    const profile = userSnap.data();
+    await addDoc(collection(db, 'walletDeposits'), {
+      uid: me.uid,
+      userName: String(profile.name || profile.displayName || me.displayName || 'নাম দেওয়া হয়নি').slice(0, 100),
+      email: String(me.email || profile.email || '').slice(0, 160),
+      type, amount, senderNumber, trxId,
+      status: 'pending', createdAt: serverTimestamp()
+    });
+    $('#deposit-form').reset();
+    await loadData();
+    say('#deposit-msg', 'ডিপোজিট রিকোয়েস্ট জমা হয়েছে। Admin TrxID যাচাই করে Approve করলে ব্যালেন্স যোগ হবে।', true);
+  } catch (err) { say('#deposit-msg', 'ডিপোজিট জমা হয়নি: ' + errorText(err), false); }
+  finally { btn.disabled = false; }
+});
+
 $('#bind').addEventListener('submit', async (e) => {
   e.preventDefault();
   const type = $('#type').value, number = $('#num').value.trim();
