@@ -180,11 +180,14 @@
       <span id="copy-fixed-bkash-status-top" role="status" aria-live="polite" style="font-size:.85rem;color:#ff4b55"></span>
     </div>
 
-    <div class="section-title"><h2>আপনার মাইনিং অ্যাক্টিভিটি</h2><span>LIVE ACTIVITY</span></div>
-    <section id="live-mining" aria-label="লাইভ মাইনিং প্রগ্রেস">
-      <p class="mine-note" data-note hidden></p>
-      <div class="mine-list" data-list><p class="mine-empty">মাইনিং ডেটা লোড হচ্ছে...</p></div>
-    </section>
+    <button type="button" id="toggle-live-mining" class="live-mining-link" aria-expanded="false" aria-controls="live-mining-panel"><span class="live-mining-dot" aria-hidden="true"></span><span>বটের লাইভ মাইনিং দেখুন</span><span class="live-mining-arrow" aria-hidden="true">›</span></button>
+    <div id="live-mining-panel" class="live-mining-panel" hidden>
+      <div class="section-title"><h2>আপনার মাইনিং অ্যাক্টিভিটি</h2><span>LIVE ACTIVITY</span></div>
+      <section id="live-mining" aria-label="লাইভ মাইনিং প্রগ্রেস">
+        <p class="mine-note" data-note hidden></p>
+        <div class="mine-list" data-list><p class="mine-empty">মাইনিং ডেটা লোড হচ্ছে...</p></div>
+      </section>
+    </div>
 
     <div class="section-title"><h2>AI Bot Collection</h2><span>৫টি প্যাকেজ</span></div>
     <section class="bots" aria-label="AI Bot packages">
@@ -406,5 +409,18 @@
         }catch(err){message.textContent=err.message||'আবেদন জমা হয়নি। Firestore Rules যাচাই করুন।';confirmBtn.disabled=false;}
       });
     })();
-  </script></body>
+  </script><script>
+    (function () {
+      var toggle = document.getElementById("toggle-live-mining");
+      var panel = document.getElementById("live-mining-panel");
+      if (!toggle || !panel) return;
+      toggle.addEventListener("click", function () {
+        var isOpen = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        panel.hidden = isOpen;
+        toggle.querySelector(".live-mining-arrow").textContent = isOpen ? "›" : "⌄";
+      });
+    })();
+  </script>
+</body>
 </html>
