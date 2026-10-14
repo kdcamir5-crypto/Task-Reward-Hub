@@ -1,7 +1,12 @@
-// fb-auth.js - Firebase দিয়ে আসল রেজিস্টার, লগইন ও সাইন আউট
+// fb-auth.js - Firebase দিয়ে রেজিস্টার, লগইন ও সাইন আউট
 import { auth, db } from './firebase-config.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut }
-  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -18,7 +23,7 @@ const ERR = {
 };
 const msg = (e) => ERR[e.code] || ('সমস্যা হয়েছে: ' + (e.code || e.message));
 
-// পুরনো পেজগুলো (টাস্ক, ওয়ালেট ইত্যাদি) এখনো localStorage-এর "session" দেখে, তাই সাময়িক সেতু
+// পুরনো পেজগুলোর localStorage session-সেতু বজায় রাখি।
 function bridge(email, refCode) {
   const users = Store.get('users', {});
   users[email] = { ...(users[email] || {}), id: refCode };
@@ -26,8 +31,14 @@ function bridge(email, refCode) {
   Store.set('session', email);
 }
 
+// ব্রাউজার বন্ধ/ট্যাব বন্ধ করে আবার খুললেও লগইন থাকবে। শুধু Sign Out করলে সেশন শেষ হবে।
+async function keepLoginUntilSignOut() {
+  await setPersistence(auth, browserLocalPersistence);
+}
+
 export async function register(email, password, ref) {
   try {
+    await keepLoginUntilSignOut();
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const refCode = 'TRH' + cred.user.uid.slice(0, 6).toUpperCase();
     await setDoc(doc(db, 'users', cred.user.uid), {
@@ -41,6 +52,7 @@ export async function register(email, password, ref) {
 
 export async function login(email, password) {
   try {
+    await keepLoginUntilSignOut();
     const cred = await signInWithEmailAndPassword(auth, email, password);
     const snap = await getDoc(doc(db, 'users', cred.user.uid));
     bridge(email, snap.exists() ? snap.data().refCode : 'TRH' + cred.user.uid.slice(0, 6).toUpperCase());
