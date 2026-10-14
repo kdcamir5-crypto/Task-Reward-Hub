@@ -1,7 +1,7 @@
 // wallet.js - Firestore-backed wallet methods and withdrawal requests
 import { db } from './firebase-config.js';
 import {
-  collection, addDoc, getDocs, query, where, doc, getDoc, serverTimestamp
+  collection, addDoc, getDocs, query, where, doc, getDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const $ = (s) => document.querySelector(s);
@@ -171,3 +171,18 @@ loadData().catch(err => {
   say('#wmsg', 'ওয়ালেট লোড করা যায়নি: ' + errorText(err), false);
   $('#bal').textContent = '৳ —';
 });
+
+// Live balance: auto-mining, admin approvals and withdrawals update the balance without a page refresh.
+onSnapshot(doc(db, 'users', me.uid), (snap) => {
+  if (!snap.exists()) return;
+  const next = Number(snap.data().balance || 0);
+  if (!Number.isFinite(next) || next === currentBalance) return;
+  const grew = next > currentBalance;
+  currentBalance = next;
+  const el = $('#bal');
+  el.textContent = '৳ ' + next.toFixed(2);
+  if (el.animate) el.animate(
+    [{ opacity: 0.35, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1)' }],
+    { duration: grew ? 900 : 500, easing: 'ease-out' }
+  );
+}, (err) => console.warn('Live balance unavailable:', err && err.code));
