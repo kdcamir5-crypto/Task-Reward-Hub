@@ -105,7 +105,65 @@ function readableError(e) {
   if (e.code === 'permission-denied') return 'Firestore অনুমতি দেয়নি। Rules যাচাই করুন।';
   return e.message || e.code || 'অজানা সমস্যা';
 }
-async function loadAll() { await Promise.all([loadSubs(), loadWithdrawals(), loadTasks()]); }
+async function loadAll() { await Promise.all([loadSubs(), loadWithdrawals(), loadWalletDeposits(), loadTasks()]); }
+
+async function loadWalletDeposits() {
+  const box = $('#wallet-deposits');
+  if (!box) return;
+  box.textContent = 'ডিপোজিট আবেদন লোড হচ্ছে...';
+  try {
+    const snap = await getDocs(query(collection(db, 'walletDeposits'), where('status', '==', 'pending')));
+    box.textContent = '';
+    if (snap.empty) { box.textContent = 'অপেক্ষায় কোনো Wallet Deposit নেই।'; return; }
+    snap.docs.forEach(d => {
+      const x = d.data();
+      const item = document.createElement('div'); item.className = 'row';
+      const details = document.createElement('span');
+      const title = document.createElement('b'); title.textContent = '৳ ' + Number(x.amount).toFixed(2) + ' · ' + String(x.type || 'পেমেন্ট');
+      const user = document.createElement('small'); user.textContent = 'ইউজার: ' + String(x.userName || 'নাম নেই') + ' · UID: ' + String(x.uid || 'নেই');
+      const sender = document.createElement('small'); sender.textContent = 'প্রেরক নম্বর: ' + String(x.senderNumber || 'নেই');
+      const trx = document.createElement('small'); trx.textContent = 'TrxID: ' + String(x.trxId || 'নেই'); trx.style.overflowWrap = 'anywhere';
+      details.append(title, user, sender, trx);
+      const actions = document.createElement('span'); actions.className = 'acts';
+      const approveBtn = document.createElement('button'); approveBtn.type = 'button'; approveBtn.className = 'mini ok'; approveBtn.textContent = 'Approve';
+      const rejectBtn = document.createElement('button'); rejectBtn.type = 'button'; rejectBtn.className = 'mini no'; rejectBtn.textContent = 'Reject';
+      approveBtn.onclick = () => settleWalletDeposit(d.id, 'approved', approveBtn, rejectBtn);
+      rejectBtn.onclick = () => settleWalletDeposit(d.id, 'rejected', approveBtn, rejectBtn);
+      actions.append(approveBtn, rejectBtn); item.append(details, actions); box.appendChild(item);
+    });
+  } catch (e) { box.textContent = 'Deposit আবেদন লোড হয়নি: ' + readableError(e) + ' Rules-এ walletDeposits admin read অনুমতি যাচাই করুন।'; }
+}
+
+async function settleWalletDeposit(id, outcome, approveBtn, rejectBtn) {
+  if (!['approved', 'rejected'].includes(outcome)) return;
+  if (outcome === 'approved' && !confirm('টাকা ও TrxID যাচাই করেছেন? Approve করলে ইউজারের ব্যালেন্সে টাকা যোগ হবে।')) return;
+  approveBtn.disabled = rejectBtn.disabled = true;
+  try {
+    await runTransaction(db, async tx => {
+      const requestRef = doc(db, 'walletDeposits', id);
+      const requestSnap = await tx.get(requestRef);
+      if (!requestSnap.exists() || requestSnap.data().status !== 'pending') throw new Error('এই Deposit আবেদন আগেই নিষ্পত্তি হয়েছে।');
+      const request = requestSnap.data();
+      if (outcome === 'approved') {
+        const amount = Number(request.amount);
+        if (!request.uid || !['bKash', 'Nagad'].includes(request.type) || !Number.isInteger(amount) || amount < 10 || amount > 50000 || String(request.trxId || '').trim().length < 5)
+          throw new Error('আবেদনের তথ্য সঠিক নয়; Approve করা হয়নি।');
+        const userRef = doc(db, 'users', request.uid);
+        const userSnap = await tx.get(userRef);
+        if (!userSnap.exists()) throw new Error('ইউজারের প্রোফাইল পাওয়া যায়নি।');
+        const current = Number(userSnap.data().balance || 0);
+        if (!Number.isFinite(current) || current < 0) throw new Error('ইউজারের বর্তমান ব্যালেন্স সঠিক নয়।');
+        tx.update(userRef, { balance: current + amount });
+      }
+      tx.update(requestRef, { status: outcome, reviewedBy: me.uid, reviewedAt: serverTimestamp() });
+    });
+    await loadWalletDeposits();
+    alert(outcome === 'approved' ? 'Deposit অনুমোদিত হয়েছে; ব্যালেন্স আপডেট হয়েছে।' : 'Deposit আবেদন বাতিল হয়েছে।');
+  } catch (e) {
+    alert('Deposit নিষ্পত্তি হয়নি: ' + readableError(e));
+    approveBtn.disabled = rejectBtn.disabled = false;
+  }
+}
 
 async function loadWithdrawals() {
   const box = $('#withdrawals'); box.textContent = 'লোড হচ্ছে...';
