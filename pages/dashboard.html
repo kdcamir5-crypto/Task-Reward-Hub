@@ -3,132 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#07152F">
+  <meta name="theme-color" content="#1B2E86">
   <title>Task Reward Hub — Community Work</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/home.css">
 </head>
-<body>
+<body class="home">
   <div class="app">
-    <header class="head">
-      <div class="head__top">
-        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম">
-          <span class="brand__mark" aria-hidden="true">TR</span>
-          <span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span>
-        </a>
-        <div class="head__actions">
-          <button class="icon-btn bell-btn" id="bell" type="button" aria-label="নোটিফিকেশন খুলুন">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
-            <span class="badge">2</span>
-          </button>
-          <button class="icon-btn logout-btn" id="logout" type="button" aria-label="সাইন আউট">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
-          </button>
-        </div>
+
+    <!-- ===== HERO ===== -->
+    <header class="hero">
+      <div class="hero__top">
+        <button class="round" id="logout" type="button" aria-label="সাইন আউট"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg></button>
+        <button class="round" id="bell" type="button" aria-label="নোটিফিকেশন খুলুন"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="dot">2</span></button>
       </div>
 
-      <div class="welcome">
-        <div>
-          <p class="eyebrow">YOUR WORKSPACE</p>
-          <h1>স্বাগতম, <span id="name">বন্ধু</span>!</h1>
-          <p class="user-id" id="uid">আপনার অ্যাকাউন্ট প্রস্তুত</p>
+      <div class="who">
+        <div class="who__main">
+          <div class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg></div>
+          <div class="who__text">
+            <h1 id="name">বন্ধু</h1>
+            <p class="who__id" id="uid">আপনার অ্যাকাউন্ট প্রস্তুত</p>
+          </div>
         </div>
-        <div class="welcome-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg></div>
+        <div class="pills">
+          <span class="pill pill--gold"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>কমিউনিটি মেম্বার</span>
+          <a class="pill pill--glass" href="achievements.html"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Level 1 : শুরুর স্তর<span aria-hidden="true">›</span></a>
+        </div>
+        <div class="tagline"><span>Complete Tasks. Earn Rewards.</span></div>
       </div>
-      <div class="header-glow" aria-hidden="true"></div>
     </header>
 
-    <main class="dashboard-main">
+    <main class="main">
+      <!-- ===== BALANCES ===== -->
       <section class="balances" aria-label="ব্যালেন্স সারাংশ">
-        <article class="bal bal--main">
-          <div class="bal__top"><span class="bal__icon" aria-hidden="true">৳</span><span class="bal__label">মোট ব্যালেন্স</span><span class="live-dot" aria-label="আপডেটেড"></span></div>
+        <a class="bal bal--blue" href="wallet.html" aria-label="ওয়ালেট খুলুন">
+          <span class="bal__label">মোট ব্যালেন্স</span>
           <strong id="balance">৳ 0.00</strong>
-          <span class="bal__foot">আপনার বর্তমান আয়</span>
-          <div class="bal__decoration" aria-hidden="true"></div>
-        </article>
-        <a class="bal bal--wallet" href="wallet.html">
-          <span class="bal__label">ওয়ালেট</span>
-          <span class="wallet-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v16H5a2 2 0 0 1-2-2V6.5A2.5 2.5 0 0 1 5.5 4M3 8h17M16 13h4"/></svg></span>
-          <strong>উইথড্র ও ইতিহাস</strong>
-          <span class="bal__foot">পেমেন্ট ব্যবস্থাপনা <span aria-hidden="true">↗</span></span>
+          <span class="bal__btn">+ উইথড্র</span>
+          <span class="bal__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span>
+          <span class="bal__go" aria-hidden="true">›</span>
+        </a>
+        <a class="bal bal--green" href="mining-robot.html" aria-label="Mining Robot খুলুন">
+          <span class="bal__label">মাইনিং থেকে আয়</span>
+          <strong id="mine-total">৳ 0.00</strong>
+          <span class="bal__sub" id="mine-sub">AI Bot চালু নেই</span>
+          <span class="bal__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></span>
+          <span class="bal__go" aria-hidden="true">›</span>
         </a>
       </section>
 
-      <section class="community-banner" aria-label="কমিউনিটি ও টাস্ক">
-        <div class="banner-copy">
-          <span class="banner-tag"><span></span> COMMUNITY WORK</span>
-          <h2>কাজ করুন।<br><em>রিওয়ার্ড</em> সংগ্রহ করুন।</h2>
-          <p>নতুন টাস্ক দেখুন, কাজ জমা দিন এবং আপনার অগ্রগতি ট্র্যাক করুন।</p>
-          <a class="banner-cta" href="tasks.html">টাস্ক দেখুন <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="banner-art" aria-hidden="true">
-          <div class="art-orbit art-orbit--one"></div>
-          <div class="art-orbit art-orbit--two"></div>
-          <div class="art-card"><span class="art-card__spark">✦</span><span class="art-card__check">✓</span><b>WORK</b><small>REWARD HUB</small></div>
-          <span class="art-star art-star--one">✦</span><span class="art-star art-star--two">✧</span>
-        </div>
-      </section>
-
+      <!-- ===== STATS ===== -->
       <section class="stats" aria-label="আপনার অগ্রগতি">
-        <article class="stat"><span class="stat__icon stat__icon--blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4M12 3l2.2 1.4 2.6-.1 1.1 2.4 2.2 1.4-.5 2.6.5 2.6-2.2 1.4-1.1 2.4-2.6-.1L12 21l-2.2-1.4-2.6.1-1.1-2.4-2.2-1.4.5-2.6-.5-2.6 2.2-1.4 1.1-2.4 2.6.1Z"/></svg></span><strong id="tasks">0</strong><span>সম্পন্ন টাস্ক</span></article>
-        <article class="stat"><span class="stat__icon stat__icon--cyan" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"/></svg></span><strong id="refs">0</strong><span>রেফারেল</span></article>
-        <a class="stat stat--mining" href="mining-robot.html" aria-label="AI Bot Pro Shop খুলুন"><span class="stat__icon stat__icon--mining" aria-hidden="true">🤖</span><strong>Mining Robot</strong><span>AI Bot Pro Shop ↗</span></a>
-        <article class="stat"><span class="stat__icon stat__icon--violet" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.8 8.7 21 9.6l-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg></span><strong>Level 1</strong><span>শুরুর স্তর</span></article>
+        <a class="stat" href="#ref">
+          <span class="chip chip--violet" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"/></svg></span>
+          <span class="stat__label">মোট রেফারেল</span>
+          <span class="stat__val"><b id="refs">0</b> জন</span>
+          <span class="stat__link c-violet">ইনভাইট ›</span>
+        </a>
+        <a class="stat" href="tasks.html">
+          <span class="chip chip--green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4M12 3l2.2 1.4 2.6-.1 1.1 2.4 2.2 1.4-.5 2.6.5 2.6-2.2 1.4-1.1 2.4-2.6-.1L12 21l-2.2-1.4-2.6.1-1.1-2.4-2.2-1.4.5-2.6-.5-2.6 2.2-1.4 1.1-2.4 2.6.1Z"/></svg></span>
+          <span class="stat__label">সম্পন্ন টাস্ক</span>
+          <span class="stat__val"><b id="tasks">0</b> টি</span>
+          <span class="stat__link c-green">কাজ করুন ›</span>
+        </a>
+        <a class="stat" href="achievements.html">
+          <span class="chip chip--amber" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg></span>
+          <span class="stat__label">বর্তমান লেভেল</span>
+          <span class="stat__val"><b>শুরুর স্তর</b></span>
+          <span class="stat__link c-amber">আপগ্রেড ›</span>
+        </a>
+        <a class="stat" href="mining-robot.html">
+          <span class="chip chip--rose" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></span>
+          <span class="stat__label">AI বট</span>
+          <span class="stat__val"><b id="bots-n">0</b> টি চালু</span>
+          <span class="stat__link c-rose">শপ ›</span>
+        </a>
       </section>
 
-      <div class="section-heading"><div><p class="eyebrow">EXPLORE</p><h2>দ্রুত অ্যাকশন</h2></div><span class="heading-mark">১০টি সেবা</span></div>
-      <section class="quick-grid" aria-label="দ্রুত অ্যাকশন">
-        <a class="quick-card quick-card--tasks" href="tasks.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg></span><span class="quick-card__title">ডেইলি টাস্ক</span><span class="quick-card__desc">কাজ দেখুন ও জমা দিন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--rewards" href="rewards.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5V7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5V7Z"/></svg></span><span class="quick-card__title">রিওয়ার্ড কোড</span><span class="quick-card__desc">কোড থাকলে ক্লেইম করুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--wallet" href="wallet.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg></span><span class="quick-card__title">আমার ওয়ালেট</span><span class="quick-card__desc">উইথড্র ও হিস্ট্রি</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--rewards" href="spin.html"><span class="quick-icon" aria-hidden="true">🎡</span><span class="quick-card__title">লাকি স্পিন</span><span class="quick-card__desc">প্রতিদিন XP ও ব্যাজ জিতুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--community" href="streak.html"><span class="quick-icon" aria-hidden="true">🔥</span><span class="quick-card__title">ডেইলি স্ট্রিক</span><span class="quick-card__desc">প্রতিদিন চেক-ইন করে XP জিতুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--rewards" href="leaderboard.html"><span class="quick-icon" aria-hidden="true">🏆</span><span class="quick-card__title">চ্যাম্পিয়ন বোর্ড</span><span class="quick-card__desc">XP র‍্যাঙ্কিং দেখুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--community" href="mystery-box.html"><span class="quick-icon" aria-hidden="true">🎁</span><span class="quick-card__title">মিস্ট্রি বক্স</span><span class="quick-card__desc">প্রতিদিন সারপ্রাইজ XP জিতুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--rewards" href="achievements.html"><span class="quick-icon" aria-hidden="true">🏅</span><span class="quick-card__title">অ্যাচিভমেন্ট ব্যাজ</span><span class="quick-card__desc">লক্ষ্য পূরণ করে ব্যাজ আনলক করুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--rewards" href="notifications.html"><span class="quick-icon" aria-hidden="true">🔔</span><span class="quick-card__title">নোটিফিকেশন সেন্টার</span><span class="quick-card__desc">আপডেট ও নতুন নোটিশ দেখুন</span><span class="quick-arrow">↗</span></a>
-        <a class="quick-card quick-card--community" href="feed.html"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></span><span class="quick-card__title">কমিউনিটি</span><span class="quick-card__desc">পোস্ট ও আলোচনা</span><span class="quick-arrow">↗</span></a>
+      <!-- ===== QUICK ACCESS ===== -->
+      <div class="head"><h2><svg class="head__ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>দ্রুত অ্যাকসেস</h2><a href="#explore">সব সার্ভিস →</a></div>
+      <section class="quick" aria-label="দ্রুত অ্যাকসেস">
+        <a class="tile" href="tasks.html"><span class="chip chip--blue"><svg viewBox="0 0 24 24"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM8 14l2.5 2.5L16 11"/></svg></span><b>ডেইলি টাস্ক</b><small>কাজ জমা দিন</small></a>
+        <a class="tile" href="rewards.html"><span class="chip chip--amber"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5V7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5V7Z"/></svg></span><b>রিওয়ার্ড কোড</b><small>বোনাস নিন</small></a>
+        <a class="tile" href="wallet.html"><span class="chip chip--violet"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></span><b>উইথড্র</b><small>টাকা তুলুন</small></a>
+        <a class="tile" href="wallet.html"><span class="chip chip--rose"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span><b>আমার ওয়ালেট</b><small>হিস্ট্রি</small></a>
+        <a class="tile" href="spin.html"><span class="chip chip--orange"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></span><b>লাকি স্পিন</b><small>XP জিতুন</small></a>
+        <a class="tile" href="streak.html"><span class="chip chip--red"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></svg></span><b>ডেইলি স্ট্রিক</b><small>চেক-ইন</small></a>
+        <a class="tile" href="mystery-box.html"><span class="chip chip--green"><svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/></svg></span><b>মিস্ট্রি বক্স</b><small>সারপ্রাইজ</small></a>
+        <a class="tile" href="achievements.html"><span class="chip chip--sky"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg></span><b>অ্যাচিভমেন্ট</b><small>ব্যাজ</small></a>
       </section>
 
-      <section class="refbox">
-        <div class="refbox__head"><span class="refbox__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"/></svg></span><div><h3>বন্ধুকে আমন্ত্রণ জানান</h3><p>আপনার রেফারেল লিংক শেয়ার করুন</p></div></div>
-        <div class="refbox__link"><code id="reflink">লিংক তৈরি হচ্ছে...</code><button id="copy" type="button" aria-label="রেফারেল লিংক কপি করুন"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>কপি</span></button></div>
+      <!-- ===== EXPLORE ===== -->
+      <div class="head" id="explore"><h2><svg class="head__ico head__ico--blue" viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5zM3 13l9 5 9-5"/></svg>এক্সপ্লোর সার্ভিস</h2></div>
+      <section class="explore" aria-label="এক্সপ্লোর সার্ভিস">
+        <a class="big" href="leaderboard.html"><span class="chip chip--amber chip--lg"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8"/></svg></span><b>চ্যাম্পিয়ন বোর্ড</b><small>XP র‍্যাঙ্কিং</small></a>
+        <a class="big" href="feed.html"><span class="chip chip--violet chip--lg"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></span><b>কমিউনিটি</b><small>পোস্ট ও আলোচনা</small></a>
+        <a class="big" href="mining-robot.html"><span class="pro">PRO</span><span class="chip chip--blue chip--lg"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></span><b>AI Bot Shop</b><small>৫টি প্যাকেজ</small></a>
       </section>
 
+      <!-- ===== AI BOT STATUS ===== -->
+      <section class="botcard" id="bot-card" aria-label="AI Bot অবস্থা">
+        <div class="botcard__top"><span class="status status--off" id="bot-pill">0 BOTS • OFFLINE</span><span class="status status--sleep" id="bot-state">Sleeping</span></div>
+        <svg class="robot" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#DCEBFB"/><path d="M60 22v-8" stroke="#7FA6D8" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="12" r="4" fill="#7FA6D8"/><rect x="26" y="26" width="68" height="56" rx="20" fill="#F4F8FE" stroke="#B9CFEA" stroke-width="3"/><rect x="36" y="36" width="48" height="36" rx="14" fill="#16233F"/><circle cx="60" cy="54" r="11" fill="none" stroke="#3EE59B" stroke-width="3" stroke-dasharray="5 6"/><circle cx="60" cy="54" r="3" fill="#3EE59B"/><rect x="40" y="88" width="40" height="14" rx="7" fill="#CFE0F5"/></svg>
+        <h3 id="bot-title">0 Bots • Offline</h3>
+        <p id="bot-text">আপনার কোনো AI বট সক্রিয় নেই। AI Bot Shop থেকে বট আনলক করে অটো-মাইনিং চালু করুন।</p>
+        <a class="cta" id="bot-cta" href="mining-robot.html">AI Bot Shop খুলুন</a>
+      </section>
+
+      <!-- ===== REFERRAL LINK ===== -->
+      <section class="ref" id="ref">
+        <span class="chip chip--blue chip--lg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+        <div class="ref__text"><h3>আপনার রেফারেল লিংক</h3><p>শেয়ার করুন, রিওয়ার্ড জিতুন</p></div>
+        <div class="ref__row"><code id="reflink">লিংক তৈরি হচ্ছে...</code><button id="copy" type="button" aria-label="রেফারেল লিংক কপি করুন">লিংক কপি</button></div>
+      </section>
+
+      <!-- ===== CLAIM CODE ===== -->
+      <section class="claim">
+        <span class="chip chip--glass" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5V7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5V7Z"/></svg></span>
+        <div class="claim__text"><h3>রিওয়ার্ড কোড ক্লেইম করুন</h3><p>কোড থাকলে বোনাস XP ও রিওয়ার্ড নিন</p></div>
+        <a class="claim__btn" href="rewards.html">কোড দিন ›</a>
+      </section>
+
+      <!-- ===== COMMUNITY ===== -->
+      <section class="promo">
+        <div class="promo__text"><h3>কমিউনিটির সঙ্গে যুক্ত থাকুন</h3><p>অফিসিয়াল আপডেট ও ঘোষণার জন্য কমিউনিটি দেখুন।</p><a href="feed.html">কমিউনিটি দেখুন →</a></div>
+        <svg class="promo__art" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      </section>
+
+      <!-- ===== RECENT ACTIVITY ===== -->
       <section class="activity">
-        <div class="section-heading"><div><p class="eyebrow">YOUR JOURNEY</p><h2>সাম্প্রতিক কার্যক্রম</h2></div></div>
-        <div class="activity-empty"><span class="activity-empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><div><strong>আপনার যাত্রা শুরু হোক</strong><p>প্রথম টাস্কটি দেখতে টাস্ক পেজে যান।</p></div><a href="tasks.html" aria-label="টাস্ক দেখুন">→</a></div>
-      </section>
-
-      <section class="telegram-cta">
-        <span class="telegram-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span>
-        <div><strong>কমিউনিটির সঙ্গে যুক্ত থাকুন</strong><p>অফিসিয়াল আপডেট ও ঘোষণার জন্য কমিউনিটি দেখুন।</p></div>
-        <a href="feed.html" aria-label="কমিউনিটি খুলুন">→</a>
+        <div class="activity__head"><h3>সাম্প্রতিক কার্যক্রম</h3><a href="wallet.html">সব দেখুন</a></div>
+        <div class="activity__empty"><span class="chip chip--green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><div><b>আপনার যাত্রা শুরু হোক</b><small>প্রথম টাস্কটি দেখতে টাস্ক পেজে যান।</small></div><a href="tasks.html" aria-label="টাস্ক দেখুন">›</a></div>
       </section>
     </main>
 
     <nav class="nav" aria-label="প্রধান মেনু">
       <a href="dashboard.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
       <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
-      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
       <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
       <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
     </nav>
   </div>
 
+  <!-- Notification sheet (same ids as before: sheet, close) -->
   <div class="sheet" id="sheet" aria-hidden="true">
     <div class="sheet__body" role="dialog" aria-modal="true" aria-labelledby="notice-title">
       <button class="sheet__close" id="close" type="button">বন্ধ করুন</button>
-      <p class="eyebrow">UPDATES</p>
       <h3 id="notice-title">নোটিফিকেশন</h3>
       <ul>
-        <li><span class="notice-dot"></span><span><strong>স্বাগতম!</strong><small>আপনার অ্যাকাউন্ট তৈরি হয়েছে।</small></span></li>
-        <li><span class="notice-dot"></span><span><strong>প্রথম টাস্ক</strong><small>টাস্ক সম্পন্ন করে রিওয়ার্ডের জন্য জমা দিন।</small></span></li>
+        <li><span class="notice-dot"></span><span><b>স্বাগতম!</b><small>আপনার অ্যাকাউন্ট তৈরি হয়েছে।</small></span></li>
+        <li><span class="notice-dot"></span><span><b>প্রথম টাস্ক</b><small>টাস্ক সম্পন্ন করে রিওয়ার্ডের জন্য জমা দিন।</small></span></li>
       </ul>
-      <p style="margin:14px 0 0"><a href="notifications.html" style="display:block;text-align:center;padding:11px;border:1px solid rgba(107,167,255,.4);border-radius:12px;color:#dceaff;text-decoration:none;background:rgba(107,167,255,.1)">সব নোটিফিকেশন দেখুন →</a></p>
+      <a class="sheet__all" href="notifications.html">সব নোটিফিকেশন দেখুন →</a>
     </div>
   </div>
 
@@ -136,5 +166,6 @@
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
   <script src="../js/dashboard.js"></script>
+  <script type="module" src="../js/home-live.js"></script>
 </body>
 </html>
