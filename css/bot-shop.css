@@ -153,7 +153,7 @@ body:not(.home) .bot {
   display:flex !important;
   flex-direction:column !important;
   min-width:0 !important;
-  min-height:270px;
+  min-height:0;
   padding:0 !important;
   overflow:hidden !important;
   border:1px solid #ECEFF5 !important;
@@ -252,6 +252,40 @@ body:not(.home) .detail {
 body:not(.home) .detail span { color:#64748B !important; font-size:9px !important; }
 body:not(.home) .detail strong { color:#1E293B !important; font-size:10px !important; overflow-wrap:anywhere; }
 body:not(.home) .detail .commission { color:#059669 !important; }
+body:not(.home) .modal-redeem-area {
+  margin:10px 0 14px !important;
+}
+body:not(.home) .modal-redeem-area:empty { display:none !important; }
+body:not(.home) .modal-redeem-area .redeem-box {
+  display:grid !important;
+  gap:8px !important;
+  margin:0 !important;
+  padding:12px !important;
+  border:1px solid #DCE5F2 !important;
+  border-radius:14px !important;
+  background:#F8FAFC !important;
+}
+body:not(.home) .modal-redeem-area .redeem-box label {
+  color:#334155 !important;
+  font-size:12px !important;
+}
+body:not(.home) .modal-redeem-area .redeem-input {
+  padding:10px !important;
+  background:#fff !important;
+  color:#1E293B !important;
+  font-size:12px !important;
+}
+body:not(.home) .modal-redeem-area .redeem-btn {
+  min-height:36px !important;
+  font-size:12px !important;
+}
+body:not(.home) .modal-redeem-area .admin-message {
+  padding:7px 0 !important;
+  font-size:12px !important;
+}
+body:not(.home) .modal-redeem-area .redeem-status {
+  font-size:11px !important;
+}
 body:not(.home) .redeem-box {
   display:grid !important;
   gap:6px !important;
