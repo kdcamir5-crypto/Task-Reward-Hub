@@ -50,6 +50,20 @@
         <span class="wallet-balance__orb wallet-balance__orb--two" aria-hidden="true"></span>
       </section>
 
+      <div class="wallet-section-heading"><div><p class="eyebrow">ADD FUNDS</p><h2>ওয়ালেটে টাকা জমা</h2></div><span class="wallet-section-mark">MANUAL REVIEW</span></div>
+      <section class="box wallet-panel wallet-deposit-panel" id="deposit-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>ডিপোজিট রিকোয়েস্ট</h3><p>bKash বা Nagad-এ টাকা পাঠিয়ে তথ্য জমা দিন</p></div></div>
+        <p class="warn"><span aria-hidden="true">ⓘ</span> শুধু অ্যাডমিনের দেওয়া অফিসিয়াল নম্বরে টাকা পাঠাবেন। Transaction ID যাচাই করে অনুমোদন না দেওয়া পর্যন্ত ব্যালেন্সে টাকা যোগ হবে না।</p>
+        <form id="deposit-form" novalidate>
+          <label class="wallet-field"><span>পেমেন্ট মাধ্যম</span><select id="deposit-type" required><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select></label>
+          <label class="wallet-field"><span>জমার পরিমাণ (৳)</span><input id="deposit-amount" type="number" inputmode="numeric" min="10" max="50000" step="1" placeholder="যেমন 500" required></label>
+          <label class="wallet-field"><span>যে নম্বর থেকে টাকা পাঠিয়েছেন</span><input id="deposit-sender" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" autocomplete="tel" required></label>
+          <label class="wallet-field"><span>Transaction ID (TrxID)</span><input id="deposit-trx" maxlength="100" placeholder="পেমেন্টের TrxID লিখুন" autocomplete="off" required></label>
+          <button class="go" id="deposit-submit" type="submit">ডিপোজিট রিকোয়েস্ট পাঠান <span aria-hidden="true">→</span></button>
+          <p class="msg2" id="deposit-msg" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
       <section class="wallet-actions" aria-label="ওয়ালেট দ্রুত অ্যাকশন">
         <a href="#bind-box" class="wallet-action wallet-action--add"><span class="wallet-action__icon" aria-hidden="true">＋</span><span><strong>ওয়ালেট যুক্ত করুন</strong><small>পেমেন্ট মাধ্যম সেভ করুন</small></span><span class="wallet-action__arrow" aria-hidden="true">↗</span></a>
         <a href="#wd" class="wallet-action wallet-action--withdraw"><span class="wallet-action__icon" aria-hidden="true">৳</span><span><strong>টাকা তুলুন</strong><small>উইথড্র রিকোয়েস্ট দিন</small></span><span class="wallet-action__arrow" aria-hidden="true">↗</span></a>
@@ -88,6 +102,10 @@
       <section class="box wallet-panel">
         <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--purple" aria-hidden="true">↻</span><div><h3>উইথড্র ইতিহাস</h3><p>আপনার আগের আবেদনগুলোর অবস্থা</p></div></div>
         <div id="hist"></div>
+      </section>
+      <section class="box wallet-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>ডিপোজিট ইতিহাস</h3><p>আপনার জমার আবেদন ও অনুমোদনের অবস্থা</p></div></div>
+        <div id="deposit-history"></div>
       </section>
       <p class="wallet-footnote">আপনার পেমেন্টের তথ্য সঠিকভাবে যাচাই করুন। কোনো সমস্যা হলে অ্যাডমিনের সঙ্গে যোগাযোগ করুন।</p>
     </main>
