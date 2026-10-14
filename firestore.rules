@@ -1,0 +1,173 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.role == 'user'
+        && request.resource.data.balance == 0
+        && request.resource.data.tasks == 0
+        && request.resource.data.referrals == 0;
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram']);
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unlockedBots', 'lastRedeemCode', 'updatedAt'])
+        && request.resource.data.unlockedBots is list
+        && request.resource.data.unlockedBots.size() == (('unlockedBots' in resource.data.keys()) ? resource.data.unlockedBots.size() + 1 : 1)
+        && request.resource.data.unlockedBots.hasAll(('unlockedBots' in resource.data.keys()) ? resource.data.unlockedBots : [])
+        && request.resource.data.lastRedeemCode is string
+        && request.resource.data.updatedAt == request.time
+        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == true
+        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.usedBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.usedAt == request.time
+        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.botId in request.resource.data.unlockedBots
+        && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == false
+        && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.expiresAtMs > request.time.toMillis();
+      allow update: if isAdmin();
+      match /botMining/{botId} {
+        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+        allow write: if false;
+      }
+    }
+
+    match /tasks/{tid} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /submissions/{sid} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && sid == request.auth.uid + '_' + request.resource.data.taskId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'taskId', 'taskTitle', 'reward', 'proof', 'image', 'status', 'createdAt'])
+        && request.resource.data.proof is string && request.resource.data.proof.size() <= 300
+        && request.resource.data.image is string && request.resource.data.image.size() <= 450000
+        && (request.resource.data.proof.size() >= 3 || request.resource.data.image.size() >= 1000)
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.active == true
+        && request.resource.data.reward == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.reward;
+      allow update: if isAdmin();
+    }
+
+    match /wallets/{walletId} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'type', 'number', 'createdAt'])
+        && request.resource.data.type in ['bKash', 'Nagad', 'Rocket']
+        && request.resource.data.number is string
+        && request.resource.data.number.matches('^01[3-9][0-9]{8}$')
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+
+    match /withdrawals/{withdrawalId} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.amount is number
+        && request.resource.data.amount >= 100 && request.resource.data.amount <= 5000
+        && request.resource.data.type in ['bKash', 'Nagad', 'Rocket']
+        && request.resource.data.number is string
+        && request.resource.data.number.matches('^01[3-9][0-9]{8}$')
+        && request.resource.data.keys().hasOnly(['uid', 'amount', 'type', 'number', 'status', 'createdAt'])
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.status in ['paid', 'rejected']
+        && request.resource.data.reviewedBy == request.auth.uid
+        && request.resource.data.reviewedAt == request.time;
+      allow delete: if false;
+    }
+
+    // Wallet deposit requests: user creates and reads only own requests; admin reviews.
+    match /walletDeposits/{depositId} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'type', 'amount', 'senderNumber', 'trxId', 'status', 'createdAt'])
+        && request.resource.data.type in ['bKash', 'Nagad']
+        && request.resource.data.amount is int
+        && request.resource.data.amount >= 10 && request.resource.data.amount <= 50000
+        && request.resource.data.senderNumber is string
+        && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
+        && request.resource.data.trxId is string
+        && request.resource.data.trxId.size() >= 5 && request.resource.data.trxId.size() <= 100
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.reviewedBy == request.auth.uid
+        && request.resource.data.reviewedAt == request.time;
+      allow delete: if false;
+    }
+
+    // Bot purchases: requests remain pending until admin approves/rejects.
+    match /botPurchaseRequests/{requestId} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'botId', 'botName', 'amount', 'paymentMethod', 'senderNumber', 'trxId', 'status', 'createdAt'])
+        && request.resource.data.botId in ['pulse', 'quantum', 'neural', 'cyber', 'apex']
+        && request.resource.data.amount is int
+        && request.resource.data.amount == (
+          request.resource.data.botId == 'pulse' ? 50 :
+          request.resource.data.botId == 'quantum' ? 100 :
+          request.resource.data.botId == 'neural' ? 200 :
+          request.resource.data.botId == 'cyber' ? 300 : 500
+        )
+        && request.resource.data.paymentMethod in ['wallet', 'bKash', 'Nagad']
+        && (request.resource.data.paymentMethod == 'wallet'
+          ? request.resource.data.senderNumber == '' && request.resource.data.trxId == ''
+          : request.resource.data.senderNumber is string
+            && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
+            && request.resource.data.trxId is string
+            && request.resource.data.trxId.size() >= 5
+            && request.resource.data.trxId.size() <= 100)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.reviewedBy == request.auth.uid
+        && request.resource.data.reviewedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /botRedeemCodes/{codeId} {
+      allow read: if isAdmin() || (signedIn() && resource.data.used == false && resource.data.expiresAtMs > request.time.toMillis());
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['code', 'botId', 'botName', 'createdBy', 'createdAt', 'expiresAtMs', 'used', 'usedBy', 'usedAt'])
+        && request.resource.data.code == codeId
+        && request.resource.data.botId in ['pulse', 'quantum', 'neural', 'cyber', 'apex']
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expiresAtMs > request.time.toMillis()
+        && request.resource.data.expiresAtMs <= request.time.toMillis() + 1800000
+        && request.resource.data.used == false && request.resource.data.usedBy == null && request.resource.data.usedAt == null;
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.used == false
+        && resource.data.expiresAtMs > request.time.toMillis()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedBy', 'usedAt'])
+        && request.resource.data.used == true
+        && request.resource.data.usedBy == request.auth.uid
+        && request.resource.data.usedAt == request.time
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.lastRedeemCode == codeId
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.unlockedBots.hasAny([resource.data.botId]));
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
