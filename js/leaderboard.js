@@ -1,35 +1,8 @@
-// Local XP leaderboard. This is browser-local until shared server-side XP is implemented.
-(() => {
-'use strict';
-const $=s=>document.querySelector(s);
-const currentEmail=Store.get('session');
-if(!currentEmail)return;
-const users=Store.get('users',{});
-const emails=Object.keys(users);
-if(!emails.includes(currentEmail))emails.push(currentEmail);
-const records=emails.map(email=>{
- const profile=Store.get('profile:'+email,{});
- const spin=Store.get('lucky-spin:'+email,{xp:0,spins:0,badges:0});
- const streak=Store.get('daily-streak:'+email,{xp:0,current:0,best:0,total:0});
- const xp=Math.max(0,Number(spin.xp)||0)+Math.max(0,Number(streak.xp)||0);
- const name=profile.name||email.split('@')[0]||'Player';
- return {email,name,xp,spins:Number(spin.spins)||0,checkins:Number(streak.total)||0,isMe:email===currentEmail};
-}).sort((a,b)=>b.xp-a.xp||a.name.localeCompare(b.name));
-const mine=records.find(x=>x.isMe)||{xp:0};
-$('#my-rank').textContent=records.findIndex(x=>x.isMe)+1;
-$('#my-xp').textContent=String(mine.xp);
-$('#account-count').textContent=String(records.length);
-const list=$('#leader-list');list.textContent='';
-records.forEach((p,i)=>{
- const li=document.createElement('li');if(p.isMe)li.className='leader-you';
- const rank=document.createElement('span');rank.className='leader-rank';rank.textContent=i===0?'👑':String(i+1);
- const person=document.createElement('span');person.className='leader-person';
- const name=document.createElement('strong');name.textContent=p.name;
- const detail=document.createElement('small');detail.textContent=p.spins+' স্পিন · '+p.checkins+' চেক-ইন';
- person.append(name,detail);
- const score=document.createElement('span');score.className='leader-score';
- const points=document.createElement('strong');points.textContent=p.xp.toLocaleString('en-US')+' XP';
- const label=document.createElement('small');label.textContent='মোট ভার্চুয়াল XP';
- score.append(points,label);li.append(rank,person,score);list.appendChild(li);
-});
-})();
+// Top 50 local XP leaderboard with a three-person podium.
+(()=>{'use strict';const $=s=>document.querySelector(s);const currentEmail=Store.get('session');if(!currentEmail)return;
+function render(){const users=Store.get('users',{}),emails=Object.keys(users);if(!emails.includes(currentEmail))emails.push(currentEmail);
+const records=emails.map(email=>{const profile=Store.get('profile:'+email,{}),spin=Store.get('lucky-spin:'+email,{xp:0,spins:0,badges:0}),streak=Store.get('daily-streak:'+email,{xp:0,current:0,best:0,total:0});return{email,name:profile.name||email.split('@')[0]||'Player',refCode:users[email]?.id||'TRH00000',avatar:profile.avatarImage||'',bots:Number(profile.unlockedBots)||0,xp:Math.max(0,Number(spin.xp)||0)+Math.max(0,Number(streak.xp)||0),spins:Number(spin.spins)||0,checkins:Number(streak.total)||0,isMe:email===currentEmail}}).sort((a,b)=>b.xp-a.xp||a.name.localeCompare(b.name)).slice(0,50);
+const mine=records.find(x=>x.isMe)||{name:currentEmail.split('@')[0],refCode:'TRH00000',avatar:'',bots:0,xp:0};$('#my-rank').textContent='#'+(records.findIndex(x=>x.isMe)+1||'—');$('#self-name').textContent=mine.name;$('#self-id').textContent='ID: '+mine.refCode+' · 🤖 '+mine.bots+' Bots';if(mine.avatar)$('#self-avatar').innerHTML='<img src="'+mine.avatar+'" alt="">';$('#account-count').textContent=records.length+' Members';
+const podium=$('#rank-podium');podium.textContent='';const top=[records[1],records[0],records[2]];const ranks=[2,1,3];top.forEach((p,i)=>{if(!p)return;const card=document.createElement('article');card.className='podium-card '+(ranks[i]===1?'first':ranks[i]===2?'second':'third');const medal=document.createElement('span');medal.className='podium-medal';medal.textContent=['🥈 #2','👑 #1 CHAMPION','🥉 #3'][i];const av=document.createElement('div');av.className='podium-avatar';if(p.avatar){const img=document.createElement('img');img.src=p.avatar;img.alt='';av.appendChild(img)}else av.textContent='👤';const name=document.createElement('strong');name.textContent=p.name;const code=document.createElement('small');code.textContent=p.refCode;const score=document.createElement('span');score.className='podium-score';score.textContent='🤖 '+p.bots+' Bots · '+p.xp+' XP';card.append(medal,av,name,code,score);podium.appendChild(card)});
+const list=$('#leader-list');list.textContent='';const q=($('#rank-search')?.value||'').trim().toLowerCase();const filtered=records.filter(p=>(p.name+' '+p.refCode+' '+p.email).toLowerCase().includes(q));filtered.forEach((p)=>{const rank=records.indexOf(p)+1,li=document.createElement('li');if(p.isMe)li.className='leader-you';const r=document.createElement('span');r.className='leader-rank';r.textContent=rank;const person=document.createElement('span');person.className='leader-person';const av=document.createElement('span');av.className='leader-avatar';if(p.avatar){const img=document.createElement('img');img.src=p.avatar;img.alt='';av.appendChild(img)}else av.textContent='👤';const copy=document.createElement('span');copy.className='leader-person-copy';const n=document.createElement('strong');n.textContent=p.name;const d=document.createElement('small');d.textContent=p.refCode+' · '+p.spins+' স্পিন · '+p.checkins+' চেক-ইন';copy.append(n,d);person.append(av,copy);const score=document.createElement('span');score.className='leader-score';score.textContent='🤖 '+p.bots+' Bots · '+p.xp+' XP';li.append(r,person,score);list.appendChild(li)});$('#rank-empty').classList.toggle('hidden',filtered.length>0);if(!records.length)list.innerHTML='<li class="leader-empty">এখনও কোনো র‍্যাঙ্কিং নেই।</li>'}
+$('#rank-search').addEventListener('input',render);$('#rank-refresh').addEventListener('click',render);render()})();
