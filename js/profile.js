@@ -33,7 +33,7 @@ if (window.hubUser) {
       ...(typeof profile.phone === 'string' ? { phone: profile.phone } : {}),
       ...(typeof profile.telegram === 'string' ? { telegram: profile.telegram } : {})
     };
-    Store.set(PKEY, synced);
+    Store.set(PKEY, { ...synced, namePendingSync: false });
     load();
   }).catch((error) => console.warn('Could not load shared profile:', error));
 }
@@ -47,6 +47,10 @@ $('#info').addEventListener('submit', async (e) => {
   if (!name) return say('#imsg', 'আপনার নাম লিখুন।', false);
   if (phone && !/^01[3-9]\d{8}$/.test(phone)) return say('#imsg', 'সঠিক ১১ ডিজিটের নম্বর দিন।', false);
   if (tg && !/^[A-Za-z0-9_]{5,32}$/.test(tg)) return say('#imsg', 'Telegram ইউজারনেম ৫-৩২ অক্ষরের (ইংরেজি, সংখ্যা, _) হতে হবে।', false);
+
+  // Save locally first so the new name is available immediately on the homepage too.
+  Store.set(PKEY, { ...Store.get(PKEY, {}), name, phone, telegram: tg, namePendingSync: true });
+  load();
 
   const button = $('#info button[type="submit"]');
   button.disabled = true;
@@ -68,12 +72,12 @@ $('#info').addEventListener('submit', async (e) => {
       telegram: tg
     });
 
-    Store.set(PKEY, { ...Store.get(PKEY, {}), name, phone, telegram: tg });
+    Store.set(PKEY, { ...Store.get(PKEY, {}), name, phone, telegram: tg, namePendingSync: false });
     load();
     say('#imsg', 'সংরক্ষণ হয়েছে। Homepage-এ নামও আপডেট হবে।', true);
   } catch (error) {
     console.error('Profile save failed:', error);
-    say('#imsg', 'Firebase-এ সংরক্ষণ হয়নি। ইন্টারনেট বা Firestore permission পরীক্ষা করুন, তারপর আবার চেষ্টা করুন।', false);
+    say('#imsg', 'নাম এই ডিভাইসে সেভ হয়েছে, কিন্তু Firebase-এ সিঙ্ক হয়নি। Homepage-এ নাম দেখা উচিত; Firebase সিঙ্কের জন্য এই ত্রুটিটি পরীক্ষা করতে হবে।', false);
   } finally {
     button.disabled = false;
     button.textContent = 'পরিবর্তন সংরক্ষণ করুন ↗';
