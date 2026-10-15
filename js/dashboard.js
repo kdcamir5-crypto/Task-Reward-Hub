@@ -5,6 +5,20 @@
   window.hubUser.then(async ({ uid, email, profile }) => {
     const p = profile || { refCode: 'TRH00000', balance: 0, tasks: 0, referrals: 0 };
     const local = Store.get('profile:' + email, {});
+    const avatarEl = document.querySelector('.who__main .avatar');
+    function applyAvatar(value) {
+      if (!avatarEl) return;
+      if (!value) return;
+      avatarEl.replaceChildren();
+      const img = document.createElement('img');
+      img.src = value;
+      img.alt = 'প্রোফাইল ছবি';
+      img.width = 62;
+      img.height = 62;
+      img.style.cssText = 'display:block;width:100%;height:100%;object-fit:cover;border-radius:50%';
+      avatarEl.appendChild(img);
+    }
+    applyAvatar(p.avatarImage || local.avatarImage || '');
     $('#name').textContent = p.name || local.name || (email || 'বন্ধু').split('@')[0];
     $('#uid').textContent = 'আইডি: ' + (p.refCode || 'TRH00000');
     $('#balance').textContent = '৳ ' + Number(p.balance || 0).toFixed(2);
@@ -31,6 +45,7 @@
         $('#tasks').textContent = data.tasks || 0;
         $('#refs').textContent = data.referrals || 0;
         if (data.name) $('#name').textContent = data.name;
+        if (data.avatarImage) applyAvatar(data.avatarImage);
         if (data.refCode) {
           $('#uid').textContent = 'আইডি: ' + data.refCode;
           const updatedLink = location.origin + location.pathname.replace('pages/dashboard.html', '') + 'index.html?ref=' + data.refCode;
