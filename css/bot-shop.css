@@ -9,8 +9,8 @@ body:not(.home) {
 }
 body:not(.home) .shop {
   width:100% !important;
-  max-width:420px !important;
-  padding:0 0 28px !important;
+  max-width:560px !important;
+  padding:10px 16px calc(98px + env(safe-area-inset-bottom)) !important;
   margin:0 auto !important;
   background:#F5F7FB;
 }
@@ -377,7 +377,7 @@ body:not(.home) #purchase-trx { background:#F8FAFC !important; border-color:#DCE
 body:not(.home) .modal-actions .cancel { background:#F1F5F9 !important; color:#334155 !important; border-color:#DCE4F0 !important; }
 body:not(.home) .modal-actions .confirm { background:#2563EB !important; color:#fff !important; }
 @media (min-width:800px) {
-  body:not(.home) .shop { max-width:420px !important; }
+  body:not(.home) .shop { max-width:560px !important; }
   body:not(.home) .bots { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
 @media (max-width:360px) {
