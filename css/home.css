@@ -19,9 +19,7 @@ button{font:inherit;cursor:pointer}
 .hero{
   position:relative;padding:calc(14px + env(safe-area-inset-top)) 16px 84px;color:#fff;
   border-radius:0 0 28px 28px;
-  background:radial-gradient(110% 80% at 88% 0%,rgba(122,90,240,.6),transparent 60%),
-             radial-gradient(70% 60% at 0% 100%,rgba(45,140,255,.28),transparent 70%),
-             linear-gradient(165deg,#0B1B52 0%,#1D3AA6 60%,#3A2FA0 100%);
+  background:linear-gradient(165deg,rgba(7,21,47,.58) 0%,rgba(11,27,82,.42) 55%,rgba(20,35,95,.48) 100%),url("https://i.ibb.co.com/bjfB93jj/image-49edb303.jpg") center center / cover no-repeat;
 }
 .hero__top{display:flex;justify-content:space-between}
 .round{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:#fff}
