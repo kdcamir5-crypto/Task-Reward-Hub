@@ -19,7 +19,7 @@
       avatarEl.appendChild(img);
     }
     applyAvatar(p.avatarImage || local.avatarImage || '');
-    $('#name').textContent = p.name || local.name || (email || 'বন্ধু').split('@')[0];
+    $('#name').textContent = (local.namePendingSync && local.name) || p.name || local.name || (email || 'বন্ধু').split('@')[0];
     $('#uid').textContent = 'আইডি: ' + (p.refCode || 'TRH00000');
     $('#balance').textContent = '৳ ' + Number(p.balance || 0).toFixed(2);
     $('#tasks').textContent = p.tasks || 0;
@@ -44,7 +44,12 @@
         $('#balance').textContent = '৳ ' + Number(data.balance || 0).toFixed(2);
         $('#tasks').textContent = data.tasks || 0;
         $('#refs').textContent = data.referrals || 0;
-        if (data.name) $('#name').textContent = data.name;
+        const localProfile = Store.get('profile:' + email, {});
+        if (localProfile.namePendingSync && localProfile.name) {
+          $('#name').textContent = localProfile.name;
+        } else if (data.name) {
+          $('#name').textContent = data.name;
+        }
         if (data.avatarImage) applyAvatar(data.avatarImage);
         if (data.refCode) {
           $('#uid').textContent = 'আইডি: ' + data.refCode;
