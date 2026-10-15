@@ -1,1 +1,38 @@
  .shared-header{position:relative;z-index:20;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;color:#fff;border-radius:0 0 26px 26px;background:radial-gradient(110% 80% at 88% 0%,#7a5af066,transparent 60%),linear-gradient(165deg,#0B1B52,#1D3AA6 60%,#3A2FA0);box-shadow:0 14px 30px #12285a25}.shared-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.shared-brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800}.shared-brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:14px;background:linear-gradient(145deg,#54e7ff,#2873ff)}.shared-actions{display:flex;gap:9px}.shared-action{display:grid;place-items:center;width:40px;height:40px;border:1px solid #ffffff50;border-radius:50%;background:#ffffff20;color:#fff}.shared-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8}.shared-user{display:flex;align-items:center;gap:10px}.shared-avatar{display:grid;place-items:center;flex:0 0 52px;width:52px;height:52px;overflow:hidden;border:2px solid #53dcff;border-radius:50%;background:#ffffff22}.shared-avatar img{width:100%;height:100%;object-fit:cover}.shared-user-copy{min-width:0;flex:1}.shared-user-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}.shared-user-copy small{display:block;font-size:10px}.shared-user-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.shared-pill{padding:3px 8px;border:1px solid #ffffff3a;border-radius:999px;background:#ffffff16;font-size:10px;font-weight:700}.shared-balances{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.shared-balance{padding:10px 12px;border:1px solid #ffffff40;border-radius:19px;background:linear-gradient(130deg,#299fe9,#2556c8)}.shared-balance.green{background:linear-gradient(130deg,#2bb987,#16885e)}.shared-balance small,.shared-balance em{display:block;font-size:10px}.shared-balance strong{display:block;font-size:18px}.shared-balance em{font-style:normal}.shared-support-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:#07152fbb}.shared-support-modal.open{display:flex}.shared-support-card{width:min(100%,360px);padding:22px;border-radius:22px;background:#fff;color:#122343;text-align:center}.shared-support-card h2{font-size:19px;margin-bottom:8px}.shared-support-card p{font-size:13px;line-height:1.7;color:#61718b;margin-bottom:16px}.shared-support-card a,.shared-support-card button{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:8px;border:0;border-radius:12px;font:inherit;font-weight:800;text-decoration:none}.shared-support-card a{background:#1688ef;color:#fff}.shared-support-card button{background:#eef2f9;color:#263b5d}
+
+/* Compact rank-style banner tuning for Home and AI Bot Shop */
+body.home .hero{padding:calc(10px + env(safe-area-inset-top)) 16px 62px;border-radius:0 0 24px 24px}
+body.home .hero__top{align-items:center;gap:8px}
+body.home .hero__top .round{width:40px;height:40px}
+body.home .who{margin-top:9px}
+body.home .who__main{gap:10px}
+body.home .avatar{width:52px;height:52px}
+body.home .who h1{font-size:17px;line-height:1.2}
+body.home .pills{gap:6px;margin-top:7px}
+body.home .pill{min-height:24px;padding:0 9px;font-size:10px}
+body.home .tagline{margin-top:2px;font-size:18px}
+body.home .balances{margin-top:-43px;gap:9px}
+body.home .balance{padding:10px 11px;border-radius:18px}
+body.home .balance strong{font-size:18px}
+body.home #support-headphones{order:1}
+body.home #bell{order:2}
+body.home #logout{order:0}
+body:has(.shop) .shared-header{padding:10px 14px 13px;border-radius:0 0 22px 22px}
+body:has(.shop) .shared-header-top{margin-bottom:9px}
+body:has(.shop) .shared-brand-mark{width:32px;height:32px;border-radius:11px}
+body:has(.shop) .shared-action{width:36px;height:36px}
+body:has(.shop) .shared-avatar{flex-basis:44px;width:44px;height:44px}
+body:has(.shop) .shared-user-copy strong{font-size:13px}
+body:has(.shop) .shared-user-pills{gap:4px;margin-top:3px}
+body:has(.shop) .shared-pill{font-size:9px;padding:2px 6px}
+body:has(.shop) .shared-balances{gap:7px;margin-top:9px}
+body:has(.shop) .shared-balance{padding:8px 10px;border-radius:15px}
+body:has(.shop) .shared-balance strong{font-size:16px}
+body:has(.shop) .shared-balance small,body:has(.shop) .shared-balance em{font-size:9px}
+body:has(.shop) .shop{padding-top:10px}
+body:has(.shop) .shop>.top{display:none}
+body:has(.shop) .shop>.hero{padding:14px 14px;border-radius:18px}
+body:has(.shop) .shop>.hero .robot{width:48px;height:48px;flex-basis:48px;border-radius:15px;font-size:26px}
+body:has(.shop) .shop>.hero h2{font-size:1.15rem}
+body:has(.shop) .shop>.hero .unlock{margin-top:10px;padding:10px}
+body:has(.shop) .shop>.hero .notice{margin-top:8px;padding:9px 10px}
