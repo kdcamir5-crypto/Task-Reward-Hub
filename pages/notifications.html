@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/notifications.css">
   <link rel="stylesheet" href="../css/compact-ui.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-home.css">
 </head>
 <body>
   <main class="notify-app">
@@ -34,7 +36,13 @@
     </section>
     <section id="noticeList" class="notice-list" aria-live="polite"></section>
     <p class="privacy-note">এই সেন্টারের নোটিফিকেশন এই ব্রাউজারের localStorage-এ থাকে। এগুলো ভার্চুয়াল আপডেট—কোনো বাস্তব ব্যালেন্স পরিবর্তন করে না।</p>
-    <nav class="bottom-nav"><a href="dashboard.html">⌂ <span>হোম</span></a><a href="tasks.html">▤ <span>টাস্ক</span></a><a href="achievements.html">🏅 <span>ব্যাজ</span></a><a href="notifications.html" aria-current="page">♧ <span>নোটিশ</span></a></nav>
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
+    </nav>
   </main>
   <script src="../js/storage.js"></script>
   <script src="../js/auth.js"></script>
