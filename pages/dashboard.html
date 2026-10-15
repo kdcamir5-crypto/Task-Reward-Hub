@@ -23,7 +23,7 @@
 
       <div class="who">
         <div class="who__main">
-          <div class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg></div>
+          <button class="avatar avatar-trigger" id="home-avatar-trigger" type="button" aria-label="প্রোফাইল ছবি বাছাই করুন"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg></div>
           <div class="who__text">
             <h1 id="name">বন্ধু</h1>
             <p class="who__id" id="uid">আপনার অ্যাকাউন্ট প্রস্তুত</p>
@@ -150,6 +150,20 @@
     </nav>
   </div>
 
+
+  <!-- Profile picture chooser: opens only when the user clicks their avatar -->
+  <div class="avatar-picker-modal" id="avatar-picker-modal" aria-hidden="true">
+    <div class="avatar-picker-panel" role="dialog" aria-modal="true" aria-labelledby="avatar-picker-title">
+      <button class="avatar-picker-close" id="avatar-picker-close" type="button" aria-label="বন্ধ করুন">×</button>
+      <h3 id="avatar-picker-title">আপনার প্রোফাইল ছবি</h3>
+      <p class="avatar-picker-note">একটি রেডিমেড ছবি বেছে নিন অথবা গ্যালারি থেকে নিজের ছবি আপলোড করুন।</p>
+      <input id="avatar-picker-file" type="file" accept="image/*" hidden>
+      <button class="avatar-picker-upload" id="avatar-picker-upload" type="button">⬆ গ্যালারি থেকে ছবি আপলোড</button>
+      <div class="avatar-picker-presets" id="avatar-picker-presets" aria-label="রেডিমেড প্রোফাইল ছবি"></div>
+      <p class="avatar-picker-message" id="avatar-picker-message" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
   <!-- Notification sheet (same ids as before: sheet, close) -->
   <div class="sheet" id="sheet" aria-hidden="true">
     <div class="sheet__body" role="dialog" aria-modal="true" aria-labelledby="notice-title">
@@ -167,6 +181,7 @@
   <script src="../js/auth.js"></script>
   <script src="../js/guard.js"></script>
   <script src="../js/dashboard.js"></script>
+  <script src="../js/avatar-picker.js"></script>
   <script type="module" src="../js/home-live.js"></script>
 </body>
 </html>
