@@ -45,7 +45,7 @@ $('#info').addEventListener('submit', async (e) => {
   const tg = $('#tg').value.trim().replace(/^@/, '');
 
   if (!name) return say('#imsg', 'আপনার নাম লিখুন।', false);
-  if (phone && !/^01[3-9]\\d{8}$/.test(phone)) return say('#imsg', 'সঠিক ১১ ডিজিটের নম্বর দিন।', false);
+  if (phone && !/^01[3-9]\d{8}$/.test(phone)) return say('#imsg', 'সঠিক ১১ ডিজিটের নম্বর দিন।', false);
   if (tg && !/^[A-Za-z0-9_]{5,32}$/.test(tg)) return say('#imsg', 'Telegram ইউজারনেম ৫-৩২ অক্ষরের (ইংরেজি, সংখ্যা, _) হতে হবে।', false);
 
   const button = $('#info button[type="submit"]');
