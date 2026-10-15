@@ -36,3 +36,27 @@ body:has(.shop) .shop>.hero .robot{width:48px;height:48px;flex-basis:48px;border
 body:has(.shop) .shop>.hero h2{font-size:1.15rem}
 body:has(.shop) .shop>.hero .unlock{margin-top:10px;padding:10px}
 body:has(.shop) .shop>.hero .notice{margin-top:8px;padding:9px 10px}
+
+
+/* Match AI Bot Shop banner width and proportions to the other mobile pages */
+body:has(.shop) .shared-header{
+  width:min(100%, 480px);
+  margin:0 auto;
+  padding:10px 14px 13px;
+  border-radius:0 0 22px 22px;
+  box-sizing:border-box;
+}
+body:has(.shop) .shared-header-top{margin-bottom:9px}
+body:has(.shop) .shared-brand{font-size:13px}
+body:has(.shop) .shared-brand-mark{width:32px;height:32px}
+body:has(.shop) .shared-user{gap:9px}
+body:has(.shop) .shared-avatar{flex-basis:44px;width:44px;height:44px}
+body:has(.shop) .shared-user-copy strong{font-size:13px}
+body:has(.shop) .shared-user-copy small{font-size:9px}
+body:has(.shop) .shared-user-pills{gap:4px;margin-top:3px}
+body:has(.shop) .shared-pill{font-size:9px;padding:2px 6px}
+body:has(.shop) .shared-balances{gap:7px;margin-top:9px}
+body:has(.shop) .shared-balance{padding:8px 10px;border-radius:15px}
+body:has(.shop) .shared-balance strong{font-size:16px}
+body:has(.shop) .shared-balance small,body:has(.shop) .shared-balance em{font-size:9px}
+@media(min-width:481px){body:has(.shop) .shared-header{border-radius:0 0 22px 22px}}
