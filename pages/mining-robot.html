@@ -14,7 +14,7 @@
     *{box-sizing:border-box}
     body{font-family:'Hind Siliguri',sans-serif;background:radial-gradient(ellipse at 50% -12%,#123f72 0,transparent 48%),var(--bg);color:var(--text);margin:0;min-height:100vh}
     button,input{font:inherit}
-    .shop{width:min(100% - 28px,980px);margin:0 auto;padding:18px 0 44px}
+    .shop{width:min(100%,480px);margin:0 auto;padding:10px 10px 100px;box-sizing:border-box}
     .top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
     .back{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:#10264a;color:#fff;text-decoration:none;font-size:24px}
     .brand{font-size:.72rem;color:#9bb5d9;letter-spacing:1.5px;font-weight:800}
@@ -82,7 +82,7 @@
     .confirm{background:linear-gradient(100deg,#64e5ff,#6df2c2);color:#06172a;border:0!important}
     .hidden{display:none!important}
     @media(min-width:800px){.bots{grid-template-columns:repeat(3,minmax(0,1fr))}.bot-img-wrap{height:200px}}
-    @media(max-width:430px){.shop{width:min(100% - 20px,980px)}.bots{grid-template-columns:1fr}.bot{display:grid;grid-template-columns:38% 1fr}.bot-img-wrap{height:100%;min-height:250px}.bot-img{position:absolute;inset:0}.bot-body{padding:13px}.bot h3{font-size:1rem}.price{font-size:1.35rem}.detail{font-size:.77rem}.buy{padding:10px 7px}.free-state{white-space:normal;text-align:right}}
+    @media(max-width:430px){.shop{width:min(100%,480px);padding:10px 10px 100px}.bots{grid-template-columns:1fr}.bot{display:grid;grid-template-columns:38% 1fr}.bot-img-wrap{height:100%;min-height:250px}.bot-img{position:absolute;inset:0}.bot-body{padding:13px}.bot h3{font-size:1rem}.price{font-size:1.35rem}.detail{font-size:.77rem}.buy{padding:10px 7px}.free-state{white-space:normal;text-align:right}}
     @media(prefers-reduced-motion:reduce){.bot{transition:none}.bot:hover{transform:none}}
       /* ---- Live mining progress ---- */
     .mine-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
