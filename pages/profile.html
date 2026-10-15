@@ -19,6 +19,15 @@
 <div class="app profile-app">
   <header class="top profile-top"><div class="profile-brand"><span class="profile-brand-icon">♙</span><div><strong>আমার প্রোফাইল</strong><small>আপনার অ্যাকাউন্ট ও সেটিংস</small></div></div><a class="icon-btn profile-home-link" href="dashboard.html" style="text-decoration:none">⌂ ড্যাশবোর্ড</a></header>
   <section class="pcard"><div class="avatar" id="avatar">?</div><div><small style="color:#51d8ff">MEMBER PROFILE</small><h2 id="hname"></h2><p id="hmail"></p><small style="color:#c5eaff">✦ Task Reward Hub Member</small></div></section>
+  <section class="box avatar-settings">
+    <h3>📸 প্রোফাইল ছবি পরিবর্তন</h3>
+    <p class="avatar-help">নিজের ছবি আপলোড করুন অথবা তৈরি করা Male / Female অ্যাভাটার থেকে পছন্দ করুন।</p>
+    <input id="avatar-upload" type="file" accept="image/*" hidden>
+    <button class="go avatar-upload-btn" id="avatar-upload-btn" type="button">⬆ নিজের ছবি আপলোড করুন</button>
+    <div class="avatar-presets-heading">রেডিমেড প্রোফাইল ছবি</div>
+    <div id="avatar-presets" class="avatar-presets" aria-label="রেডিমেড প্রোফাইল ছবি"></div>
+    <p class="msg2" id="avatar-msg" role="status" aria-live="polite"></p>
+  </section>
   <section class="box"><h3>⌁ আমার রেফারেল কোড</h3><p style="color:#92aacc;font-size:.82rem">বন্ধুদের সঙ্গে কোডটি শেয়ার করুন</p><div class="refrow"><code id="refcode"></code><button id="copy" type="button">▢ কপি</button></div></section>
   <section class="box"><h3>☷ ব্যক্তিগত তথ্য</h3><p style="color:#92aacc;font-size:.82rem">আপনার প্রোফাইলের তথ্য আপডেট করুন</p><form id="info" novalidate>
     <label for="name">পুরো নাম</label><input id="name" autocomplete="name" placeholder="আপনার পুরো নাম লিখুন">
