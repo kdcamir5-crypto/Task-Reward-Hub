@@ -3,7 +3,19 @@
   'use strict';
   const $ = (s) => document.querySelector(s);
   const email = Store.get('session');
-  if (!email) return;
+  if (!email) {
+    // Recover the legacy local session from the authenticated Firebase session.
+    // Previously this silent return left the Spin button without any click handler.
+    if (window.hubUser && typeof window.hubUser.then === 'function') {
+      window.hubUser.then(user => {
+        if (user && user.email) {
+          Store.set('session', user.email);
+          window.location.reload();
+        }
+      }).catch(() => {});
+    }
+    return;
+  }
   const KEY = 'lucky-spin:' + email;
   const today = () => new Date().toLocaleDateString('en-CA');
   const prizes = [
