@@ -25,7 +25,8 @@
     $('#tasks').textContent = p.tasks || 0;
     $('#refs').textContent = p.referrals || 0;
 
-    const link = location.origin + location.pathname.replace('pages/dashboard.html', '') + 'index.html?ref=' + (p.refCode || 'TRH00000');
+    const makeReferralLink = (code) => 'https://t.me/Taskrewardhub_bot?start=' + encodeURIComponent(code || 'TRH00000');
+    const link = makeReferralLink(p.refCode);
     $('#reflink').textContent = link;
     $('#copy').addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(link); $('#copy').textContent = 'কপি হয়েছে'; }
@@ -53,7 +54,7 @@
         if (data.avatarImage) applyAvatar(data.avatarImage);
         if (data.refCode) {
           $('#uid').textContent = 'আইডি: ' + data.refCode;
-          const updatedLink = location.origin + location.pathname.replace('pages/dashboard.html', '') + 'index.html?ref=' + data.refCode;
+          const updatedLink = makeReferralLink(data.refCode);
           $('#reflink').textContent = updatedLink;
         }
       }, (error) => {
