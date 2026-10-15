@@ -3,7 +3,19 @@
   'use strict';
   const $ = (selector) => document.querySelector(selector);
   const session = Store.get('session');
-  if (!session) return;
+  if (!session) {
+    // Recover the legacy local session from the authenticated Firebase session.
+    // Previously this silent return left the feature button without any click handler.
+    if (window.hubUser && typeof window.hubUser.then === 'function') {
+      window.hubUser.then(user => {
+        if (user && user.email) {
+          Store.set('session', user.email);
+          window.location.reload();
+        }
+      }).catch(() => {});
+    }
+    return;
+  }
 
   const KEY = 'mystery-box:' + session;
   const dateKey = (date = new Date()) => {
