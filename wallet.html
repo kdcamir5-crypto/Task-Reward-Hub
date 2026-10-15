@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>Task Reward Hub — My Wallet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+  <link rel="stylesheet" href="../css/wallet.css">
+  <link rel="stylesheet" href="../css/compact-ui.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-home.css">
+</head>
+<body>
+  <div class="app wallet-app">
+    <header class="head wallet-head">
+      <div class="head__top">
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম">
+          <span class="brand__mark" aria-hidden="true">TR</span>
+          <span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span>
+        </a>
+        <div class="head__actions">
+          <a class="icon-btn wallet-home-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="welcome wallet-welcome">
+        <div>
+          <p class="eyebrow">YOUR WALLET</p>
+          <h1>আপনার <span>ওয়ালেট</span></h1>
+          <p class="user-id">ব্যালেন্স, পেমেন্ট ও উইথড্র এক জায়গায়</p>
+        </div>
+        <div class="welcome-avatar wallet-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H21v15H5a2 2 0 0 1-2-2zM3 9h18M16 14h5M7 5V4a2 2 0 0 1 2-2h8"/></svg>
+        </div>
+      </div>
+      <div class="header-glow" aria-hidden="true"></div>
+    </header>
+
+    <main class="wallet-main wallet-dashboard-main">
+      <section class="wcard wallet-balance" aria-label="উইথড্র-যোগ্য ব্যালেন্স">
+        <div class="wallet-balance__top"><span class="wallet-eyebrow">AVAILABLE BALANCE</span><span class="wallet-balance__coin" aria-hidden="true">৳</span></div>
+        <span class="wallet-balance__label">উইথড্র-যোগ্য ব্যালেন্স</span>
+        <strong id="bal">৳ 0.00</strong>
+        <div class="wallet-balance__foot"><span class="wallet-balance__dot"></span> আপনার বর্তমান রিওয়ার্ড ব্যালেন্স</div>
+        <span class="wallet-balance__orb wallet-balance__orb--one" aria-hidden="true"></span>
+        <span class="wallet-balance__orb wallet-balance__orb--two" aria-hidden="true"></span>
+      </section>
+
+      <div class="wallet-section-heading"><div><p class="eyebrow">ADD FUNDS</p><h2>ওয়ালেটে টাকা জমা</h2></div><span class="wallet-section-mark">MANUAL REVIEW</span></div>
+      <section class="box wallet-panel wallet-deposit-panel" id="deposit-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>ডিপোজিট রিকোয়েস্ট</h3><p>bKash বা Nagad-এ টাকা পাঠিয়ে তথ্য জমা দিন</p></div></div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px">
+          <p style="color:#ff4b55;font-weight:700;line-height:1.6;margin:0">এই Bkash নম্বরে পেমেন্ট করুন: <span id="fixed-bkash-number">01720236858</span> (শুধুমাত্র Send Money গ্রহণযোগ্য)</p>
+          <button type="button" id="copy-fixed-bkash" style="border:0;border-radius:8px;padding:8px 13px;background:#ff4b55;color:#fff;font:inherit;font-weight:700;cursor:pointer">নম্বর কপি করুন</button>
+          <span id="copy-fixed-bkash-status" role="status" aria-live="polite" style="font-size:.85rem;color:#ff4b55"></span>
+        </div>
+        <p class="warn"><span aria-hidden="true">ⓘ</span> শুধু অ্যাডমিনের দেওয়া অফিসিয়াল নম্বরে টাকা পাঠাবেন। Transaction ID যাচাই করে অনুমোদন না দেওয়া পর্যন্ত ব্যালেন্সে টাকা যোগ হবে না।</p>
+        <form id="deposit-form" novalidate>
+          <label class="wallet-field"><span>পেমেন্ট মাধ্যম</span><select id="deposit-type" required><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select></label>
+          <label class="wallet-field"><span>জমার পরিমাণ (৳)</span><input id="deposit-amount" type="number" inputmode="numeric" min="10" max="50000" step="1" placeholder="যেমন 500" required></label>
+          <label class="wallet-field"><span>যে নম্বর থেকে টাকা পাঠিয়েছেন</span><input id="deposit-sender" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" autocomplete="tel" required></label>
+          <label class="wallet-field"><span>Transaction ID (TrxID)</span><input id="deposit-trx" maxlength="100" placeholder="পেমেন্টের TrxID লিখুন" autocomplete="off" required></label>
+          <button class="go" id="deposit-submit" type="submit">ডিপোজিট রিকোয়েস্ট পাঠান <span aria-hidden="true">→</span></button>
+          <p class="msg2" id="deposit-msg" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="wallet-actions" aria-label="ওয়ালেট দ্রুত অ্যাকশন">
+        <a href="#bind-box" class="wallet-action wallet-action--add"><span class="wallet-action__icon" aria-hidden="true">＋</span><span><strong>ওয়ালেট যুক্ত করুন</strong><small>পেমেন্ট মাধ্যম সেভ করুন</small></span><span class="wallet-action__arrow" aria-hidden="true">↗</span></a>
+        <a href="#wd" class="wallet-action wallet-action--withdraw"><span class="wallet-action__icon" aria-hidden="true">৳</span><span><strong>টাকা তুলুন</strong><small>উইথড্র রিকোয়েস্ট দিন</small></span><span class="wallet-action__arrow" aria-hidden="true">↗</span></a>
+      </section>
+
+      <div class="wallet-section-heading"><div><p class="eyebrow">PAYMENT METHODS</p><h2>আপনার পেমেন্ট মাধ্যম</h2></div><span class="wallet-section-mark">SECURE</span></div>
+      <section class="box wallet-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon" aria-hidden="true">▣</span><div><h3>যুক্ত ই-ওয়ালেট</h3><p>আপনার সেভ করা পেমেন্ট মাধ্যম</p></div></div>
+        <div id="wallets"></div>
+      </section>
+
+      <section class="box wallet-panel" id="bind-box">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>নতুন ই-ওয়ালেট যুক্ত করুন</h3><p>ব্যক্তিগত নম্বর যুক্ত করে সুরক্ষিত রাখুন</p></div></div>
+        <form id="bind" novalidate>
+          <label class="wallet-field"><span>পেমেন্ট মাধ্যম</span><select id="type" aria-label="ওয়ালেটের ধরন"><option>bKash</option><option>Nagad</option><option>Rocket</option></select></label>
+          <label class="wallet-field"><span>মোবাইল নম্বর</span><input id="num" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" aria-label="মোবাইল নম্বর" autocomplete="tel"></label>
+          <p class="warn"><span aria-hidden="true">ⓘ</span> নিজের পার্সোনাল নম্বর দিন। একবার যুক্ত করলে বদলানো যাবে না। সর্বোচ্চ ৫টি ওয়ালেট যুক্ত করা যাবে।</p>
+          <button class="go" type="submit">যুক্ত ও লক করুন <span aria-hidden="true">→</span></button>
+          <p class="msg2" id="bmsg" role="status"></p>
+        </form>
+      </section>
+
+      <div class="wallet-section-heading"><div><p class="eyebrow">CASH OUT</p><h2>উইথড্র সেন্টার</h2></div><span class="wallet-section-mark">QUICK & EASY</span></div>
+      <section class="box wallet-panel wallet-withdraw">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--green" aria-hidden="true">↗</span><div><h3>উইথড্র রিকোয়েস্ট</h3><p>পছন্দের ওয়ালেটে টাকা তোলার আবেদন</p></div></div>
+        <form id="wd" novalidate>
+          <label class="wallet-field"><span>কোন ওয়ালেটে নেবেন</span><select id="dest" aria-label="কোন ওয়ালেটে নেবেন"></select></label>
+          <label class="wallet-field"><span>উইথড্র পরিমাণ (৳)</span><input id="amt" type="number" inputmode="numeric" min="1" placeholder="পরিমাণ লিখুন" aria-label="পরিমাণ"></label>
+          <p class="warn"><span aria-hidden="true">ⓘ</span> ন্যূনতম <strong id="minlabel"></strong>। অ্যাডমিন যাচাই করে রিকোয়েস্টের ব্যবস্থা করবেন।</p>
+          <button class="go" type="submit">রিকোয়েস্ট পাঠান <span aria-hidden="true">→</span></button>
+          <p class="msg2" id="wmsg" role="status"></p>
+        </form>
+      </section>
+
+      <div class="wallet-section-heading"><div><p class="eyebrow">TRANSACTION ACTIVITY</p><h2>আপনার লেনদেন</h2></div><span class="wallet-section-mark">HISTORY</span></div>
+      <section class="box wallet-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--purple" aria-hidden="true">↻</span><div><h3>উইথড্র ইতিহাস</h3><p>আপনার আগের আবেদনগুলোর অবস্থা</p></div></div>
+        <div id="hist"></div>
+      </section>
+      <section class="box wallet-panel">
+        <div class="wallet-panel__heading"><span class="wallet-panel__icon wallet-panel__icon--cyan" aria-hidden="true">＋</span><div><h3>ডিপোজিট ইতিহাস</h3><p>আপনার জমার আবেদন ও অনুমোদনের অবস্থা</p></div></div>
+        <div id="deposit-history"></div>
+      </section>
+      <p class="wallet-footnote">আপনার পেমেন্টের তথ্য সঠিকভাবে যাচাই করুন। কোনো সমস্যা হলে অ্যাডমিনের সঙ্গে যোগাযোগ করুন।</p>
+    </main>
+
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script>
+    (function () {
+      var button = document.getElementById('copy-fixed-bkash');
+      var number = document.getElementById('fixed-bkash-number');
+      var status = document.getElementById('copy-fixed-bkash-status');
+      if (!button || !number || !status) return;
+      button.addEventListener('click', async function () {
+        var value = number.textContent.trim();
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            var input = document.createElement('textarea');
+            input.value = value;
+            input.style.position = 'fixed';
+            input.style.opacity = '0';
+            document.body.appendChild(input);
+            input.select();
+            var copied = document.execCommand('copy');
+            input.remove();
+            if (!copied) throw new Error('copy failed');
+          }
+          status.textContent = 'নম্বর কপি হয়েছে!';
+        } catch (error) {
+          status.textContent = 'কপি হয়নি—নম্বরটি চেপে ধরে কপি করুন।';
+        }
+      });
+    })();
+  </script>
+  <script type="module" src="../js/wallet.js"></script>
+</body>
+</html>

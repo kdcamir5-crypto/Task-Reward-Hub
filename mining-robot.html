@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>AI Bot Pro Shop — Task Reward Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    :root{color-scheme:dark;--bg:#07152f;--panel:#0c1d3a;--line:#23436d;--text:#eef5ff;--muted:#aebfda;--cyan:#4bdcff;--green:#76f3c0}
+    *{box-sizing:border-box}
+    body{font-family:'Hind Siliguri',sans-serif;background:radial-gradient(ellipse at 50% -12%,#123f72 0,transparent 48%),var(--bg);color:var(--text);margin:0;min-height:100vh}
+    button,input{font:inherit}
+    .shop{width:min(100% - 28px,980px);margin:0 auto;padding:18px 0 44px}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .back{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:#10264a;color:#fff;text-decoration:none;font-size:24px}
+    .brand{font-size:.72rem;color:#9bb5d9;letter-spacing:1.5px;font-weight:800}
+    h1{font-size:clamp(1.5rem,5vw,2.25rem);line-height:1.15;margin:4px 0 0}
+    .hero{position:relative;overflow:hidden;padding:23px 20px;border:1px solid #285184;border-radius:24px;background:radial-gradient(ellipse at 92% 0%,#164e83 0,transparent 48%),linear-gradient(145deg,#10264b,#0b1a37 68%);box-shadow:0 16px 44px #0003}
+    .hero-top{display:flex;align-items:center;gap:16px}
+    .robot{display:grid;place-items:center;flex:0 0 64px;width:64px;height:64px;border:1px solid #46d9ff66;border-radius:20px;background:#19bdf51b;font-size:34px;box-shadow:0 0 28px #27c8ff24}
+    .eyebrow{font-size:.7rem;letter-spacing:1.6px;color:var(--cyan);font-weight:800;margin:0 0 6px}
+    .hero h2{font-size:clamp(1.25rem,4vw,1.65rem);margin:0 0 5px}
+    .hero p{line-height:1.65;color:#bfd0e9;margin:0}
+    .unlock{display:flex;gap:12px;align-items:flex-start;margin-top:17px;padding:14px;border:1px solid #28634f;border-radius:16px;background:#0b2a2a;color:#d9fff0;line-height:1.6}
+    .unlock b{color:var(--green)}
+    .notice{margin-top:12px;padding:12px 14px;border:1px solid #6b5326;border-radius:14px;background:#2a2111;color:#f7dfad;font-size:.84rem;line-height:1.65}
+    .section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:25px 2px 12px}
+    .section-title h2{font-size:1.22rem;margin:0}
+    .section-title span{font-size:.78rem;color:#92a9ca}
+    .bots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .bot{min-width:0;overflow:hidden;border:1px solid #203d65;border-radius:20px;background:linear-gradient(160deg,#10274a,#0a1831);box-shadow:0 12px 26px #0002;transition:transform .2s,border-color .2s}
+    .bot:hover{transform:translateY(-3px);border-color:#3b83ae}
+    .bot-img-wrap{position:relative;height:180px;background:radial-gradient(ellipse at 50% 50%,#16436a,#0a1933 72%);overflow:hidden}
+    .bot-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+    .bot-number{position:absolute;top:10px;left:10px;padding:4px 9px;border:1px solid #ffffff30;border-radius:999px;background:#06152cbb;color:#dcecff;font-size:.7rem;font-weight:800}
+    .bot-body{padding:15px}
+    .bot h3{font-size:1.08rem;line-height:1.35;margin:0 0 10px}
+    .price-line{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+    .price{font-size:1.55rem;font-weight:800;color:#fff}
+    .price-caption{font-size:.76rem;color:#9eb5d7}
+    .details{display:grid;gap:8px;margin:0 0 14px}
+    .detail{display:flex;justify-content:space-between;gap:8px;font-size:.82rem;line-height:1.4}
+    .detail span{color:#9fb5d4}
+    .detail strong{text-align:right;font-weight:700}
+    .detail .commission{color:var(--green)}
+    .buy{width:100%;border:1px solid #2d8bb2;border-radius:12px;padding:11px 12px;color:#06172a;font-weight:800;background:linear-gradient(100deg,#64e5ff,#6df2c2);cursor:pointer}
+    .buy:focus-visible,.back:focus-visible,.modal button:focus-visible,.modal a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+    .buy:disabled{opacity:.6;cursor:wait}
+.redeem-box{display:grid;gap:8px;margin-top:13px;padding:12px;border:1px solid #31547c;border-radius:14px;background:#07162d}
+    .redeem-box label{font-size:.82rem;font-weight:700;color:#c8def8}
+    .redeem-input{width:100%;min-width:0;padding:10px 11px;border:1px solid #315276;border-radius:10px;background:#0b1e39;color:#fff}
+    .redeem-btn{width:100%;padding:10px;border:1px solid #318da8;border-radius:10px;background:linear-gradient(100deg,#5edfff,#70f0c0);color:#06172a;font-weight:800;cursor:pointer}
+    .redeem-btn:disabled{opacity:.6;cursor:wait}
+    .admin-message{font-size:.85rem;font-weight:700;color:#65dcff;text-decoration:underline;text-align:center}
+    .redeem-status{font-size:.8rem;line-height:1.5;color:#f5d99b;margin:0;overflow-wrap:anywhere}
+    .redeem-status.ok{color:#86f2c3}
+    .free-card{display:flex;gap:14px;align-items:center;padding:16px;border:1px dashed #3b7a78;border-radius:18px;background:#0b242f}
+    .free-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:16px;background:#123d4b;font-size:26px}
+    .free-card h3{font-size:1rem;margin:0 0 4px}
+    .free-card p{font-size:.84rem;line-height:1.55;color:#a9c2d9;margin:0}
+    .free-state{margin-left:auto;white-space:nowrap;color:#9cebd4;font-size:.78rem;font-weight:800}
+    .footer{text-align:center;color:#8198bb;font-size:.78rem;margin-top:24px}
+    .modal-backdrop{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:#020817d9;backdrop-filter:blur(7px)}
+    .modal-backdrop.open{display:flex}
+    .modal{width:min(100%,430px);padding:21px;border:1px solid #2b527e;border-radius:22px;background:#0c1d3a;box-shadow:0 25px 80px #0008}
+    .modal h2{font-size:1.3rem;margin:0 0 7px}
+    .modal p{color:#b6c9e2;line-height:1.65;margin:0 0 13px}
+    .modal-summary{padding:13px;border:1px solid #203d65;border-radius:14px;background:#09172f;margin-bottom:14px}
+    .modal-summary div{display:flex;justify-content:space-between;gap:12px;margin:5px 0;font-size:.9rem}
+    .modal-summary span{color:#a6bbd8}
+    .ref-field{display:grid;gap:6px;margin:13px 0}
+    .ref-field label{font-size:.82rem;color:#c3d4ea}
+    .ref-field input{width:100%;padding:11px 12px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff}
+    .modal-msg{font-size:.88rem;line-height:1.6;margin:10px 0;color:#ffdf9a}
+    .modal-actions{display:flex;gap:10px;margin-top:14px}
+    .modal-actions button,.modal-actions a{display:flex;align-items:center;justify-content:center;flex:1;min-height:44px;padding:10px;border:1px solid #315276;border-radius:12px;text-decoration:none;font-weight:700;cursor:pointer}
+    .cancel{background:#142849;color:#eaf3ff}
+    .confirm{background:linear-gradient(100deg,#64e5ff,#6df2c2);color:#06172a;border:0!important}
+    .hidden{display:none!important}
+    @media(min-width:800px){.bots{grid-template-columns:repeat(3,minmax(0,1fr))}.bot-img-wrap{height:200px}}
+    @media(max-width:430px){.shop{width:min(100% - 20px,980px)}.bots{grid-template-columns:1fr}.bot{display:grid;grid-template-columns:38% 1fr}.bot-img-wrap{height:100%;min-height:250px}.bot-img{position:absolute;inset:0}.bot-body{padding:13px}.bot h3{font-size:1rem}.price{font-size:1.35rem}.detail{font-size:.77rem}.buy{padding:10px 7px}.free-state{white-space:normal;text-align:right}}
+    @media(prefers-reduced-motion:reduce){.bot{transition:none}.bot:hover{transform:none}}
+      /* ---- Live mining progress ---- */
+    .mine-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+    .mine-card{padding:16px;border:1px solid #285184;border-radius:20px;background:linear-gradient(160deg,#10274a,#0a1831);box-shadow:0 12px 26px #0002}
+    .mine-head{display:flex;align-items:center;gap:12px}
+    .mine-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #46d9ff55;border-radius:14px;background:#19bdf51b;font-size:22px}
+    .mine-title{min-width:0;flex:1}
+    .mine-title h3{font-size:1rem;line-height:1.3;margin:0 0 3px}
+    .mine-status{font-size:.74rem;font-weight:800;color:#9fb5d4}
+    .mine-status.running{color:var(--green)}
+    .mine-status.done{color:#ffe08a}
+    .mine-status.error{color:#ff9d9d}
+    .mine-pct{font-size:1.15rem;color:var(--cyan);font-variant-numeric:tabular-nums}
+    .mine-bar{position:relative;height:12px;margin:14px 0;border-radius:999px;background:#07162d;border:1px solid #23436d;overflow:hidden}
+    .mine-bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#4bdcff,#76f3c0);box-shadow:0 0 12px #4bdcff66;transition:width .8s linear}
+    .mine-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mine-grid div{min-width:0;padding:9px 10px;border:1px solid #1f3b61;border-radius:12px;background:#0a1a34}
+    .mine-grid span{display:block;font-size:.7rem;color:#9fb5d4;margin-bottom:3px;line-height:1.3}
+    .mine-grid strong{display:block;font-size:.88rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .mine-grid strong.ok{color:var(--green)}
+    .mine-foot{margin:11px 2px 0;font-size:.72rem;line-height:1.55;color:#8fa6c8}
+    .mine-empty{grid-column:1/-1;margin:0;padding:16px;border:1px dashed #31547c;border-radius:16px;color:#bfd0e9;line-height:1.65;font-size:.88rem}
+    .mine-note{margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:.84rem;line-height:1.6}
+    .mine-note.err{border:1px solid #7a3636;background:#2a1414;color:#ffc9c9}
+
+    /* Premium shop refinement */
+    :root{--bg:#050d20;--panel:#0b1931;--line:#263f67;--text:#f4f8ff;--muted:#a9bad4;--cyan:#67e8f9;--green:#8af0c7}
+    body{background:radial-gradient(ellipse at 50% -14%,#153f73 0,transparent 48%),linear-gradient(180deg,#07142b 0%,#050d20 72%);letter-spacing:.005em}
+    .shop{width:min(100% - 32px,1080px);padding-top:24px}
+    .top{margin-bottom:24px}
+    .back{border-color:#294a75;background:#0c2141;box-shadow:0 8px 22px #0002;transition:transform .18s,border-color .18s}
+    .back:hover{transform:translateY(-2px);border-color:#67e8f9}
+    .brand{letter-spacing:2px;color:#9db9df}
+    .hero{padding:clamp(20px,4vw,32px);border-color:#2b5686;border-radius:26px;background:radial-gradient(ellipse at 100% 0%,#1a5487 0,transparent 44%),linear-gradient(135deg,#10294d 0%,#0a1832 72%);box-shadow:0 20px 60px #0003}
+    .robot{border-radius:21px;background:linear-gradient(145deg,#123d60,#0c2947);border-color:#4bdcff70}
+    .unlock{background:linear-gradient(110deg,#0a292d,#0a242f);border-color:#24635d}
+    .notice{background:linear-gradient(110deg,#111f3a,#10223d);border-color:#31557e;color:#d2e3f8;border-radius:16px}
+    .notice strong{display:inline-block;margin-bottom:3px;color:#83e9ff;font-size:.9rem}
+    .section-title{margin-top:30px;margin-bottom:14px}
+    .section-title h2{font-size:clamp(1.1rem,3vw,1.35rem);letter-spacing:-.01em}
+    .section-title span{letter-spacing:1px;font-size:.7rem;font-weight:800}
+    .bots{gap:18px}
+    .bot{border-color:#233e65;border-radius:22px;background:linear-gradient(155deg,#102342 0%,#09162c 100%);box-shadow:0 14px 36px #0002}
+    .bot:hover{transform:translateY(-4px);border-color:#4ab9df;box-shadow:0 20px 42px #0003,0 0 0 1px #4bdcff12}
+    .bot-img-wrap{background:radial-gradient(ellipse at 50% 35%,#19476d,#09172e 74%)}
+    .bot-img{transition:transform .35s}
+    .bot:hover .bot-img{transform:scale(1.035)}
+    .bot-number{background:#061328e8;border-color:#8bb9e455;letter-spacing:.8px}
+    .bot-body{padding:17px}
+    .bot h3{font-size:1.12rem;letter-spacing:-.01em}
+    .price{color:#f7fbff;font-size:1.7rem;letter-spacing:-.03em}
+    .price-caption{color:#a9bddb}
+    .details{gap:9px;padding:12px;border:1px solid #203b5d;border-radius:14px;background:#07162b;margin-bottom:14px}
+    .detail{font-size:.8rem}
+    .detail span{color:#a7bad6}
+    .detail strong{color:#e6f0ff}
+    .detail .commission{color:#8af0c7}
+    .buy,.redeem-btn{border:0;border-radius:13px;background:linear-gradient(105deg,#6ee7f9,#86f0c6);box-shadow:0 7px 18px #3ed5d51a;transition:filter .18s,transform .18s}
+    .buy:hover,.redeem-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+    .redeem-box{gap:9px;border-color:#29486e;border-radius:15px;background:#07152a}
+    .redeem-input,.ref-field input{border-color:#2d4b70;background:#091a33;border-radius:11px}
+    .admin-message{color:#79e8ff;text-decoration:none}
+    .admin-message:hover{text-decoration:underline}
+    .free-card{border-color:#3d8279;background:linear-gradient(110deg,#0b252f,#0b1f30)}
+    .modal{border-color:#315783;border-radius:24px;background:linear-gradient(145deg,#102342,#09172e);box-shadow:0 28px 90px #0009}
+    .modal-summary{border-color:#28466c;background:#07162b}
+    .modal-actions button,.modal-actions a{border-radius:13px}
+    .confirm{background:linear-gradient(105deg,#6ee7f9,#86f0c6)}
+    .footer{padding-top:14px;border-top:1px solid #1b3150;color:#8da4c6}
+    @media(max-width:430px){.shop{width:min(100% - 22px,1080px);padding-top:14px}.hero{border-radius:20px}.bot-body{padding:12px}.details{padding:10px}}
+    @media(prefers-reduced-motion:reduce){.back,.bot,.bot-img,.buy,.redeem-btn{transition:none}.back:hover,.buy:hover,.redeem-btn:hover,.bot:hover{transform:none}.bot:hover .bot-img{transform:none}}
+
+  </style>
+  <link rel="stylesheet" href="../css/compact-ui.css">
+  <link rel="stylesheet" href="../css/bot-shop.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-home.css">
+</head>
+<body>
+  <main class="shop">
+    <header class="top">
+      <a class="back" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরে যান">‹</a>
+      <div><div class="brand">TASK REWARD HUB</div><h1>AI Bot Pro Shop</h1></div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-top">
+        <div class="robot" aria-hidden="true">🤖</div>
+        <div><p class="eyebrow">AI MINING ROBOT SYSTEM</p><h2>আপনার বট কালেকশন তৈরি করুন</h2><p>আপনার প্রয়োজন অনুযায়ী AI Bot নির্বাচন করুন। প্রতিটি প্যাকেজের মূল্য ও সুবিধা নিচে পরিষ্কারভাবে দেওয়া হয়েছে।</p></div>
+      </div>
+      <div class="unlock"><span aria-hidden="true">🔓</span><div><b>১টা Verified Referral = ১টা Free Bot Unlock</b><br>রেফারেল সত্যিই ভেরিফাই হওয়ার পরই ফ্রি বট আনলক হবে। ভেরিফিকেশন সার্ভার থেকে নিশ্চিত না হওয়া পর্যন্ত এই পেজ নিজে থেকে কাউকে verified দেখাবে না।</div></div>
+    </section>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 2px 0">
+      <p style="color:#ff4b55;font-weight:700;line-height:1.6;margin:0">এই Bkash নম্বরে পেমেন্ট করুন: <span id="fixed-bkash-number-top">01720236858</span> (শুধুমাত্র Send Money গ্রহণযোগ্য)</p>
+      <button type="button" id="copy-fixed-bkash-top" style="border:0;border-radius:8px;padding:8px 13px;background:#ff4b55;color:#fff;font:inherit;font-weight:700;cursor:pointer">নম্বর কপি করুন</button>
+      <span id="copy-fixed-bkash-status-top" role="status" aria-live="polite" style="font-size:.85rem;color:#ff4b55"></span>
+    </div>
+
+    <button type="button" id="toggle-live-mining" class="live-mining-link" aria-expanded="false" aria-controls="live-mining-panel"><span class="live-mining-dot" aria-hidden="true"></span><span>বটের লাইভ মাইনিং দেখুন</span><span class="live-mining-arrow" aria-hidden="true">›</span></button>
+    <div id="live-mining-panel" class="live-mining-panel" hidden>
+      <div class="section-title"><h2>আপনার মাইনিং অ্যাক্টিভিটি</h2><span>LIVE ACTIVITY</span></div>
+      <section id="live-mining" aria-label="লাইভ মাইনিং প্রগ্রেস">
+        <p class="mine-note" data-note hidden></p>
+        <div class="mine-list" data-list><p class="mine-empty">মাইনিং ডেটা লোড হচ্ছে...</p></div>
+      </section>
+    </div>
+
+    <div class="section-title"><h2>AI Bot Collection</h2><span>৫টি প্যাকেজ</span></div>
+    <section class="bots" aria-label="AI Bot packages">
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/6cW9XvRY/m-MIWSKs-Z0l-G2-Bi-NTOY5-CVQHTJQOg-Ly-Qc-L7-P-ur-Ot-Yz-D3em-ZMb4up4-Qx0-Thyvq1-Rg9x-ZNO9a-Qrmc-Tb-0n-O1-BSn.jpg" alt="AI Pulse Bot v2 robot artwork" loading="lazy"><span class="bot-number">BOT 01</span></div>
+        <div class="bot-body"><h3>AI Pulse Bot v2</h3><div class="price-line"><strong class="price">৳50</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳80</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$0.10</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳2.50</strong></div></div><span class="redeem-placeholder" data-redeem-placeholder="pulse" hidden></span><div class="redeem-box" data-redeem-bot="pulse"><label for="redeem-pulse">Redeem Code</label><input id="redeem-pulse" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="pulse">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="pulse">প্যাকেজের বিস্তারিত →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/vC4tDThh/Mz-Q-Ky431ty-GFW4-At6f69-IQIvxl-UCtxmk-WZb1-Ek-Ju-Wq-CHXzhxziykxs-Mjy-Tny-EQTwe3-O4ghw5-PAVXtbdpe-JA3r-Db.jpg" alt="Quantum Core Pro robot artwork" loading="lazy"><span class="bot-number">BOT 02</span></div>
+        <div class="bot-body"><h3>Quantum Core Pro</h3><div class="price-line"><strong class="price">৳100</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳160</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$0.20</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳5</strong></div></div><span class="redeem-placeholder" data-redeem-placeholder="quantum" hidden></span><div class="redeem-box" data-redeem-bot="quantum"><label for="redeem-quantum">Redeem Code</label><input id="redeem-quantum" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="quantum">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="quantum">প্যাকেজের বিস্তারিত →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/G3WxCW7x/Ol-By-PN7xs-MYQ-KVVc-WSy-M1-P0-DVYm-QEKz-L23vfnma1-Jp2u-V9-9az-Of-SQIFSt3-INry-Tg-OZfmi-YRu-NGUf7u-K90pf.jpg" alt="Neural Matrix Bot robot artwork" loading="lazy"><span class="bot-number">BOT 03</span></div>
+        <div class="bot-body"><h3>Neural Matrix Bot</h3><div class="price-line"><strong class="price">৳200</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳320</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$0.40</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳10</strong></div></div><span class="redeem-placeholder" data-redeem-placeholder="neural" hidden></span><div class="redeem-box" data-redeem-bot="neural"><label for="redeem-neural">Redeem Code</label><input id="redeem-neural" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="neural">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="neural">প্যাকেজের বিস্তারিত →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/DDRG594T/PYbai-V6-Td-Zx-M7-Ha-Qwca5-J87-FT06x-CVeagc-Cy-Fmz-EHSjw-Gat-JC8-BCz9ae-Boks-KExa-Ar-S06-Ij502-Z9g4jg-MHi-D.jpg" alt="Cyber Forge Titan robot artwork" loading="lazy"><span class="bot-number">BOT 04</span></div>
+        <div class="bot-body"><h3>Cyber Forge Titan</h3><div class="price-line"><strong class="price">৳300</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳480</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$0.60</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳15</strong></div></div><span class="redeem-placeholder" data-redeem-placeholder="cyber" hidden></span><div class="redeem-box" data-redeem-bot="cyber"><label for="redeem-cyber">Redeem Code</label><input id="redeem-cyber" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="cyber">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="cyber">প্যাকেজের বিস্তারিত →</button></div>
+      </article>
+      <article class="bot">
+        <div class="bot-img-wrap"><img class="bot-img" src="https://i.ibb.co.com/0RfhmCMV/R5-IYj-HQyi-SMUL7-Aqf-QAby-TFi-Fu-Hd-XMc-APD054b-M1-GVTv4e-TVEJq3-Hm-QCmb-LOOCa-ATIso0t-w-Yv-NWf-JRd7-ks.jpg" alt="Apex Sentinel AI robot artwork" loading="lazy"><span class="bot-number">BOT 05</span></div>
+        <div class="bot-body"><h3>Apex Sentinel AI</h3><div class="price-line"><strong class="price">৳500</strong><span class="price-caption">প্যাকেজ মূল্য</span></div><div class="details"><div class="detail"><span>প্রদর্শিত রিওয়ার্ড*</span><strong>৳800</strong></div><div class="detail"><span>প্রদর্শিত বোনাস*</span><strong>$1.00</strong></div><div class="detail"><span>রেফারার কমিশন (৫%)</span><strong class="commission">৳25</strong></div></div><span class="redeem-placeholder" data-redeem-placeholder="apex" hidden></span><div class="redeem-box" data-redeem-bot="apex"><label for="redeem-apex">Redeem Code</label><input id="redeem-apex" class="redeem-input" maxlength="40" placeholder="এই বটের কোড লিখুন" autocomplete="off"><button type="button" class="redeem-btn" data-redeem="apex">কোড দিয়ে বট আনলক</button><a class="admin-message" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">অ্যাডমিনকে মেসেজ দিন ↗</a><p class="redeem-status" aria-live="polite"></p></div>
+        <button class="buy" type="button" data-bot="apex">প্যাকেজের বিস্তারিত →</button></div>
+      </article>
+    </section>
+
+    <div class="section-title"><h2>🎁 ফ্রি বট আনলক</h2></div>
+    <section class="free-card"><div class="free-icon" aria-hidden="true">🔐</div><div><h3>Verified Referral Reward</h3><p>১ জন ভেরিফায়েড রেফার = ১টি ফ্রি বট আনলক। আপনার verified referral সংখ্যা সার্ভার থেকে যাচাই হলে এখানে অগ্রগতি দেখানো হবে।</p></div><span class="free-state">যাচাই প্রয়োজন</span></section>
+    <p class="footer">Task Reward Hub · AI Bot Pro Shop</p>
+  </main>
+
+  <div class="modal-backdrop" id="bot-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <section class="modal">
+      <h2 id="modal-title">প্যাকেজের বিস্তারিত</h2>
+      <p id="modal-description">নির্বাচিত বটের মূল্য ও কমিশন দেখে পরবর্তী ধাপ যাচাই করুন।</p>
+      <div class="modal-summary"><div><span>AI Bot</span><strong id="modal-bot-name">—</strong></div><div><span>প্যাকেজ মূল্য</span><strong id="modal-price">—</strong></div><div><span>রেফারার কমিশন</span><strong id="modal-commission">—</strong></div></div>
+      <p class="modal-msg" id="modal-message" aria-live="polite">পেমেন্ট ও বট আনলক কেবল অনুমোদিত লেনদেনের মাধ্যমেই সম্পন্ন হবে।</p>
+      <div id="modal-redeem-area" class="modal-redeem-area" aria-label="Redeem code and admin help"></div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px">
+        <p style="color:#ff4b55;font-weight:700;line-height:1.6;margin:0">এই Bkash নম্বরে পেমেন্ট করুন: <span id="fixed-bkash-number-modal">01720236858</span> (শুধুমাত্র Send Money গ্রহণযোগ্য)</p>
+        <button type="button" id="copy-fixed-bkash-modal" style="border:0;border-radius:8px;padding:8px 13px;background:#ff4b55;color:#fff;font:inherit;font-weight:700;cursor:pointer">নম্বর কপি করুন</button>
+        <span id="copy-fixed-bkash-status-modal" role="status" aria-live="polite" style="font-size:.85rem;color:#ff4b55"></span>
+      </div>
+      <div id="purchase-fields" style="display:grid;gap:9px;margin:12px 0">
+        <label for="purchase-method">পেমেন্ট পদ্ধতি</label>
+        <select id="purchase-method" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <option value="wallet">Wallet Balance</option><option value="bKash">bKash</option><option value="Nagad">Nagad</option>
+        </select>
+        <div id="direct-payment-fields" class="hidden" style="display:grid;gap:9px">
+          <label for="purchase-sender">যে নম্বর থেকে পেমেন্ট করেছেন</label>
+          <input id="purchase-sender" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <label for="purchase-trx">Transaction ID (TrxID)</label>
+          <input id="purchase-trx" maxlength="100" placeholder="TrxID লিখুন" style="padding:11px;border:1px solid #315276;border-radius:11px;background:#07152f;color:#fff">
+          <p style="font-size:.8rem;color:#f7dfad;margin:0">শুধু অফিসিয়াল নম্বরে পেমেন্ট করার পর আবেদন জমা দিন।</p>
+        </div>
+      </div>
+      <div class="modal-actions"><button class="cancel" type="button" id="modal-cancel">ফিরে যান</button><button class="confirm" type="button" id="modal-confirm">ব্যালেন্স যাচাই করুন</button></div>
+    </section>
+  </div>
+
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { doc, runTransaction, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+    const botLabels = {pulse:'AI Pulse Bot v2',quantum:'Quantum Core Pro',neural:'Neural Matrix Bot',cyber:'Cyber Forge Titan',apex:'Apex Sentinel AI'};
+    document.querySelectorAll('[data-redeem]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const botId = button.dataset.redeem;
+        const box = button.closest('.redeem-box');
+        const input = box.querySelector('.redeem-input');
+        const status = box.querySelector('.redeem-status');
+        const code = input.value.trim().toUpperCase();
+        if (!code) { status.textContent = 'আগে অ্যাডমিনের কাছ থেকে পাওয়া redeem code লিখুন।'; return; }
+        button.disabled = true; status.className = 'redeem-status'; status.textContent = 'কোড যাচাই হচ্ছে...';
+        try {
+          const user = window.hubUser ? await window.hubUser : null;
+          if (!user || !user.uid) throw new Error('লগইন তথ্য পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
+          const codeRef = doc(db, 'botRedeemCodes', code);
+          const userRef = doc(db, 'users', user.uid);
+          await runTransaction(db, async tx => {
+            const codeSnap = await tx.get(codeRef);
+            if (!codeSnap.exists()) throw new Error('এই কোডটি সঠিক নয়। অ্যাডমিনের কাছ থেকে নতুন কোড নিন।');
+            const codeData = codeSnap.data();
+            if (codeData.botId !== botId) throw new Error('এই কোডটি ' + (codeData.botName || 'অন্য বট') + ' এর জন্য। সঠিক বটের কোড ব্যবহার করুন।');
+            if (codeData.used) throw new Error('এই কোডটি আগেই ব্যবহার করা হয়েছে।');
+            if (!Number(codeData.expiresAtMs) || Number(codeData.expiresAtMs) <= Date.now()) throw new Error('এই কোডের ৩০ মিনিটের মেয়াদ শেষ। অ্যাডমিনের কাছ থেকে নতুন কোড নিন।');
+            const userSnap = await tx.get(userRef);
+            if (!userSnap.exists()) throw new Error('আপনার ইউজার প্রোফাইল পাওয়া যায়নি।');
+            const unlocked = Array.isArray(userSnap.data().unlockedBots) ? userSnap.data().unlockedBots : [];
+            if (unlocked.includes(botId)) throw new Error('এই বটটি আপনার অ্যাকাউন্টে আগে থেকেই আনলক করা আছে।');
+            tx.update(codeRef, { used: true, usedBy: user.uid, usedAt: serverTimestamp() });
+            tx.update(userRef, { unlockedBots: arrayUnion(botId), lastRedeemCode: code, updatedAt: serverTimestamp() });
+          });
+          status.className = 'redeem-status ok';
+          status.textContent = 'সফল! ' + botLabels[botId] + ' আপনার অ্যাকাউন্টে আনলক হয়েছে।';
+          input.value = '';
+        } catch (error) {
+          status.textContent = error.message || 'কোড যাচাই করা যায়নি। আবার চেষ্টা করুন।';
+        } finally { button.disabled = false; }
+      });
+    });
+  </script>
+
+  <script>
+    (function () {
+      function setupCopy(buttonId, numberId, statusId) {
+        var button = document.getElementById(buttonId);
+        var number = document.getElementById(numberId);
+        var status = document.getElementById(statusId);
+        if (!button || !number || !status) return;
+        button.addEventListener('click', async function () {
+          var value = number.textContent.trim();
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(value);
+            } else {
+              var input = document.createElement('textarea');
+              input.value = value;
+              input.style.position = 'fixed';
+              input.style.opacity = '0';
+              document.body.appendChild(input);
+              input.select();
+              var copied = document.execCommand('copy');
+              input.remove();
+              if (!copied) throw new Error('copy failed');
+            }
+            status.textContent = 'নম্বর কপি হয়েছে!';
+          } catch (error) {
+            status.textContent = 'কপি হয়নি—নম্বরটি চেপে ধরে কপি করুন।';
+          }
+        });
+      }
+      setupCopy('copy-fixed-bkash-top', 'fixed-bkash-number-top', 'copy-fixed-bkash-status-top');
+      setupCopy('copy-fixed-bkash-modal', 'fixed-bkash-number-modal', 'copy-fixed-bkash-status-modal');
+    })();
+  </script>
+  <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
+    </nav>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script type="module" src="../js/mining-progress.js"></script>
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { collection, doc, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+    (function(){
+      'use strict';
+      const packages = {
+        pulse:{name:'AI Pulse Bot v2',price:50,commission:2.5},
+        quantum:{name:'Quantum Core Pro',price:100,commission:5},
+        neural:{name:'Neural Matrix Bot',price:200,commission:10},
+        cyber:{name:'Cyber Forge Titan',price:300,commission:15},
+        apex:{name:'Apex Sentinel AI',price:500,commission:25}
+      };
+      const modal=document.getElementById('bot-modal'),message=document.getElementById('modal-message'),confirmBtn=document.getElementById('modal-confirm');
+      const methodSelect=document.getElementById('purchase-method'),directFields=document.getElementById('direct-payment-fields');
+      const senderInput=document.getElementById('purchase-sender'),trxInput=document.getElementById('purchase-trx');
+      const redeemArea=document.getElementById('modal-redeem-area');
+      let selected=null, activeRedeemBox=null, activeRedeemPlaceholder=null;
+      document.querySelectorAll('.redeem-box[data-redeem-bot]').forEach(box=>{
+        const id=box.dataset.redeemBot;
+        const placeholder=document.querySelector('[data-redeem-placeholder="'+id+'"]');
+        if(placeholder) placeholder.parentNode.insertBefore(placeholder,box);
+      });
+      function returnRedeemBox(){
+        if(activeRedeemBox&&activeRedeemPlaceholder&&activeRedeemPlaceholder.parentNode){
+          activeRedeemPlaceholder.parentNode.insertBefore(activeRedeemBox,activeRedeemPlaceholder.nextSibling);
+        }
+        activeRedeemBox=null;activeRedeemPlaceholder=null;
+        if(redeemArea) redeemArea.replaceChildren();
+      }
+      function money(n){return '৳'+Number(n).toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
+      function showMethod(){const direct=methodSelect.value!=='wallet';directFields.classList.toggle('hidden',!direct);confirmBtn.textContent=direct?'পেমেন্ট আবেদন জমা দিন':'Wallet Purchase আবেদন দিন';}
+      function closeModal(){modal.classList.remove('open');returnRedeemBox();selected=null;message.textContent='পেমেন্ট যাচাইয়ের পর Admin অনুমোদন দিলে বট আনলক হবে।';}
+      methodSelect.addEventListener('change',showMethod);
+      document.querySelectorAll('[data-bot]').forEach(btn=>btn.addEventListener('click',()=>{
+        returnRedeemBox();
+        selected={id:btn.dataset.bot,...packages[btn.dataset.bot]};if(!selected.name)return;
+        activeRedeemBox=document.querySelector('.redeem-box[data-redeem-bot="'+selected.id+'"]');
+        activeRedeemPlaceholder=document.querySelector('[data-redeem-placeholder="'+selected.id+'"]');
+        if(activeRedeemBox&&redeemArea) redeemArea.appendChild(activeRedeemBox);
+        document.getElementById('modal-bot-name').textContent=selected.name;document.getElementById('modal-price').textContent=money(selected.price);
+        document.getElementById('modal-commission').textContent=money(selected.commission)+' (৫%)';
+        methodSelect.value='wallet';senderInput.value='';trxInput.value='';showMethod();
+        confirmBtn.disabled=false;message.textContent='আবেদন জমা দিলে Admin যাচাই করবেন। অনুমোদনের আগে Wallet থেকে টাকা কাটা বা বট আনলক হবে না.';
+        modal.classList.add('open');document.getElementById('modal-cancel').focus();
+      }));
+      document.getElementById('modal-cancel').addEventListener('click',closeModal);
+      modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
+      confirmBtn.addEventListener('click',async()=>{
+        if(!selected||confirmBtn.disabled)return;
+        confirmBtn.disabled=true;
+        try{
+          const user=window.hubUser?await window.hubUser:null;if(!user||!user.uid)throw new Error('লগইন পাওয়া যায়নি। আবার লগইন করুন।');
+          const method=methodSelect.value,senderNumber=senderInput.value.trim(),trxId=trxInput.value.trim().replace(/\s+/g,'');
+          if(!['wallet','bKash','Nagad'].includes(method))throw new Error('সঠিক পেমেন্ট পদ্ধতি নির্বাচন করুন।');
+          if(method!=='wallet'){
+            if(!/^01[3-9]\d{8}$/.test(senderNumber))throw new Error('সঠিক ১১ ডিজিটের পেমেন্ট নম্বর লিখুন।');
+            if(trxId.length<5||trxId.length>100)throw new Error('সঠিক TrxID লিখুন।');
+            if(!confirm('আপনি কি অফিসিয়াল নম্বরে পেমেন্ট সম্পন্ন করেছেন এবং TrxID সঠিক?'))return;
+          }
+          await runTransaction(db,async tx=>{
+            const userRef=doc(db,'users',user.uid),userSnap=await tx.get(userRef);
+            if(!userSnap.exists())throw new Error('ইউজার প্রোফাইল পাওয়া যায়নি।');
+            const profile=userSnap.data(),unlocked=Array.isArray(profile.unlockedBots)?profile.unlockedBots:[];
+            if(unlocked.includes(selected.id))throw new Error('এই বটটি আগে থেকেই আনলক করা আছে।');
+            if(method==='wallet'&&Number(profile.balance||0)<selected.price)throw new Error('Wallet Balance পর্যাপ্ত নয়।');
+            const requestRef=doc(collection(db,'botPurchaseRequests'));
+            tx.set(requestRef,{uid:user.uid,userName:String(profile.name||profile.displayName||user.displayName||'নাম নেই').slice(0,100),
+              email:String(user.email||profile.email||'').slice(0,160),botId:selected.id,botName:selected.name,amount:selected.price,
+              paymentMethod:method,senderNumber:method==='wallet'?'':senderNumber,trxId:method==='wallet'?'':trxId,
+              status:'pending',createdAt:serverTimestamp()});
+          });
+          message.textContent='Bot Purchase আবেদন জমা হয়েছে। Admin যাচাই করে অনুমোদন দিলে বট আনলক হবে'+(method==='wallet'?' এবং Wallet থেকে মূল্য কাটা হবে।':'।');
+          confirmBtn.disabled=true;
+        }catch(err){message.textContent=err.message||'আবেদন জমা হয়নি। Firestore Rules যাচাই করুন।';confirmBtn.disabled=false;}
+      });
+    })();
+  </script><script>
+    (function () {
+      var toggle = document.getElementById("toggle-live-mining");
+      var panel = document.getElementById("live-mining-panel");
+      if (!toggle || !panel) return;
+      toggle.addEventListener("click", function () {
+        var isOpen = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        panel.hidden = isOpen;
+        toggle.querySelector(".live-mining-arrow").textContent = isOpen ? "›" : "⌄";
+      });
+    })();
+  </script>
+</body>
+</html>

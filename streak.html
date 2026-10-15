@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>Task Reward Hub — Daily Streak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/streak.css">
+  <link rel="stylesheet" href="../css/compact-ui.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-home.css">
+</head>
+<body>
+  <div class="app streak-app">
+    <header class="head">
+      <div class="head__top">
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম"><span class="brand__mark" aria-hidden="true">TR</span><span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span></a>
+        <a class="icon-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">⌂</a>
+      </div>
+      <div class="welcome">
+        <div><p class="eyebrow">DAILY STREAK CHALLENGE</p><h1>Daily <span>Streak</span> 🔥</h1><p class="user-id">প্রতিদিন ফিরে আসুন, ধারাবাহিকতা তৈরি করুন</p></div>
+        <div class="welcome-avatar" aria-hidden="true">🔥</div>
+      </div>
+      <div class="header-glow" aria-hidden="true"></div>
+    </header>
+    <main class="streak-main">
+      <section class="streak-hero">
+        <div class="streak-flame" aria-hidden="true">🔥</div>
+        <p class="streak-kicker">YOUR CONSISTENCY MATTERS</p>
+        <h2>প্রতিদিন চেক-ইন করুন!</h2>
+        <p>একটানা প্রতিদিন চেক-ইন করে আপনার স্ট্রিক বাড়ান এবং ভার্চুয়াল XP আনলক করুন। XP শুধু গেমের অগ্রগতি—এটি নগদ টাকা বা উইথড্র ব্যালেন্স নয়।</p>
+        <div class="streak-count"><strong id="current-streak">0</strong><span>দিনের স্ট্রিক</span></div>
+        <button id="checkin-button" class="checkin-button" type="button">🔥 আজকের চেক-ইন</button>
+        <p id="streak-status" class="streak-status" role="status" aria-live="polite"></p>
+      </section>
+      <section class="streak-summary">
+        <article><span>সর্বোচ্চ স্ট্রিক</span><strong id="best-streak">0 দিন</strong></article>
+        <article><span>মোট চেক-ইন</span><strong id="total-checkins">0</strong></article>
+        <article><span>মোট XP</span><strong id="streak-xp">0</strong></article>
+      </section>
+      <section class="streak-calendar">
+        <div class="streak-section-head"><div><p class="eyebrow">7 DAY JOURNEY</p><h2>সাপ্তাহিক চ্যালেঞ্জ</h2></div><span id="week-progress">0/7</span></div>
+        <div class="streak-days" id="streak-days">
+          <div class="streak-day"><span>দিন ১</span><b>+10 XP</b></div><div class="streak-day"><span>দিন ২</span><b>+15 XP</b></div><div class="streak-day"><span>দিন ৩</span><b>+20 XP</b></div><div class="streak-day"><span>দিন ৪</span><b>+25 XP</b></div><div class="streak-day"><span>দিন ৫</span><b>+30 XP</b></div><div class="streak-day"><span>দিন ৬</span><b>+40 XP</b></div><div class="streak-day"><span>দিন ৭</span><b>+75 XP</b></div>
+        </div>
+        <p class="streak-note">প্রতিদিনের XP একবারই পাওয়া যাবে। কোনো দিন বাদ পড়লে বর্তমান স্ট্রিক আবার ১ থেকে শুরু হবে।</p>
+      </section>
+      <section class="streak-history">
+        <div class="streak-section-head"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>চেক-ইন ইতিহাস</h2></div></div>
+        <ul id="streak-history-list"><li class="streak-history-empty">এখনো কোনো চেক-ইন করা হয়নি।</li></ul>
+      </section>
+      <a class="streak-back" href="dashboard.html">← ড্যাশবোর্ডে ফিরে যান</a>
+    </main>
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/streak.js"></script>
+</body>
+</html>

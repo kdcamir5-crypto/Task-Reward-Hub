@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07152F">
+  <title>Task Reward Hub — Reward Codes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/tasks.css">
+  <link rel="stylesheet" href="../css/rewards.css">
+  <link rel="stylesheet" href="../css/compact-ui.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-home.css">
+</head>
+<body>
+  <div class="app rewards-app">
+    <header class="head rewards-head">
+      <div class="head__top">
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub হোম">
+          <span class="brand__mark" aria-hidden="true">TR</span>
+          <span class="brand__text"><strong>Task Reward Hub</strong><small>COMMUNITY WORK</small></span>
+        </a>
+        <div class="head__actions">
+          <a class="icon-btn rewards-home-btn" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="welcome rewards-welcome">
+        <div>
+          <p class="eyebrow">BONUS & REWARDS</p>
+          <h1>রিওয়ার্ড <span>কোড</span></h1>
+          <p class="user-id">অফিসিয়াল কোড ক্লেইম করে বোনাস সংগ্রহ করুন</p>
+        </div>
+        <div class="welcome-avatar rewards-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5V7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5V7Z"/></svg>
+        </div>
+      </div>
+      <div class="header-glow" aria-hidden="true"></div>
+    </header>
+
+    <main class="rewards-main">
+      <section class="rewards-hero" aria-label="রিওয়ার্ড কোড ক্লেইম">
+        <div class="rewards-hero__shine" aria-hidden="true"></div>
+        <div class="rewards-hero__top"><span class="rewards-pill"><span></span> REWARD CENTER</span><span class="rewards-gift" aria-hidden="true">✦</span></div>
+        <div class="rewards-hero__copy">
+          <p>আপনার পরবর্তী বোনাস</p>
+          <h2>কোড লিখুন,<br><em>রিওয়ার্ড</em> জিতে নিন!</h2>
+          <span>অফিসিয়াল চ্যানেলে প্রকাশিত কোড এখানে ব্যবহার করুন।</span>
+        </div>
+        <div class="rewards-hero__orb rewards-hero__orb--one" aria-hidden="true"></div>
+        <div class="rewards-hero__orb rewards-hero__orb--two" aria-hidden="true"></div>
+      </section>
+
+      <section class="rewards-claim-panel">
+        <div class="rewards-panel-heading">
+          <span class="rewards-panel-icon" aria-hidden="true">⌁</span>
+          <div><h3>কোড ক্লেইম করুন</h3><p>আপনার কাছে থাকা রিওয়ার্ড কোড লিখুন</p></div>
+          <span class="rewards-step">01</span>
+        </div>
+        <form id="form" class="rewards-form">
+          <label for="code">রিওয়ার্ড কোড</label>
+          <div class="rewards-input-wrap"><span aria-hidden="true">✧</span><input id="code" placeholder="যেমন WELCOME1" autocomplete="off" maxlength="20" aria-label="রিওয়ার্ড কোড"></div>
+          <p class="rewards-hint"><span aria-hidden="true">ⓘ</span> কোডের বানান ঠিক আছে কিনা দেখে নিন। প্রতিটি কোড একবারই ব্যবহার করা যাবে।</p>
+          <button type="submit" class="rewards-submit"><span>রিওয়ার্ড ক্লেইম করুন</span><span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <p class="result rewards-result" id="result" role="status" aria-live="polite"></p>
+
+      <div class="rewards-section-heading">
+        <div><p class="eyebrow">YOUR REWARD JOURNEY</p><h2>ব্যবহৃত কোডের ইতিহাস</h2></div>
+        <span class="rewards-history-tag">HISTORY</span>
+      </div>
+      <section class="rewards-history-panel" aria-label="ব্যবহৃত কোডের ইতিহাস">
+        <div class="rewards-history-heading"><span class="rewards-history-icon" aria-hidden="true">↻</span><div><strong>আমার ক্লেইম হিস্ট্রি</strong><small>আগের রিওয়ার্ডগুলোর তালিকা</small></div></div>
+        <ul class="hist" id="hist"></ul>
+      </section>
+      <p class="rewards-footnote">শুধুমাত্র বৈধ ও মেয়াদ থাকা কোড ক্লেইম করা যাবে।</p>
+    </main>
+
+    <nav class="nav" aria-label="প্রধান মেনু">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span>হোম</span></a>
+      <a href="tasks.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 3h6v4H9zM7 13h10M7 17h7"/></svg><span>টাস্ক</span></a>
+      <a href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H21v16H5a2 2 0 0 1-2-2zM3 8h18M16 13h5"/></svg><span>ওয়ালেট</span></a>
+      <a href="feed.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>কমিউনিটি</span></a>
+      <a href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg><span>প্রোফাইল</span></a>
+    </nav>
+  </div>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/codes-data.js"></script>
+  <script src="../js/rewards.js"></script>
+</body>
+</html>
