@@ -79,3 +79,8 @@
 .tasks-live{box-shadow:0 0 15px rgba(57,216,255,.1)}
 @keyframes tasksCosmicFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(2deg)}}
 @media(prefers-reduced-motion:reduce){.tasks-hero__art{animation:none!important}}
+
+/* Consistent professional icon-only home button matching the wallet page */
+.tasks-home-link,.feed-home-link,.profile-home-link{display:grid!important;place-items:center!important;flex:0 0 42px!important;width:42px!important;height:42px!important;min-width:42px!important;padding:0!important;border:1px solid rgba(142,187,255,.22)!important;border-radius:13px!important;background:rgba(255,255,255,.07)!important;color:#ddecff!important;text-decoration:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important;transition:background .2s ease,border-color .2s ease,transform .2s ease!important}
+.tasks-home-link svg,.feed-home-link svg,.profile-home-link svg{display:block!important;width:20px!important;height:20px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.tasks-home-link:hover,.feed-home-link:hover,.profile-home-link:hover{background:rgba(35,142,255,.18)!important;border-color:rgba(73,190,255,.55)!important;transform:translateY(-1px)}
