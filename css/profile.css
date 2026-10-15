@@ -15,3 +15,18 @@
 .profile-app .go:hover{filter:brightness(1.1);box-shadow:0 0 22px rgba(45,190,255,.25)}
 @keyframes profileAvatarGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(48,177,255,.12))}50%{filter:drop-shadow(0 0 12px rgba(48,177,255,.32))}}
 @media(prefers-reduced-motion:reduce){.profile-app .avatar{animation:none!important}}
+
+
+/* Profile picture uploader and ready-made avatars */
+.profile-app .avatar{overflow:hidden}
+.profile-app .avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.profile-app .avatar-settings .avatar-help{margin:-5px 0 14px;color:#9fb7d8;font-size:.83rem;line-height:1.55}
+.profile-app .avatar-upload-btn{margin-top:0}
+.profile-app .avatar-presets-heading{margin:18px 0 10px;color:#c9ddf6;font-size:.86rem;font-weight:700}
+.profile-app .avatar-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.profile-app .avatar-choice{display:flex;min-width:0;flex-direction:column;align-items:center;gap:7px;padding:10px 5px;border:1px solid #263f64;border-radius:15px;background:#091a32;color:#dcecff;font:inherit;font-size:.76rem;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.profile-app .avatar-choice img{width:62px;height:62px;object-fit:cover;border-radius:50%;border:2px solid #355d8c;background:#102747}
+.profile-app .avatar-choice[aria-pressed="true"]{border-color:#34c9ff;background:rgba(20,120,220,.18);box-shadow:0 0 0 2px rgba(52,201,255,.1),0 0 18px rgba(52,201,255,.13)}
+.profile-app .avatar-choice:hover{border-color:#45bfff;transform:translateY(-2px)}
+.profile-app #avatar-msg{margin-top:10px;line-height:1.5}
+@media(max-width:380px){.profile-app .avatar-presets{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-app .avatar-choice img{width:56px;height:56px}}
