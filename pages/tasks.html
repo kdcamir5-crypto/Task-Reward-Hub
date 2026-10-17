@@ -17,14 +17,16 @@
   <link rel="stylesheet" href="../css/shared-shell.css">
 </head>
 <body>
-  <!-- Shared Task Reward Hub header: static markup ensures it renders on every inner page -->
-  <header class="shared-header">
-    <div class="shared-header-top"><a class="shared-brand" href="dashboard.html"><span class="shared-brand-mark">TR</span>Task Reward Hub</a><div class="shared-actions"><button class="shared-action" id="support-headphones" type="button" aria-label="অ্যাডমিনের সঙ্গে যোগাযোগ"><svg viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13a2 2 0 0 0 2 2h2v-5H6a2 2 0 0 0-2 2zM20 13a2 2 0 0 1-2 2h-2v-5h2a2 2 0 0 1 2 2z"/></svg></button><a class="shared-action" href="notifications.html" aria-label="নোটিফিকেশন">♧</a></div></div>
-    <div class="shared-user"><div class="shared-avatar" id="shared-avatar">👤</div><div class="shared-user-copy"><strong id="shared-name">স্বাগতম</strong><small id="shared-id">Collector ID: —</small><div class="shared-user-pills"><span class="shared-pill">♛ Verified Member</span><span class="shared-pill">◈ Level 1: Starter Novice</span></div></div></div>
-    <div class="shared-balances"><div class="shared-balance"><small>BDT BALANCE</small><strong id="shared-balance">৳ 0.00</strong><em>+ Withdraw</em></div><div class="shared-balance green"><small>USD EQUIV.</small><strong id="shared-usd">$0.00</strong><em id="shared-bdt">≈ ৳0.00</em></div></div>
-  </header>
+  
 
   <div class="app tasks-app">
+  <!-- Shared dashboard-style header and live balances -->
+  <header class="shared-header shared-home-hero">
+    <div class="hero__top"><button class="round" id="shared-logout" type="button" aria-label="সাইন আউট"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg></button><button class="round" id="support-headphones" type="button" aria-label="অ্যাডমিনের সঙ্গে যোগাযোগ"><svg viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13a2 2 0 0 0 2 2h2v-5H6a2 2 0 0 0-2 2zM20 13a2 2 0 0 1-2 2h-2v-5h2a2 2 0 0 1 2 2z"/></svg></button><a class="round" href="notifications.html" aria-label="নোটিফিকেশন">♧</a></div>
+    <div class="who"><div class="who__main"><div class="avatar shared-avatar" id="shared-avatar">👤</div><div class="who__text"><h1 id="shared-name">বন্ধু</h1><p class="who__id" id="shared-id">আইডি: —</p></div></div><div class="pills"><span class="pill pill--gold">কমিউনিটি মেম্বার</span><a class="pill pill--glass" href="achievements.html">Level 1 : শুরুর স্তর ›</a></div><div class="tagline"><span>Complete Tasks. Earn Rewards.</span></div></div>
+  </header>
+  <section class="balances shared-home-balances" aria-label="ব্যালেন্স সারাংশ"><a class="bal bal--blue" href="wallet.html" aria-label="ওয়ালেট খুলুন"><span class="bal__label">মোট ব্যালেন্স</span><strong id="shared-balance">৳ 0.00</strong><span class="bal__btn">+ উইথড্র</span><span class="bal__ico" aria-hidden="true">৳</span><span class="bal__go" aria-hidden="true">›</span></a><a class="bal bal--green" href="mining-robot.html" aria-label="Mining Robot খুলুন"><span class="bal__label">মাইনিং থেকে আয়</span><strong id="shared-mine-total">৳ 0.00</strong><span class="bal__sub" id="shared-mine-sub">AI Bot চালু নেই</span><span class="bal__ico" aria-hidden="true">🤖</span><span class="bal__go" aria-hidden="true">›</span></a></section>
+
     <header class="top tasks-top">
       <a class="tasks-brand" href="dashboard.html" aria-label="ড্যাশবোর্ডে ফিরুন">
         <span class="tasks-brand__mark" aria-hidden="true">TR</span>
