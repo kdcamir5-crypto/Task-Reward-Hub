@@ -167,7 +167,6 @@ async function firestoreCredit(env, uid, ymid, date) {
             ymid: { stringValue: ymid },
             amount: { integerValue: String(REWARD_TAKA) },
             source: { stringValue: "monetag_rewarded_interstitial" },
-            monetagRewardType: { stringValue: "monetag-postback-confirmed" },
             rewardDate: { stringValue: date },
             createdAt: { timestampValue: now }
           }
