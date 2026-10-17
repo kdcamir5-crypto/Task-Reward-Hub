@@ -22,7 +22,7 @@ if(window.hubUser){
           if(el)el.textContent=formatted;
         });
         const usd=document.getElementById('shared-usd');
-        if(usd)usd.textContent='+(balance/110).toFixed(2);
+        if(usd)usd.textContent=String.fromCharCode(36)+(balance/110).toFixed(2);
         const bdt=document.getElementById('shared-bdt');
         if(bdt)bdt.textContent='≈ ৳'+balance.toFixed(2);
       },(error)=>{
