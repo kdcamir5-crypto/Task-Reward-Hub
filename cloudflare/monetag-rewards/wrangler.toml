@@ -1,0 +1,12 @@
+name = "task-reward-hub-monetag-rewards"
+main = "src/index.js"
+compatibility_date = "2026-10-17"
+
+[[d1_databases]]
+binding = "REWARDS_DB"
+database_name = "task-reward-hub-rewards"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[vars]
+FIREBASE_PROJECT_ID = "reward-hub-bd"
+APP_ORIGINS = "https://kdcamir5-crypto.github.io"
