@@ -67,3 +67,30 @@ body:has(.shop) .shared-header{width:min(100%,560px);max-width:560px;box-sizing:
 body:has(.shop) .shop{width:100%;max-width:560px;margin-left:auto;margin-right:auto;box-sizing:border-box}
 body:has(.shop) .nav,body:has(.shop) .bottom-nav{left:50%;width:min(100%,560px)!important;max-width:560px!important;box-sizing:border-box}
 @media(max-width:560px){body:has(.shop) .shared-header,body:has(.shop) .shop,body:has(.shop) .nav,body:has(.shop) .bottom-nav{max-width:100%}}
+
+
+/* Critical shared wallet header: keep it visible on every inner page. */
+html body:not(.home) .app > .shared-header,
+html body:not(.home) > .shared-header{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:relative !important;
+  z-index:100 !important;
+  width:min(100%,560px) !important;
+  max-width:560px !important;
+  margin:0 auto !important;
+  box-sizing:border-box !important;
+  flex:none !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+html body:not(.home) .shared-header .shared-balances,
+html body:not(.home) .shared-header .shared-balance{
+  display:grid !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+html body:not(.home) .shared-header .shared-balance{display:block !important}
+@media(max-width:560px){html body:not(.home) .shared-header{width:100% !important;max-width:100% !important}}
