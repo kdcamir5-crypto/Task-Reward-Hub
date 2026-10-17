@@ -26,10 +26,11 @@ if(window.hubUser){
         if(usd)usd.textContent=String.fromCharCode(36)+(balance/110).toFixed(2);
         const bdt=document.getElementById('shared-bdt');
         if(bdt)bdt.textContent='≈ ৳'+balance.toFixed(2);
-      F.onSnapshot(F.collection(db,'users',uid,'botMining'),(miningSnap)=>{let earned=0;miningSnap.forEach((item)=>{earned+=Number((item.data()||{}).earnedReward||0)});const mine=document.getElementById('shared-mine-total');if(mine)mine.textContent='৳ '+earned.toFixed(2)},(error)=>console.warn('Mining total unavailable:',error&&error.code?error.code:'unknown error'));
       },(error)=>{
         console.warn('Realtime balance sync unavailable:',error&&error.code?error.code:'unknown error');
       });
+      F.onSnapshot(F.collection(db,'users',uid,'botMining'),(miningSnap)=>{let earned=0;miningSnap.forEach((item)=>{earned+=Number((item.data()||{}).earnedReward||0)});const mine=document.getElementById('shared-mine-total');if(mine)mine.textContent='৳ '+earned.toFixed(2)},(error)=>console.warn('Mining total unavailable:',error&&error.code?error.code:'unknown error'));
+
     }catch(error){
       console.warn('Could not start realtime balance sync:',error&&error.message?error.message:'unknown error');
     }
