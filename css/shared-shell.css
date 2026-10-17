@@ -237,8 +237,12 @@ html body .app > .nav > a {
 
 /* Remove duplicate branded strips below the unified blue account header.
    Keep each page's actual feature title and content intact. */
-body:not(.home) .wallet-head,
 body:not(.home) .tasks-top,
 body:not(.home) .feed-top {
   display: none !important;
 }
+/* Preserve the Wallet page title/content; remove only its duplicate brand row. */
+body:not(.home) .wallet-head { display: block !important; }
+body:not(.home) .wallet-head .head__top { display: none !important; }
+/* Inner feature pages keep their page title but not another brand/navigation row. */
+body:not(.home) .head > .head__top { display: none !important; }
