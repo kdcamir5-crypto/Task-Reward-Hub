@@ -6,6 +6,7 @@ const user = Auth.users()[email] || { id: 'TRH00000' };
 
 function say(id, msg, ok) {
   const el = $(id);
+  if (!el) return;
   el.textContent = msg;
   el.className = 'msg2 ' + (ok ? 'ok' : 'err');
 }
@@ -13,13 +14,13 @@ function say(id, msg, ok) {
 function load() {
   const p = Store.get(PKEY, {});
   const name = p.name || (email || '').split('@')[0];
-  $('#hname').textContent = name;
-  $('#hmail').textContent = email || '';
-  $('#name').value = p.name || '';
-  $('#phone').value = p.phone || '';
-  $('#tg').value = p.telegram || '';
-  $('#email').value = email || '';
-  $('#refcode').textContent = user.id;
+  if ($('#hname')) $('#hname').textContent = name;
+  if ($('#hmail')) $('#hmail').textContent = email || '';
+  if ($('#name')) $('#name').value = p.name || '';
+  if ($('#phone')) $('#phone').value = p.phone || '';
+  if ($('#tg')) $('#tg').value = p.telegram || '';
+  if ($('#email')) $('#email').value = email || '';
+  if ($('#refcode')) $('#refcode').textContent = user.id;
 }
 
 // Firestore profile is the shared source of truth for the homepage and profile page.
