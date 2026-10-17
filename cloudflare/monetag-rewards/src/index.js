@@ -167,6 +167,7 @@ async function firestoreCredit(env, uid, ymid, date) {
             ymid: { stringValue: ymid },
             amount: { integerValue: String(REWARD_TAKA) },
             source: { stringValue: "monetag_rewarded_interstitial" },
+            monetagRewardType: { stringValue: "monetag-postback-confirmed" },
             rewardDate: { stringValue: date },
             createdAt: { timestampValue: now }
           }
@@ -220,7 +221,7 @@ async function handlePostback(request, env) {
   if (!/^[A-Za-z0-9_.-]{8,100}$/.test(ymid) || zoneId !== MONETAG_ZONE_ID || requestVar !== REQUEST_VAR) {
     return new Response("Ignored", { status: 200 });
   }
-  if (eventType !== "impression" || rewardType !== "valued") {
+  if (eventType !== "impression" || !["valued", "non_valued"].includes(rewardType)) {
     return new Response("Accepted without reward", { status: 200 });
   }
 
