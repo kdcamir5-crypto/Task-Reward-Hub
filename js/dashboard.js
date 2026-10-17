@@ -36,7 +36,7 @@
     // Keep the dashboard balance in sync when the secure mining worker credits Firestore.
     try {
       const [{ db }, F] = await Promise.all([
-        import('./firebase-config.js'),
+        import('../js/firebase-config.js'),
         import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
       ]);
       F.onSnapshot(F.doc(db, 'users', uid), (snap) => {
