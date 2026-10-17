@@ -46,10 +46,52 @@ function toBase64Url(bytes) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 function pemBytes(pem) {
-  const normalized = pem.replace(/\\n/g, "\n");
-  const body = normalized.replace(/-----BEGIN PRIVATE KEY-----/g, "")
-    .replace(/-----END PRIVATE KEY-----/g, "").replace(/\s/g, "");
-  return b64urlBytes(body.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, ""));
+  if (typeof pem !== "string" || !pem.trim()) {
+    throw new Error("FIREBASE_PRIVATE_KEY is empty or missing.");
+  }
+
+  let normalized = pem.trim().replace(/^\\uFEFF/, "");
+
+  // Accept either the private_key value itself or an accidentally pasted
+  // service-account JSON object. Never log this value.
+  if (normalized.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(normalized);
+      if (typeof parsed.private_key === "string") normalized = parsed.private_key.trim();
+    } catch {
+      throw new Error("FIREBASE_PRIVATE_KEY contains invalid JSON.");
+    }
+  }
+
+  // Cloudflare secrets may contain literal escaped newlines from JSON.
+  normalized = normalized
+    .replace(/^["']|["']$/g, "")
+    .replace(/\\r\\n/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+
+  if (normalized.includes("-----BEGIN RSA PRIVATE KEY-----")) {
+    throw new Error("FIREBASE_PRIVATE_KEY is PKCS#1. Use the full private_key from a Google service-account JSON key (BEGIN PRIVATE KEY).");
+  }
+  if (!normalized.includes("-----BEGIN PRIVATE KEY-----") ||
+      !normalized.includes("-----END PRIVATE KEY-----")) {
+    throw new Error("FIREBASE_PRIVATE_KEY must include the complete BEGIN PRIVATE KEY and END PRIVATE KEY lines.");
+  }
+
+  const body = normalized
+    .replace("-----BEGIN PRIVATE KEY-----", "")
+    .replace("-----END PRIVATE KEY-----", "")
+    .replace(/\s/g, "");
+
+  try {
+    const padded = body + "=".repeat((4 - body.length % 4) % 4);
+    const raw = atob(padded);
+    return Uint8Array.from(raw, c => c.charCodeAt(0));
+  } catch {
+    throw new Error("FIREBASE_PRIVATE_KEY body is not valid Base64. Copy the complete private_key value from the service-account JSON.");
+  }
 }
 function constantTimeEqual(a, b) {
   if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
