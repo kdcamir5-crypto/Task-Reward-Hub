@@ -2,16 +2,16 @@
 const path=location.pathname.split('/').pop()||'';
 const isHome=document.body.classList.contains('home')||path==='dashboard.html';
 const items=[
- ['dashboard.html','Home','M3 10l9-7 9 7v10h-7v-7h-4v7H4z'],
- ['leaderboard.html','Rank','M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z'],
+ ['dashboard.html','হোম','M3 10l9-7 9 7v10h-7v-7h-4v7H4z'],
+ ['leaderboard.html','র‍্যাঙ্ক','M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z'],
  ['mining-robot.html','AI Bot','M4 9h16v11H4zM12 9V4M9 14h.01M15 14h.01'],
- ['feed.html','Community','M21 11.5a8 8 0 0 1-12 7.6L3 21l2-6a8 8 0 0 1 8-12'],
- ['profile.html','Profile','M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10']
+ ['feed.html','কমিউনিটি','M21 11.5a8 8 0 0 1-12 7.6L3 21l2-6a8 8 0 0 1 8-12'],
+ ['profile.html','প্রোফাইল','M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10']
 ];
 const nav=document.querySelector('.nav');
 if(nav){
  nav.innerHTML=items.map(([href,label,d])=>'<a href="'+href+'" '+(path===href?'aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+d+'"/></svg><span>'+label+'</span></a>').join('');
- nav.setAttribute('aria-label','Main navigation');
+ nav.setAttribute('aria-label','প্রধান মেনু');
 }
 const modal=document.createElement('div');
 modal.className='shared-support-modal';modal.id='shared-support-modal';
