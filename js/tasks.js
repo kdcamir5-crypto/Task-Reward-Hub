@@ -50,7 +50,7 @@ function setupMonetagReward() {
         status.textContent = 'বিজ্ঞাপন যাচাই হয়েছে। সার্ভার রিওয়ার্ড নিশ্চিত করলে ৳৩ ব্যালেন্সে যোগ হবে।';
       } else if (result?.reward_event_type === 'non_valued') {
         status.className = 'monetag-status monetag-status--warning';
-        status.textContent = 'এই বিজ্ঞাপনটি রিওয়ার্ডযোগ্য নয়। এতে ব্যালেন্স যোগ হবে না।';
+        status.textContent = 'বিজ্ঞাপন শেষ হয়েছে। সার্ভার যাচাই করে রিওয়ার্ড যোগ করবে; কিছুটা সময় লাগতে পারে।';
       } else {
         status.textContent = 'বিজ্ঞাপন প্রক্রিয়া শেষ। রিওয়ার্ড সার্ভারের যাচাইয়ের ওপর নির্ভর করবে।';
       }
