@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const path=location.pathname.split('/').pop()||'';
-const isHome=path==='dashboard.html';
+const isHome=document.body.classList.contains('home')||path==='dashboard.html';
 const items=[
  ['dashboard.html','Home','M3 10l9-7 9 7v10h-7v-7h-4v7H4z'],
  ['leaderboard.html','Rank','M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z'],
@@ -12,16 +12,6 @@ const nav=document.querySelector('.nav');
 if(nav){
  nav.innerHTML=items.map(([href,label,d])=>'<a href="'+href+'" '+(path===href?'aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+d+'"/></svg><span>'+label+'</span></a>').join('');
  nav.setAttribute('aria-label','Main navigation');
-}
-const supportSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13a2 2 0 0 0 2 2h2v-5H6a2 2 0 0 0-2 2zM20 13a2 2 0 0 1-2 2h-2v-5h2a2 2 0 0 1 2 2z"/></svg>';
-if(isHome){
- const top=document.querySelector('.hero__top');
- if(top&&!document.getElementById('support-headphones')){
-  const button=document.createElement('button');
-  button.className='round';button.id='support-headphones';button.type='button';
-  button.setAttribute('aria-label','অ্যাডমিনের সঙ্গে যোগাযোগ');button.innerHTML=supportSvg;
-  top.appendChild(button);
- }
 }
 const modal=document.createElement('div');
 modal.className='shared-support-modal';modal.id='shared-support-modal';
