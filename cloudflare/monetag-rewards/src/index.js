@@ -113,7 +113,15 @@ async function serviceOAuthToken(env) {
     })
   });
   const body = await res.json();
-  if (!res.ok || !body.access_token) throw new Error("Firebase service authorization failed.");
+  if (!res.ok || !body.access_token) {
+    // Log safe OAuth error details, never credentials or the signed assertion.
+    console.error("Firebase OAuth token request rejected:", JSON.stringify({
+      status: res.status,
+      error: body.error || "unknown_error",
+      error_description: body.error_description || "No error description returned."
+    }));
+    throw new Error("Firebase service authorization failed.");
+  }
   cachedOAuthToken = body.access_token;
   cachedOAuthExpiry = Date.now() + Number(body.expires_in || 3600) * 1000;
   return cachedOAuthToken;
