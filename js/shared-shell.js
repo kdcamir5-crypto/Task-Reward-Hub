@@ -8,7 +8,7 @@ if(window.hubUser){
     if(!uid)return;
     try{
       const [{db},F]=await Promise.all([
-        import('./firebase-config.js'),
+        import('../js/firebase-config.js'),
         import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
       ]);
       F.onSnapshot(F.doc(db,'users',uid),(snap)=>{
