@@ -94,3 +94,29 @@ html body:not(.home) .shared-header .shared-balance{
 }
 html body:not(.home) .shared-header .shared-balance{display:block !important}
 @media(max-width:560px){html body:not(.home) .shared-header{width:100% !important;max-width:100% !important}}
+
+/* Match shared inner-page header to the actual Dashboard hero and balance cards */
+body:not(.home) .shared-home-hero{padding:calc(10px + env(safe-area-inset-top)) 16px 62px!important;border-radius:0 0 24px 24px!important;background:radial-gradient(110% 80% at 88% 0%,rgba(122,90,240,.6),transparent 60%),radial-gradient(70% 60% at 0% 100%,rgba(45,140,255,.28),transparent 70%),linear-gradient(165deg,#0B1B52 0%,#1D3AA6 60%,#3A2FA0 100%)!important;box-shadow:none!important;width:100%!important;max-width:520px!important;margin:0 auto!important;box-sizing:border-box!important}
+body:not(.home) .shared-home-hero .hero__top{display:flex;align-items:center;justify-content:space-between;margin:0}
+body:not(.home) .shared-home-hero .round{display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;text-decoration:none}
+body:not(.home) .shared-home-hero .who{margin-top:9px}
+body:not(.home) .shared-home-hero .who__main{display:flex;align-items:center;gap:10px}
+body:not(.home) .shared-home-hero .avatar{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;overflow:hidden;border:3px solid rgba(255,255,255,.85);border-radius:50%;background:linear-gradient(145deg,#5BA8FF,#7A5AF0);color:#fff}
+body:not(.home) .shared-home-hero .shared-avatar img{width:100%;height:100%;object-fit:cover}
+body:not(.home) .shared-home-hero .who h1{font-size:17px!important;color:#fff;font-weight:800;text-transform:uppercase;line-height:1.2}
+body:not(.home) .shared-home-hero .who__id{font-size:12px;color:rgba(255,255,255,.82)}
+body:not(.home) .shared-home-hero .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+body:not(.home) .shared-home-hero .pill{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:99px;font-size:10px;font-weight:700;color:#fff;text-decoration:none}
+body:not(.home) .shared-home-hero .pill--gold{background:linear-gradient(90deg,#FDE68A,#FBBF24);color:#5B3B00}
+body:not(.home) .shared-home-hero .pill--glass{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3)}
+body:not(.home) .shared-home-hero .tagline{margin-top:2px;text-align:right;font-family:'Caveat',cursive;font-size:18px;font-weight:600;color:#7DDCFF}
+body:not(.home) .shared-home-balances{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:9px;width:calc(100% - 32px);max-width:488px;margin:-43px auto 12px;padding:0;z-index:21}
+body:not(.home) .shared-home-balances .bal{position:relative;display:flex;flex-direction:column;min-width:0;min-height:104px;padding:10px 11px;border-radius:18px;overflow:hidden;color:#fff;text-decoration:none;box-shadow:0 8px 20px rgba(25,50,100,.14)}
+body:not(.home) .shared-home-balances .bal--blue{background:linear-gradient(135deg,#2588F4,#2548C8)}
+body:not(.home) .shared-home-balances .bal--green{background:linear-gradient(135deg,#18B985,#087E63)}
+body:not(.home) .shared-home-balances .bal__label{font-size:11px;font-weight:700;opacity:.94}
+body:not(.home) .shared-home-balances strong{display:block;margin-top:4px;font-size:18px!important;line-height:1.25;color:#fff}
+body:not(.home) .shared-home-balances .bal__btn,body:not(.home) .shared-home-balances .bal__sub{font-size:10px;margin-top:4px;color:#fff}
+body:not(.home) .shared-home-balances .bal__ico{position:absolute;right:10px;top:12px;font-size:20px;opacity:.25}
+body:not(.home) .shared-home-balances .bal__go{position:absolute;right:10px;bottom:8px;color:#fff}
+body:not(.home) .nav{z-index:80}
