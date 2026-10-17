@@ -1,9 +1,67 @@
 // tasks.js (module) - টাস্ক তালিকা, ক্লিকযোগ্য লিংক, স্ক্রিনশট আপলোড (ছোট করে Firestore-এ জমা), প্রমাণ জমা
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import { collection, getDocs, query, where, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const $ = (s) => document.querySelector(s);
 const me = await window.hubUser;
+
+const MONETAG_WORKER_URL = 'https://task-reward-hub-monetag-rewards.kdcamir5.workers.dev';
+
+function setupMonetagReward() {
+  const button = $('#monetag-watch');
+  const status = $('#monetag-status');
+  if (!button || !status) return;
+
+  button.addEventListener('click', async () => {
+    if (button.disabled) return;
+    button.disabled = true;
+    status.className = 'monetag-status';
+    status.textContent = 'বিজ্ঞাপনের সেশন প্রস্তুত হচ্ছে...';
+
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('আপনার সাইন-ইন সেশন পাওয়া যায়নি। আবার সাইন ইন করুন।');
+      if (typeof window.show_12051888 !== 'function') {
+        throw new Error('Monetag SDK লোড হয়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
+      }
+
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(MONETAG_WORKER_URL + '/ad-session', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + idToken,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      const session = await response.json().catch(() => ({}));
+      if (!response.ok || !session.ymid) {
+        throw new Error(session.error || 'বিজ্ঞাপন সেশন তৈরি করা যায়নি। একটু পরে চেষ্টা করুন।');
+      }
+
+      status.textContent = 'বিজ্ঞাপন চালু হচ্ছে। অনুগ্রহ করে শেষ হওয়া পর্যন্ত দেখুন।';
+      const result = await window.show_12051888({
+        ymid: session.ymid,
+        requestVar: 'daily_reward'
+      });
+
+      if (result?.reward_event_type === 'valued') {
+        status.className = 'monetag-status monetag-status--success';
+        status.textContent = 'বিজ্ঞাপন যাচাই হয়েছে। সার্ভার রিওয়ার্ড নিশ্চিত করলে ৳৩ ব্যালেন্সে যোগ হবে।';
+      } else if (result?.reward_event_type === 'non_valued') {
+        status.className = 'monetag-status monetag-status--warning';
+        status.textContent = 'এই বিজ্ঞাপনটি রিওয়ার্ডযোগ্য নয়। এতে ব্যালেন্স যোগ হবে না।';
+      } else {
+        status.textContent = 'বিজ্ঞাপন প্রক্রিয়া শেষ। রিওয়ার্ড সার্ভারের যাচাইয়ের ওপর নির্ভর করবে।';
+      }
+    } catch (error) {
+      status.className = 'monetag-status monetag-status--warning';
+      status.textContent = error?.message || 'বিজ্ঞাপন চালানো যায়নি। পরে আবার চেষ্টা করুন।';
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
 let filter = 'all', tasks = [], subs = {};
 const label = { pending: 'অনুমোদনের অপেক্ষায়', approved: 'সম্পন্ন', rejected: 'বাতিল' };
 const cls = { pending: 'pill--pending', approved: 'pill--done', rejected: 'pill--rejected' };
@@ -116,4 +174,5 @@ document.querySelectorAll('.tabs2 button').forEach(b => b.addEventListener('clic
   render();
 }));
 document.documentElement.dataset.theme = Store.get('theme', 'light');
+setupMonetagReward();
 load();
