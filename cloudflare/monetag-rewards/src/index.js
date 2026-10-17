@@ -263,6 +263,27 @@ async function handlePostback(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // Public, non-sensitive diagnostic endpoint for deployment checks.
+    // It never returns secret values or Firebase credentials.
+    if (url.pathname === "/health" && request.method === "GET") {
+      let d1Configured = false;
+      try {
+        const result = await env.REWARDS_DB.prepare("SELECT 1 AS ok").first();
+        d1Configured = result?.ok === 1;
+      } catch (error) {
+        console.error("Health check D1 probe failed:", error?.message || error);
+      }
+      const checks = {
+        firebaseProjectConfigured: Boolean(env.FIREBASE_PROJECT_ID),
+        serviceAccountConfigured: Boolean(env.FIREBASE_CLIENT_EMAIL && env.FIREBASE_PRIVATE_KEY),
+        postbackSecretConfigured: Boolean(env.MONETAG_POSTBACK_SECRET),
+        d1Configured
+      };
+      const ok = Object.values(checks).every(Boolean);
+      return json({ ok, service: "monetag-rewards", checks }, ok ? 200 : 503);
+    }
+
     if (url.pathname === "/postback") return handlePostback(request, env);
     const origin = getAllowedOrigin(request, env);
     if (request.method === "OPTIONS") {
