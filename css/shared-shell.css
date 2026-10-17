@@ -199,3 +199,46 @@ html body:not(.home) .app { padding-bottom:calc(76px + env(safe-area-inset-botto
  html body:not(.home) .app .nav,
  html body:not(.home) > .nav {max-width:100% !important}
 }
+
+
+/* Emergency layout correction: keep the full five-tab navigation on screen. */
+html body .app > .nav,
+html body > .nav,
+html body:has(.shop) .nav,
+html body:has(.shop) .bottom-nav {
+  left: 0 !important;
+  right: 0 !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 520px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+html body .app > .nav {
+  display: flex !important;
+  justify-content: space-around !important;
+  flex-wrap: nowrap !important;
+  overflow: visible !important;
+}
+html body .app > .nav > a {
+  display: flex !important;
+  flex: 1 1 20% !important;
+  width: 20% !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+}
+@media (max-width: 520px) {
+  html body .app > .nav,
+  html body > .nav,
+  html body:has(.shop) .nav,
+  html body:has(.shop) .bottom-nav { max-width: 100% !important; }
+}
+
+/* Remove duplicate branded strips below the unified blue account header.
+   Keep each page's actual feature title and content intact. */
+body:not(.home) .wallet-head,
+body:not(.home) .tasks-top,
+body:not(.home) .feed-top {
+  display: none !important;
+}
