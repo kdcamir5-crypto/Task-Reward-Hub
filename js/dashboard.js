@@ -88,6 +88,9 @@
       panel.classList.toggle("is-active", active);
     });
     const titleByTab = {home:"Home",rank:"Rank",bots:"AI Bots",feed:"Feed",profile:"Profile"};
+    document.body.classList.toggle("reference-home-active", tab === "home");
+    const homeLayout = document.querySelector(".home-reference-layout");
+    if (homeLayout) homeLayout.hidden = tab !== "home";
     document.title = titleByTab[tab] + " · Task Reward Hub";
     if (tab === "profile") {
       const panel = document.getElementById("panel-profile");
