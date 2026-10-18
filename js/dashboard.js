@@ -157,6 +157,26 @@
   }
   document.getElementById("sign-out")?.addEventListener("click", signOut);
   document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+  const rankSearch = document.getElementById("rank-search");
+  const rankRefresh = document.getElementById("rank-refresh");
+  function filterRankRows() {
+    const query = (rankSearch?.value || "").trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll("#rank-list .rank-list-row").forEach(row => {
+      const match = (row.dataset.name + " " + row.dataset.id + " " + row.textContent).toLowerCase().includes(query);
+      row.hidden = !match;
+      if (match) visible++;
+    });
+    const empty = document.getElementById("rank-empty");
+    if (empty) empty.hidden = visible !== 0;
+  }
+  rankSearch?.addEventListener("input", filterRankRows);
+  rankRefresh?.addEventListener("click", () => {
+    if (rankSearch) rankSearch.value = "";
+    filterRankRows();
+    showToast("Leaderboard view refreshed.");
+  });
+
 
   function renderProfile(user, profile) {
     const name = firstName(user, profile);
@@ -195,7 +215,7 @@
     setText("dashboard-message", "Signed in securely as " + (user.email || "your account") + ". Profile values are read from your Firebase user document.");
 
     // Do not fabricate a rank. A real rank needs the full, verified leaderboard collection.
-    setText("rank-label", "Awaiting leaderboard data");
+    setText("rank-label", "—");
     setText("rank-description", "Your profile is connected, but a verified leaderboard position is not available in this build.");
   }
 
