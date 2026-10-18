@@ -124,10 +124,7 @@
 
       auth.onAuthStateChanged(user => {
         if (user && loginForm && !submitting) {
-          showMessage(
-            "You are already signed in. The dashboard page is currently missing from this repository's main branch, so automatic navigation is not available yet.",
-            "success"
-          );
+          window.location.replace("pages/dashboard.html");
         }
       });
     } catch (error) {
@@ -173,10 +170,7 @@
       try {
         await auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
         await auth.signInWithEmailAndPassword(normalizedEmail, password.value);
-        showMessage(
-          "Login successful. Your session will remain active on this device until you sign out. The dashboard page is missing from the current main branch, so the next page cannot be opened yet.",
-          "success"
-        );
+        window.location.replace("pages/dashboard.html");
       } catch (error) {
         showMessage(friendlyAuthError(error));
       } finally {
