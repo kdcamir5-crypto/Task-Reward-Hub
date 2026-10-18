@@ -118,9 +118,16 @@
   }
 
   function bindFleetButtons() {
-    ["fleet-shop-button", "fleet-unlock-button", "fleet-empty-shop"].forEach(id => {
+    ["fleet-shop-button", "fleet-empty-shop"].forEach(id => {
       const button = document.getElementById(id);
-      if (button) button.onclick = () => showToast("Bot Shop page is not available in the current main branch yet.");
+      if (button) button.onclick = openBotShop;
+    });
+    const unlockButton = document.getElementById("fleet-unlock-button");
+    if (unlockButton) unlockButton.onclick = openBotShop;
+    const backButton = document.getElementById("bot-shop-back");
+    if (backButton) backButton.onclick = closeBotShop;
+    document.querySelectorAll("[data-shop-bot]").forEach(button => {
+      button.addEventListener("click", () => showToast("এই বটের ক্রয় ও পেমেন্ট যাচাই সংযোগ এখনো চালু করা হয়নি। কোনো টাকা কাটা হয়নি।"));
     });
     const referralButton = document.getElementById("fleet-referral-button");
     if (referralButton) referralButton.onclick = () => showTab("rank");
@@ -141,6 +148,28 @@
     return (name || "U").trim().charAt(0).toUpperCase() || "U";
   }
 
+  function openBotShop() {
+    const fleet = document.getElementById("panel-bots");
+    const shop = document.getElementById("bot-shop-page");
+    if (!fleet || !shop) {
+      showToast("Bot Shop interface could not be opened.");
+      return;
+    }
+    fleet.hidden = true;
+    shop.hidden = false;
+    shop.scrollIntoView({ block:"start", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    document.title = "AI Bot Shop · Task Reward Hub";
+  }
+
+  function closeBotShop() {
+    const fleet = document.getElementById("panel-bots");
+    const shop = document.getElementById("bot-shop-page");
+    if (shop) shop.hidden = true;
+    if (fleet) fleet.hidden = false;
+    document.title = "AI Bots · Task Reward Hub";
+    if (fleet) fleet.scrollIntoView({ block:"start", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+
   function showTab(tabName) {
     const valid = ["home", "rank", "bots", "feed", "profile"];
     const tab = valid.includes(tabName) ? tabName : "home";
@@ -150,6 +179,8 @@
       if (active) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
     });
+    const botShop = document.getElementById("bot-shop-page");
+    if (botShop) botShop.hidden = true;
     document.querySelectorAll("[data-panel]").forEach(panel => {
       const active = panel.dataset.panel === tab;
       panel.hidden = !active;
