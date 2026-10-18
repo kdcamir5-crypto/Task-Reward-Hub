@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071326">
+  <meta name="color-scheme" content="dark">
+  <title>Sign In · Task Reward Hub</title>
+  <link rel="stylesheet" href="css/login.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <main class="login-screen">
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <div class="star-field" aria-hidden="true"></div>
+    <section class="login-layout" aria-labelledby="page-title">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" role="img"><path d="M24 4.5 41 14v20L24 43.5 7 34V14L24 4.5Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="m16 25 5.2 5.2L33 18.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="brand-copy"><span class="brand-name">TASK REWARD <span>HUB</span></span><span class="brand-caption">YOUR EFFORT. YOUR REWARDS.</span></div>
+      </header>
+      <div class="welcome"><span class="eyebrow"><span class="status-dot"></span> YOUR REWARD JOURNEY STARTS HERE</span><h1 id="page-title">Welcome<br><span>back.</span></h1><p class="welcome-copy">Sign in to continue your tasks, track rewards, and explore your dashboard.</p></div>
+      <form class="login-form" id="login-form" novalidate>
+        <div class="field-group"><label for="email">Email address</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"></rect><path d="m5 7 7 5.5L19 7"></path></svg><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div></div>
+        <div class="field-group"><div class="label-row"><label for="password">Password</label><button class="text-button" id="forgot-password" type="button">Forgot password?</button></div><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2.2"></rect><path d="M8 10V7.5a4 4 0 0 1 8 0V10"></path></svg><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="password-toggle" id="toggle-password" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg></button></div></div>
+        <div class="form-message" id="form-message" role="status" aria-live="polite"></div><button class="sign-in-button" type="submit"><span>Sign In</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
+      </form>
+      <div class="login-footer"><span class="footer-line"></span><p>SECURE ACCESS <span class="footer-lock">◆</span> BUILT FOR YOUR JOURNEY</p><span class="footer-line"></span></div>
+    </section>
+  </main>
+  <script src="js/login-ui.js"></script>
+</body>
+</html>
