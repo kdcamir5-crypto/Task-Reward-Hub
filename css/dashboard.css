@@ -370,3 +370,42 @@ body:not(.reference-home-active) .home-reference-layout{display:none}
 #panel-profile .profile-menu-icon.signout{background:#ffe5e7;color:#d63b49}
 #panel-profile .profile-signout-card .profile-menu-copy strong,#panel-profile .profile-signout-card .profile-menu-arrow{color:#c92f40}
 @media(max-width:390px){#panel-profile .profile-section-header{padding:14px 11px}#panel-profile .profile-section-header h2{font-size:16px}#panel-profile .profile-identity-card{gap:10px;margin-left:9px;margin-right:9px;padding:14px 10px}#panel-profile .profile-identity-avatar{width:59px;height:59px;flex-basis:59px}#panel-profile .profile-identity-copy>strong{font-size:13px}#panel-profile .profile-level-line{font-size:9px}#panel-profile .profile-telegram-card,#panel-profile .profile-vip-banner{margin-left:9px;margin-right:9px}#panel-profile .profile-vip-banner{gap:6px;padding:11px 8px}#panel-profile .profile-official-badge{font-size:6px;padding:5px 4px}#panel-profile .profile-vip-join{padding:7px 6px}#panel-profile .profile-settings-list{margin-left:9px;margin-right:9px}#panel-profile .profile-menu-card{gap:9px;padding:10px}#panel-profile .profile-menu-icon{width:36px;height:36px;flex-basis:36px}}
+
+
+/* Dedicated AI Bot Shop — scoped to the shop content only; global header and five-tab navigation remain untouched. */
+#bot-shop-page{width:100%;margin:0 auto 100px;padding:0 0 18px;color:#17243c;background:#f4f7fc;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;box-shadow:0 10px 28px rgba(24,45,76,.08)}
+#bot-shop-page[hidden]{display:none!important}
+#bot-shop-page .bot-shop-header{display:flex;align-items:center;gap:11px;padding:16px 13px;background:#fff;border-bottom:1px solid #e5ebf3}
+#bot-shop-page .bot-shop-back{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:1px solid #dce7f5;border-radius:12px;background:#f5f9ff;color:#1266d5;font-size:26px;line-height:1;cursor:pointer}
+#bot-shop-page .bot-shop-header>div{min-width:0;flex:1}
+#bot-shop-page .bot-shop-header p{margin:0 0 3px;color:#0b70e8;font-size:8px;font-weight:900;letter-spacing:1.2px}
+#bot-shop-page .bot-shop-header h2{margin:0;color:#162945;font-size:20px;line-height:1.2;font-weight:900;letter-spacing:-.45px}
+#bot-shop-page .bot-shop-header span{display:block;margin-top:5px;color:#77869a;font-size:10px}
+#bot-shop-page .bot-shop-mark{display:grid;place-items:center;width:43px;height:43px;flex:0 0 43px;border-radius:14px;background:linear-gradient(145deg,#eaf2ff,#fbe9f5);font-size:25px}
+#bot-shop-page .bot-shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+#bot-shop-page .shop-bot-card{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0;padding:13px 9px 10px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;box-shadow:0 5px 15px rgba(30,54,88,.055)}
+#bot-shop-page .shop-bot-badge{align-self:flex-end;max-width:100%;margin:0 0 7px;padding:5px 6px;border:1px solid #f3a9d3;border-radius:20px;background:#fff7fc;color:#c42c88;font-size:7px;font-weight:900;line-height:1.2;text-align:center;letter-spacing:.2px}
+#bot-shop-page .shop-bot-badge.popular{border-color:#a8d4ff;background:#eff7ff;color:#1468c5}
+#bot-shop-page .shop-bot-badge.value{border-color:#f0d17b;background:#fff9e8;color:#996900}
+#bot-shop-page .shop-bot-badge.mega{border-color:#ffc58a;background:#fff5e9;color:#bd5a13}
+#bot-shop-page .shop-bot-badge.limited{border-color:#d3b5ff;background:#f8f2ff;color:#8141c9}
+#bot-shop-page .shop-bot-avatar{display:grid;place-items:center;width:60px;height:60px;flex:0 0 60px;margin:0 auto 9px;border:1px solid rgba(230,91,171,.13);border-radius:17px;background:#fff0f8;box-shadow:inset 0 0 18px rgba(238,91,172,.08)}
+#bot-shop-page .shop-bot-avatar span{font-size:32px;filter:drop-shadow(0 3px 5px rgba(26,105,219,.18))}
+#bot-shop-page .shop-bot-avatar.violet{background:#f3edff;border-color:#e4d7ff}
+#bot-shop-page .shop-bot-avatar.blue{background:#eaf4ff;border-color:#cfe5ff}
+#bot-shop-page .shop-bot-avatar.amber{background:#fff4df;border-color:#ffe4ac}
+#bot-shop-page .shop-bot-avatar.mint{background:#e9fbf3;border-color:#c6f0dc}
+#bot-shop-page .shop-bot-card h3{width:100%;min-height:31px;margin:0 0 7px;color:#1a2b45;font-size:11px;line-height:1.4;font-weight:900;text-align:center;overflow-wrap:anywhere}
+#bot-shop-page .shop-bot-rate{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin-bottom:9px;color:#0870e9;font-size:9px;white-space:nowrap}
+#bot-shop-page .shop-bot-rate strong{font-size:9px;font-weight:850}
+#bot-shop-page .shop-bot-price{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;min-height:75px;padding:8px 4px;margin-bottom:8px;border:1px solid #edf0f5;border-radius:11px;background:#f6f8fb;text-align:center}
+#bot-shop-page .shop-bot-price small{color:#8491a4;font-size:8px}
+#bot-shop-page .shop-bot-price>strong{color:#162b48;font-size:20px;line-height:1.15;font-weight:950;letter-spacing:-.5px}
+#bot-shop-page .shop-bot-price>span{color:#0b9a58;font-size:8px;line-height:1.4;font-weight:850}
+#bot-shop-page .shop-bot-price i{font-style:normal}
+#bot-shop-page .shop-bot-bonus{display:flex;align-items:center;justify-content:center;gap:3px;width:100%;min-height:31px;padding:6px 4px;margin-bottom:6px;border:1px solid #d9eaff;border-radius:9px;background:#f0f7ff;color:#145caa;font-size:8px;line-height:1.35;font-weight:800;text-align:center;overflow-wrap:anywhere}
+#bot-shop-page .shop-bot-bonus.green{border-color:#c9efdb;background:#effcf5;color:#13824c}
+#bot-shop-page .shop-bot-action{display:flex;align-items:center;justify-content:center;width:100%;min-height:39px;margin-top:auto;padding:8px 4px;border:1px solid #0757d2;border-radius:10px;background:linear-gradient(115deg,#075ee2,#0784ff);box-shadow:0 5px 11px rgba(0,102,255,.18);color:#fff;font:inherit;font-size:9px;line-height:1.35;font-weight:900;text-align:center;cursor:pointer}
+#bot-shop-page .shop-bot-action:active{transform:scale(.98)}
+#bot-shop-page .bot-shop-note{margin:0 12px;padding:10px 11px;border:1px solid #dce8f7;border-radius:11px;background:#fff;color:#75849a;font-size:9px;line-height:1.65}
+@media(max-width:360px){#bot-shop-page .bot-shop-grid{gap:7px;padding:8px}#bot-shop-page .shop-bot-card{padding:10px 6px 8px}#bot-shop-page .shop-bot-price>strong{font-size:18px}#bot-shop-page .shop-bot-bonus{font-size:7px}#bot-shop-page .shop-bot-badge{font-size:6px}}
