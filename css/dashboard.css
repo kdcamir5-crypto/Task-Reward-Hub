@@ -15,3 +15,57 @@
 .mining-balance-card .balance-status i{background:#55e8bf;box-shadow:0 0 8px rgba(85,232,191,.7)}
 .mining-balance-note{position:relative;z-index:1;font-size:9px;line-height:1.45;color:#a5e6d9;margin:10px 0 0}
 @media(max-width:390px){.balance-split{gap:8px}.balance-split .balance-card{padding:14px 11px 12px}.balance-split .balance-top>span:first-child{font-size:7px;letter-spacing:.7px}.balance-split .balance-value{gap:3px}.balance-split .balance-value .currency{font-size:17px}.balance-split .balance-value strong{font-size:clamp(17px,5vw,23px)}.balance-split .balance-foot{font-size:8px}.mining-balance-note{font-size:8px}}
+
+
+/* Premium blue dashboard header with persistent wallet balances */
+.topbar{height:auto;display:block;padding:14px 14px 15px;margin:0 0 20px;border:1px solid rgba(131,202,255,.3);border-top:0;border-radius:0 0 24px 24px;background:linear-gradient(135deg,#176be0 0%,#1454bd 42%,#102e78 100%);box-shadow:0 16px 38px rgba(0,77,190,.28),inset 0 1px rgba(255,255,255,.17);position:relative;z-index:20;overflow:visible}
+.topbar:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(ellipse at 15% 0%,rgba(125,217,255,.25),transparent 48%),linear-gradient(110deg,transparent 35%,rgba(255,255,255,.035) 50%,transparent 65%)}
+.topbar-row{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;padding:0 2px 13px}
+.topbar .brand strong b{color:#b9e8ff}
+.topbar .brand small{color:rgba(233,246,255,.75)}
+.topbar .brand-logo{background:linear-gradient(145deg,rgba(255,255,255,.23),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.22);box-shadow:0 5px 18px rgba(0,28,94,.15)}
+.topbar .header-actions{gap:8px}
+.topbar .live-pill{color:#e5fff4;border-color:rgba(193,255,224,.35);background:rgba(4,54,107,.2)}
+.topbar .icon-button{border-color:rgba(255,255,255,.23);background:rgba(5,39,104,.25);color:#fff}
+.topbar .balance-split{position:relative;z-index:1;gap:10px}
+.topbar .balance-split .balance-card{padding:15px 14px 12px;border-radius:17px;background:linear-gradient(145deg,rgba(7,33,91,.48),rgba(7,28,77,.32));border:1px solid rgba(222,242,255,.25);box-shadow:0 7px 19px rgba(0,31,93,.14),inset 0 1px rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.topbar .balance-split .balance-top>span:first-child{color:#dceeff;font-size:8px;letter-spacing:.8px}
+.topbar .balance-split .balance-value{margin:10px 0 11px}
+.topbar .balance-split .balance-value .currency{color:#fff}
+.topbar .balance-split .balance-value strong{color:#fff;font-size:clamp(21px,4.6vw,30px)}
+.topbar .balance-split .balance-foot{color:#d7eaff}
+.topbar .balance-split .balance-status{color:#e2f1ff}
+.topbar .balance-split .balance-note{color:#c4e1ff}
+.topbar .balance-split .wallet-icon{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.18)}
+.topbar .balance-split .mining-balance-card{background:linear-gradient(145deg,rgba(4,86,103,.65),rgba(7,44,91,.42));border-color:rgba(116,255,226,.36)}
+.topbar .balance-split .mining-balance-card .balance-top>span:first-child{color:#bdfcf0}
+.topbar .balance-split .mining-balance-card .balance-value .currency{color:#83ffe2}
+.topbar .balance-split .mining-balance-card .balance-status{color:#c3fff2}
+.topbar .balance-split .mining-balance-card .balance-note,.topbar .mining-balance-note{color:#a7f7e9}
+.topbar .balance-split .mining-wallet-icon{background:rgba(109,255,222,.14);border-color:rgba(109,255,222,.3)}
+.support-wrap{position:relative;display:flex;align-items:center}
+.support-button{position:relative;display:grid;place-items:center;width:39px;height:39px;border-radius:13px;border:1px solid rgba(255,255,255,.34);background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.1));color:#fff;cursor:pointer;box-shadow:0 5px 16px rgba(0,30,94,.17);transition:transform .18s ease,background .18s ease}
+.support-button:hover,.support-button[aria-expanded="true"]{background:rgba(255,255,255,.28);transform:translateY(-1px)}
+.support-button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.support-ping{position:absolute;right:5px;top:5px;width:7px;height:7px;border:1px solid #1760bd;border-radius:50%;background:#67ffd2;box-shadow:0 0 8px rgba(103,255,210,.9)}
+.support-popover{position:absolute;top:calc(100% + 13px);right:-48px;width:min(310px,calc(100vw - 34px));padding:17px;border:1px solid rgba(104,174,255,.25);border-radius:19px;background:linear-gradient(155deg,#152947,#0b1426 80%);box-shadow:0 20px 55px rgba(0,0,0,.42);color:#f3f7ff;z-index:100;animation:support-pop-in .16s ease-out}
+.support-popover[hidden]{display:none}
+@keyframes support-pop-in{from{opacity:0;transform:translateY(-5px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.support-popover:before{content:"";position:absolute;right:58px;top:-6px;width:11px;height:11px;transform:rotate(45deg);background:#152947;border-left:1px solid rgba(104,174,255,.25);border-top:1px solid rgba(104,174,255,.25)}
+.support-popover-heading{display:flex;align-items:center;gap:11px}
+.support-mini-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:13px;background:linear-gradient(145deg,#2e8cff,#2459d8);font-size:21px;font-weight:800;box-shadow:0 6px 18px rgba(46,140,255,.24)}
+.support-popover-heading strong{display:block;font-size:15px}
+.support-popover-heading small{display:block;margin-top:3px;color:#9eb6d8;font-size:11px}
+.support-popover>p{font-size:12px;line-height:1.6;color:#b8c9e2;margin:13px 0}
+.telegram-support-link{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid rgba(77,171,255,.28);border-radius:14px;background:linear-gradient(110deg,rgba(35,139,244,.2),rgba(26,74,151,.18));text-decoration:none;color:#f4f9ff;transition:background .18s ease,border-color .18s ease}
+.telegram-support-link:hover{background:rgba(35,139,244,.28);border-color:rgba(105,194,255,.55)}
+.telegram-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,#38baf7,#1684dc);box-shadow:0 6px 16px rgba(20,142,222,.25)}
+.telegram-icon svg{width:22px;height:22px;fill:#fff}
+.telegram-support-link>span:nth-child(2){min-width:0;flex:1}
+.telegram-support-link strong,.telegram-support-link small{display:block}
+.telegram-support-link strong{font-size:12px}
+.telegram-support-link small{margin-top:4px;font-size:10px;color:#9ccdf6}
+.support-arrow{font-size:18px;color:#8ed4ff}
+.support-hours{display:block;margin-top:12px;color:#829bbd;font-size:10px;text-align:center}
+@media(max-width:390px){.topbar{padding:12px 10px 12px;border-radius:0 0 20px 20px}.topbar-row{gap:7px;padding-bottom:11px}.topbar .brand{gap:7px}.topbar .brand-logo{width:33px;height:33px;border-radius:10px}.topbar .brand strong{font-size:10px;letter-spacing:.35px}.topbar .brand small{font-size:8px}.topbar .header-actions{gap:5px}.topbar .live-pill{font-size:8px;padding:6px 7px}.support-button{width:34px;height:34px;border-radius:11px}.topbar .icon-button{width:34px;height:34px}.topbar .balance-split{gap:7px}.topbar .balance-split .balance-card{padding:12px 9px 10px}.topbar .balance-split .balance-top>span:first-child{font-size:7px;letter-spacing:.45px}.topbar .balance-split .balance-value{gap:3px;margin:9px 0}.topbar .balance-split .balance-value .currency{font-size:17px}.topbar .balance-split .balance-value strong{font-size:clamp(17px,5vw,23px)}.topbar .balance-split .balance-foot{font-size:8px}.topbar .mining-balance-note{font-size:8px}.support-popover{right:-42px}}
+@media(min-width:600px){.topbar{padding:17px 20px 19px}.topbar-row{padding-bottom:16px}.topbar .balance-split .balance-card{padding:18px 20px 15px}}
