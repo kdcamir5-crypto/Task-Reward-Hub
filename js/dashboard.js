@@ -102,6 +102,26 @@
     button.addEventListener("click", () => showTab(button.dataset.go));
   });
 
+  const supportToggle = document.getElementById("support-toggle");
+  const supportPopover = document.getElementById("support-popover");
+  function closeSupportPopover() {
+    if (!supportToggle || !supportPopover) return;
+    supportPopover.hidden = true;
+    supportToggle.setAttribute("aria-expanded", "false");
+  }
+  supportToggle?.addEventListener("click", event => {
+    event.stopPropagation();
+    if (!supportPopover) return;
+    const shouldOpen = supportPopover.hidden;
+    supportPopover.hidden = !shouldOpen;
+    supportToggle.setAttribute("aria-expanded", String(shouldOpen));
+  });
+  supportPopover?.addEventListener("click", event => event.stopPropagation());
+  document.addEventListener("click", closeSupportPopover);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeSupportPopover();
+  });
+
   async function signOut() {
     if (!auth) {
       window.location.replace("../index.html");
