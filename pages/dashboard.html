@@ -28,11 +28,20 @@
         <div class="avatar" id="user-avatar" aria-label="Profile avatar">U</div>
       </section>
 
-      <section class="balance-card panel" aria-labelledby="balance-heading">
-        <div class="balance-top"><span id="balance-heading">TOTAL WALLET BALANCE</span><span class="wallet-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H20v16H5.5A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 7h17M15 13h5"/><circle cx="15" cy="13" r=".7"/></svg></span></div>
-        <div class="balance-value"><span class="currency">৳</span><strong id="balance-value">—</strong></div>
-        <div class="balance-foot"><span class="balance-status"><i></i> Your account balance</span><span class="balance-note">BDT · ৳</span></div>
-        <div class="balance-shine" aria-hidden="true"></div>
+      <section class="balance-split" aria-label="Account balances">
+        <article class="balance-card panel main-balance-card" aria-labelledby="balance-heading">
+          <div class="balance-top"><span id="balance-heading">MAIN ACCOUNT BALANCE</span><span class="wallet-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H20v16H5.5A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 7h17M15 13h5"/><circle cx="15" cy="13" r=".7"/></svg></span></div>
+          <div class="balance-value"><span class="currency">৳</span><strong id="balance-value">—</strong></div>
+          <div class="balance-foot"><span class="balance-status"><i></i> Available account balance</span><span class="balance-note">BDT</span></div>
+          <div class="balance-shine" aria-hidden="true"></div>
+        </article>
+        <article class="balance-card panel mining-balance-card" aria-labelledby="mining-balance-heading">
+          <div class="balance-top"><span id="mining-balance-heading">BOT MINING BALANCE</span><span class="mining-wallet-icon" aria-hidden="true">⌘</span></div>
+          <div class="balance-value"><span class="currency">৳</span><strong id="bot-mining-value">—</strong></div>
+          <div class="balance-foot"><span class="balance-status"><i></i> Total bot mining earned</span><span class="balance-note">BDT</span></div>
+          <p class="mining-balance-note">Mining rewards are automatically credited to your main balance.</p>
+          <div class="balance-shine" aria-hidden="true"></div>
+        </article>
       </section>
 
       <section class="stats-grid" aria-label="Account overview">
