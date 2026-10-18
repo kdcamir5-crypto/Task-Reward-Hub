@@ -119,11 +119,11 @@
 
   function bindFleetButtons() {
     ["fleet-shop-button", "fleet-unlock-button", "fleet-empty-shop"].forEach(id => {
-      document.getElementById(id)?.addEventListener("click", () => showToast("Bot Shop page is not available in the current main branch yet."));
+      const button = document.getElementById(id);
+      if (button) button.onclick = () => showToast("Bot Shop page is not available in the current main branch yet.");
     });
-    ["fleet-referral-button"].forEach(id => {
-      document.getElementById(id)?.addEventListener("click", () => showTab("rank"));
-    });
+    const referralButton = document.getElementById("fleet-referral-button");
+    if (referralButton) referralButton.onclick = () => showTab("rank");
   }
 
   function setText(id, value) {
