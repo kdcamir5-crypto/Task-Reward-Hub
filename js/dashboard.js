@@ -227,6 +227,47 @@
   }
   document.getElementById("sign-out")?.addEventListener("click", signOut);
   document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+
+  document.getElementById("profile-back-home")?.addEventListener("click", () => showTab("home"));
+  document.querySelectorAll("[data-profile-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.profileAction;
+      if (action === "referrals") {
+        showTab("rank");
+        return;
+      }
+      if (action === "support") {
+        const supportToggle = document.getElementById("support-toggle");
+        const supportPopover = document.getElementById("support-popover");
+        if (supportToggle && supportPopover) {
+          supportPopover.hidden = false;
+          supportToggle.setAttribute("aria-expanded", "true");
+          supportToggle.focus();
+        } else {
+          showToast("Customer support link is not configured in this dashboard.");
+        }
+        return;
+      }
+      const messages = {
+        account:"Account details and password settings are not available in this dashboard yet.",
+        wallet:"Wallet and withdrawal are not connected to this Profile menu yet.",
+        ledger:"Collection history ledger is not connected to this Profile menu yet."
+      };
+      showToast(messages[action] || "This setting is not available yet.");
+    });
+  });
+  document.getElementById("profile-telegram-open")?.addEventListener("click", () => {
+    const raw = document.getElementById("profile-telegram-username")?.textContent.trim() || "";
+    const username = raw.replace(/^@/, "");
+    if (username && /^[A-Za-z0-9_]{5,32}$/.test(username)) {
+      window.open("https://t.me/" + encodeURIComponent(username), "_blank", "noopener,noreferrer");
+    } else {
+      showToast("Telegram username is not configured for this account.");
+    }
+  });
+  document.getElementById("profile-vip-join")?.addEventListener("click", () => {
+    showToast("Official VIP community link has not been configured yet.");
+  });
   const rankSearch = document.getElementById("rank-search");
   const rankRefresh = document.getElementById("rank-refresh");
   function filterRankRows() {
@@ -275,6 +316,20 @@
     setText("bot-description", bots === null ? "Your profile does not yet contain a readable unlocked-bot count." : "You currently have " + bots + " unlocked " + (bots === 1 ? "bot" : "bots") + " recorded in your profile.");
     renderBotFleet();
     setText("profile-name", displayName);
+    setText("profile-member-id", String(collectorId));
+    const telegramName = profile.telegramUsername || profile.telegram_username || profile.telegram || "@KDCARIYAN";
+    setText("profile-telegram-username", String(telegramName).startsWith("@") ? String(telegramName) : "@" + String(telegramName));
+    const profilePhoto = document.getElementById("profile-photo");
+    if (profilePhoto) {
+      const photoUrl = profile.photoURL || profile.photoUrl || profile.photoURL || profile.avatarUrl || user.photoURL;
+      if (typeof photoUrl === "string" && /^https:\/\//i.test(photoUrl)) {
+        profilePhoto.src = photoUrl;
+        profilePhoto.hidden = false;
+      } else {
+        profilePhoto.removeAttribute("src");
+        profilePhoto.hidden = true;
+      }
+    }
     setText("profile-email", user.email || "Email not available");
     setText("profile-role", String(profile.role || "member").toUpperCase());
     setText("profile-avatar", initials(displayName));
