@@ -15,19 +15,31 @@
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="dashboard.html" aria-label="Task Reward Hub home">
-        <span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17Z"/><path d="m12.5 20.5 5 5 10-11"/></svg></span>
-        <span><strong>TASK REWARD <b>HUB</b></strong><small>YOUR EFFORT. YOUR REWARDS.</small></span>
-      </a>
-      <div class="header-actions"><span class="live-pill"><i></i> LIVE HUB</span><button id="sign-out" class="icon-button" type="button" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg></button></div>
-    </header>
-
-    <main>
-      <section class="welcome-row">
-        <div><p class="eyebrow"><span class="spark">✦</span> YOUR REWARD SPACE</p><h1 id="welcome-title">Welcome back<span class="blue-dot">.</span></h1><p class="muted" id="welcome-subtitle">Your next step starts here.</p></div>
-        <div class="avatar" id="user-avatar" aria-label="Profile avatar">U</div>
-      </section>
-
+      <div class="topbar-row">
+        <a class="brand" href="dashboard.html" aria-label="Task Reward Hub home">
+          <span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17Z"/><path d="m12.5 20.5 5 5 10-11"/></svg></span>
+          <span><strong>TASK REWARD <b>HUB</b></strong><small>YOUR EFFORT. YOUR REWARDS.</small></span>
+        </a>
+        <div class="header-actions">
+          <span class="live-pill"><i></i> LIVE HUB</span>
+          <div class="support-wrap">
+            <button id="support-toggle" class="support-button" type="button" aria-label="Customer support" aria-expanded="false" aria-controls="support-popover" title="Customer support">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 16 0v5a2 2 0 0 1-2 2h-2"/><path d="M4 13H3a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h2v-5H4ZM20 13h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2v-5h1ZM9 20h4"/></svg>
+              <span class="support-ping" aria-hidden="true"></span>
+            </button>
+            <div id="support-popover" class="support-popover" hidden>
+              <div class="support-popover-heading"><span class="support-mini-icon">?</span><div><strong>Need a hand?</strong><small>Task Reward Hub Support</small></div></div>
+              <p>Questions about your account or rewards? Message our support team on Telegram.</p>
+              <a class="telegram-support-link" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer">
+                <span class="telegram-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.5 3.5 18.2 20c-.25 1.17-.9 1.45-1.82.9l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.14 9.36-8.45c.4-.36-.09-.56-.62-.2L5.4 13.45.4 11.9c-1.08-.34-1.1-1.08.23-1.57L20.1 2.7c.91-.34 1.71.22 1.4.8Z"/></svg></span>
+                <span><strong>Chat on Telegram</strong><small>@Kdcariyan1</small></span><span class="support-arrow">↗</span>
+              </a>
+              <span class="support-hours">Customer support · Direct message</span>
+            </div>
+          </div>
+          <button id="sign-out" class="icon-button" type="button" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg></button>
+        </div>
+      </div>
       <section class="balance-split" aria-label="Account balances">
         <article class="balance-card panel main-balance-card" aria-labelledby="balance-heading">
           <div class="balance-top"><span id="balance-heading">MAIN ACCOUNT BALANCE</span><span class="wallet-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H20v16H5.5A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 7h17M15 13h5"/><circle cx="15" cy="13" r=".7"/></svg></span></div>
@@ -42,6 +54,13 @@
           <p class="mining-balance-note">Mining rewards are automatically credited to your main balance.</p>
           <div class="balance-shine" aria-hidden="true"></div>
         </article>
+      </section>
+    </header>
+
+    <main>
+      <section class="welcome-row">
+        <div><p class="eyebrow"><span class="spark">✦</span> YOUR REWARD SPACE</p><h1 id="welcome-title">Welcome back<span class="blue-dot">.</span></h1><p class="muted" id="welcome-subtitle">Your next step starts here.</p></div>
+        <div class="avatar" id="user-avatar" aria-label="Profile avatar">U</div>
       </section>
 
       <section class="stats-grid" aria-label="Account overview">
