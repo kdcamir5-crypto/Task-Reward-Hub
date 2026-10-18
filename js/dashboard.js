@@ -348,6 +348,8 @@
     const displayName = [profile.name, profile.fullName, user.displayName].find(value => typeof value === "string" && value.trim()) || name;
 
     setText("header-user-name", String(displayName).toUpperCase());
+    setText("feed-user-name", String(displayName).toUpperCase());
+    setText("feed-user-avatar", initials(displayName));
     const collectorId = profile.collectorId || profile.collector_id || profile.referralCode || profile.referral_code || "—";
     setText("collector-id", String(collectorId));
     setText("welcome-title", "Welcome back.");
