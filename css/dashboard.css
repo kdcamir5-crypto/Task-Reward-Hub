@@ -317,3 +317,56 @@ body:not(.reference-home-active) .home-reference-layout{display:none}
 #panel-feed .feed-empty-state p{max-width:340px;margin:8px 0 0;color:#8793a5;font-size:10px;line-height:1.8}
 @keyframes feedPulse{50%{opacity:.48;box-shadow:0 0 3px #47f0bd}}
 @media(max-width:390px){#panel-feed .feed-compose-card{margin-left:9px;margin-right:9px;padding:12px 10px}#panel-feed .feed-community-banner{padding:18px 12px}#panel-feed .feed-public-badge{font-size:8px;padding:5px 6px}#panel-feed .feed-compose-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)}#panel-feed .feed-image-button,#panel-feed .feed-submit-button{font-size:9px;padding:8px 5px}#panel-feed .feed-image-button small{font-size:7px}}
+
+/* Profile & Settings redesign — strictly scoped to Profile panel */
+#panel-profile.profile-page{padding:0 0 20px;margin-top:15px;min-height:0;overflow:hidden;background:#f4f7fc;border:1px solid #dfe7f1;border-radius:19px;color:#17243c;box-shadow:0 14px 34px rgba(4,28,71,.12)}
+#panel-profile .profile-section-header{display:flex;align-items:center;gap:12px;padding:16px 15px;background:#fff;border-bottom:1px solid #e8edf5}
+#panel-profile .profile-back-button{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid #e1e8f2;border-radius:12px;background:#f8fbff;color:#1559b8;font-size:25px;line-height:1;cursor:pointer}
+#panel-profile .profile-section-header h2{margin:0;color:#182640;font-size:18px;font-weight:850;letter-spacing:-.35px}
+#panel-profile .profile-identity-card{display:flex;align-items:center;gap:14px;margin:14px 12px 0;padding:17px 14px;border:1px solid #e0e8f2;border-radius:17px;background:#fff;box-shadow:0 7px 20px rgba(22,54,101,.055)}
+#panel-profile .profile-identity-avatar{position:relative;display:grid;place-items:center;width:68px;height:68px;flex:0 0 68px;overflow:hidden;border:3px solid #e8f2ff;border-radius:50%;background:linear-gradient(145deg,#0a58ca,#4ab7f6);color:#fff;font-size:25px;font-weight:850}
+#panel-profile .profile-identity-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+#panel-profile .profile-identity-avatar img[hidden]{display:none}
+#panel-profile .profile-identity-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+#panel-profile .profile-identity-copy>strong{overflow-wrap:anywhere;color:#17243c;font-size:15px;font-weight:850}
+#panel-profile .profile-identity-copy>p{margin:0;overflow-wrap:anywhere;color:#7d8ba1;font-size:11px}
+#panel-profile .profile-level-line{color:#3278c9;font-size:10px;line-height:1.5;font-weight:700}
+#panel-profile .profile-level-line b{overflow-wrap:anywhere;font-weight:800}
+#panel-profile .profile-level-line i{padding:0 3px;font-style:normal;color:#90a4bf}
+#panel-profile .profile-telegram-card{margin:12px 12px 0;padding:13px;border:1px solid #c7e2fb;border-radius:15px;background:linear-gradient(135deg,#f0f8ff,#e7f3ff)}
+#panel-profile .profile-telegram-top{display:flex;flex-direction:column;gap:11px}
+#panel-profile .profile-telegram-title{display:flex;align-items:center;gap:8px;color:#1c2f4b;font-size:11px}
+#panel-profile .profile-telegram-title>strong{overflow-wrap:anywhere}
+#panel-profile .profile-telegram-title>strong b{color:#1260bc}
+#panel-profile .profile-telegram-logo{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:#178de0;color:#fff;font-size:17px}
+#panel-profile .profile-telegram-badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+#panel-profile .profile-verified-badge,#panel-profile .profile-open-badge,#panel-profile .profile-locked-badge{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:6px 9px;border-radius:30px;font:inherit;font-size:9px;font-weight:800;white-space:nowrap}
+#panel-profile .profile-verified-badge{border:1px solid #b5e6cf;background:#e4faee;color:#167348}
+#panel-profile .profile-open-badge{border:1px solid #a8d5fa;background:#dff1ff;color:#0b62b8;cursor:pointer}
+#panel-profile .profile-locked-badge{border:1px solid #d9e1ec;background:#f4f7fb;color:#6f7d91}
+#panel-profile .profile-telegram-policy{display:flex;align-items:flex-start;gap:7px;margin:11px 0 0;padding-top:10px;border-top:1px solid #d5e8fa;color:#6a7b91;font-size:9px;line-height:1.7}
+#panel-profile .profile-telegram-policy span{color:#2376ca;font-weight:900}
+#panel-profile .profile-vip-banner{display:flex;align-items:center;gap:9px;margin:12px 12px 0;padding:13px 11px;border:1px solid #2b67bd;border-radius:15px;background:radial-gradient(circle at 65% 0,rgba(55,155,255,.27),transparent 40%),linear-gradient(120deg,#102c69,#0a58ca);color:#fff;box-shadow:0 8px 18px rgba(10,88,202,.15)}
+#panel-profile .profile-vip-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(255,255,255,.12);font-size:17px}
+#panel-profile .profile-vip-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+#panel-profile .profile-vip-copy strong{overflow:hidden;font-size:10px;white-space:nowrap;text-overflow:ellipsis}
+#panel-profile .profile-vip-copy span{color:#c9e0ff;font-size:8px;line-height:1.45}
+#panel-profile .profile-official-badge{padding:5px 6px;border:1px solid rgba(114,221,255,.65);border-radius:6px;background:rgba(31,185,255,.16);color:#a9efff;font-size:7px;font-weight:900;letter-spacing:.5px;box-shadow:0 0 10px rgba(72,194,255,.15)}
+#panel-profile .profile-vip-join{padding:7px 9px;border:1px solid rgba(255,255,255,.8);border-radius:9px;background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:9px;font-weight:850;white-space:nowrap;cursor:pointer}
+#panel-profile .profile-settings-list{display:flex;flex-direction:column;gap:9px;margin:15px 12px 0}
+#panel-profile .profile-menu-card{display:flex;align-items:center;gap:11px;width:100%;min-height:66px;padding:11px 12px;border:1px solid #e0e7f0;border-radius:14px;background:#fff;text-align:left;color:#17243c;box-shadow:0 5px 14px rgba(22,54,101,.035);cursor:pointer;transition:border-color .16s,transform .16s}
+#panel-profile .profile-menu-card:active{transform:scale(.992)}
+#panel-profile .profile-menu-icon{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px;font-size:22px;font-weight:700}
+#panel-profile .profile-menu-icon.account{background:#e8f2ff;color:#1265c7}
+#panel-profile .profile-menu-icon.referrals{background:#f1eaff;color:#8653d7}
+#panel-profile .profile-menu-icon.wallet{background:#e7f2ff;color:#1670cb}
+#panel-profile .profile-menu-icon.ledger{background:#e6f9ee;color:#168652}
+#panel-profile .profile-menu-icon.support{background:#e5f8f1;color:#16875c}
+#panel-profile .profile-menu-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+#panel-profile .profile-menu-copy strong{font-size:11px;font-weight:850}
+#panel-profile .profile-menu-copy small{color:#8a97a9;font-size:9px;line-height:1.5}
+#panel-profile .profile-menu-arrow{flex:0 0 auto;color:#9aa6b7;font-size:25px;line-height:1}
+#panel-profile .profile-signout-card{border-color:#f1c7cc;background:#fff7f7}
+#panel-profile .profile-menu-icon.signout{background:#ffe5e7;color:#d63b49}
+#panel-profile .profile-signout-card .profile-menu-copy strong,#panel-profile .profile-signout-card .profile-menu-arrow{color:#c92f40}
+@media(max-width:390px){#panel-profile .profile-section-header{padding:14px 11px}#panel-profile .profile-section-header h2{font-size:16px}#panel-profile .profile-identity-card{gap:10px;margin-left:9px;margin-right:9px;padding:14px 10px}#panel-profile .profile-identity-avatar{width:59px;height:59px;flex-basis:59px}#panel-profile .profile-identity-copy>strong{font-size:13px}#panel-profile .profile-level-line{font-size:9px}#panel-profile .profile-telegram-card,#panel-profile .profile-vip-banner{margin-left:9px;margin-right:9px}#panel-profile .profile-vip-banner{gap:6px;padding:11px 8px}#panel-profile .profile-official-badge{font-size:6px;padding:5px 4px}#panel-profile .profile-vip-join{padding:7px 6px}#panel-profile .profile-settings-list{margin-left:9px;margin-right:9px}#panel-profile .profile-menu-card{gap:9px;padding:10px}#panel-profile .profile-menu-icon{width:36px;height:36px;flex-basis:36px}}
