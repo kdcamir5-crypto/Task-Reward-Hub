@@ -139,11 +139,44 @@
         </div>
       </section>
 
-      <section class="tab-panel panel" id="panel-bots" data-panel="bots" aria-labelledby="bots-panel-title" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">AI MINING SYSTEM</p><h2 id="bots-panel-title">Mining Robots</h2></div><span class="round-mark">⌘</span></div>
-        <div class="feature-banner"><div class="feature-orb">✦</div><div><strong>Your bot collection</strong><p id="bot-description">Your unlocked bot count will appear here.</p></div></div>
-        <div class="info-row"><span>Unlocked bots</span><strong id="bots-detail-count">—</strong></div>
-        <p class="small-note">The existing bot shop and live-mining page are not present in the current main branch. This tab is ready for them to be connected when their code is restored.</p>
+      <section class="tab-panel panel ai-fleet-page" id="panel-bots" data-panel="bots" aria-labelledby="bots-panel-title" hidden>
+        <div class="fleet-titlebar">
+          <span class="fleet-back" aria-hidden="true">←</span>
+          <h2 id="bots-panel-title">AI Mining Bot Fleet <span>(বট তালিকা)</span></h2>
+          <span class="fleet-status-pill" id="fleet-header-status">🔒 0 Bots • Offline</span>
+        </div>
+
+        <button class="fleet-shop-banner" id="fleet-shop-button" type="button">
+          <span class="fleet-robot-mark" aria-hidden="true">🤖</span>
+          <span class="fleet-shop-copy"><strong>Advance Bot Pro Shop</strong><small>আপনার মাইনিং শক্তি বাড়াতে নতুন বট সংগ্রহ করুন</small></span>
+          <span class="fleet-shop-cta">শপ-এ যান →</span>
+        </button>
+
+        <section class="fleet-status-panel" aria-label="Live mining fleet status">
+          <div class="fleet-status-heading">
+            <div><p>LIVE MINING FLEET STATUS</p><span class="fleet-live-label" id="fleet-live-label"><i></i><b id="fleet-live-status">0 Bots • Offline</b></span></div>
+            <button class="fleet-unlock-button" id="fleet-unlock-button" type="button">🤖 Unlock 1st Bot</button>
+          </div>
+          <div class="fleet-metrics">
+            <div><strong id="fleet-active-count">0</strong><span>Active Bots</span></div>
+            <div><strong id="fleet-hashrate">— MH/s</strong><span>Fleet Hashrate</span></div>
+            <div><strong id="fleet-earned">৳ 0.00</strong><span>Live Mined BDT</span></div>
+          </div>
+        </section>
+
+        <div class="fleet-section-heading"><h3>All Deployed Bots</h3><span>1 Verified Ref = 1 Bot</span></div>
+        <div id="fleet-deployed-list" class="fleet-deployed-list" aria-live="polite">
+          <div class="fleet-empty-card" id="fleet-empty-card">
+            <div class="fleet-robot-illustration" aria-hidden="true"><span>🤖</span><i></i></div>
+            <strong id="fleet-empty-title">Loading your bot fleet…</strong>
+            <p id="fleet-empty-copy">আপনার বটের বর্তমান অবস্থা Firebase থেকে লোড হচ্ছে।</p>
+            <div class="fleet-empty-actions">
+              <button class="fleet-outline-button" id="fleet-empty-shop" type="button">🤖 বট শপ-এ যান</button>
+              <button class="fleet-referral-button" id="fleet-referral-button" type="button">👤+ মেম্বার রেফার করুন</button>
+            </div>
+          </div>
+        </div>
+        <p class="fleet-data-note" id="fleet-data-note">Mining details are read-only. Rewards are processed by the secure mining workflow.</p>
       </section>
 
       <section class="tab-panel panel" id="panel-feed" data-panel="feed" aria-labelledby="feed-panel-title" hidden>
