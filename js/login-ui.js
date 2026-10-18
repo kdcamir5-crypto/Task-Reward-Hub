@@ -1,10 +1,22 @@
 (() => {
   "use strict";
+
   const root = document.documentElement;
   const themeDark = document.getElementById("theme-dark");
   const themeOled = document.getElementById("theme-oled");
   const telegramApp = window.Telegram && window.Telegram.WebApp;
   const formMessage = document.getElementById("form-message");
+  const passwordInput = document.getElementById("password");
+  const passwordToggle = document.getElementById("toggle-password");
+  const loginForm = document.getElementById("login-form");
+  const forgotPassword = document.getElementById("forgot-password");
+  const telegramLogin = document.getElementById("telegram-login");
+  const submitButton = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
+  const submitButtonLabel = submitButton ? submitButton.querySelector("span") : null;
+
+  let auth = null;
+  let authReady = false;
+  let submitting = false;
 
   function applyTheme(theme) {
     const oled = theme === "oled";
@@ -45,22 +57,84 @@
   if (themeDark) themeDark.addEventListener("click", () => applyTheme("dark"));
   if (themeOled) themeOled.addEventListener("click", () => applyTheme("oled"));
 
-  const passwordInput = document.getElementById("password");
-  const passwordToggle = document.getElementById("toggle-password");
-  const loginForm = document.getElementById("login-form");
-  const forgotPassword = document.getElementById("forgot-password");
-  const telegramLogin = document.getElementById("telegram-login");
-
-  function showMessage(message) {
+  function showMessage(message, kind) {
     if (!formMessage) return;
     formMessage.textContent = message;
     formMessage.classList.add("is-visible");
+    formMessage.dataset.kind = kind || "error";
+    formMessage.setAttribute("role", kind === "success" ? "status" : "alert");
   }
 
   function clearMessage() {
     if (!formMessage) return;
     formMessage.textContent = "";
     formMessage.classList.remove("is-visible");
+    delete formMessage.dataset.kind;
+    formMessage.setAttribute("role", "status");
+  }
+
+  function setSubmitting(value) {
+    submitting = value;
+    if (submitButton) {
+      submitButton.disabled = value;
+      submitButton.setAttribute("aria-busy", String(value));
+    }
+    if (submitButtonLabel) {
+      submitButtonLabel.textContent = value ? "Please wait…" : "Sign In to Your Account";
+    }
+  }
+
+  function friendlyAuthError(error) {
+    const code = error && error.code ? error.code : "";
+    const messages = {
+      "auth/invalid-email": "Please enter a valid email address.",
+      "auth/user-disabled": "This account has been disabled. Please contact support.",
+      "auth/user-not-found": "No account was found for this email address.",
+      "auth/wrong-password": "The email or password is incorrect.",
+      "auth/invalid-credential": "The email or password is incorrect.",
+      "auth/too-many-requests": "Too many attempts. Please wait a little and try again.",
+      "auth/network-request-failed": "Network error. Check your internet connection and try again.",
+      "auth/operation-not-allowed": "Email/password sign-in is not enabled in Firebase Authentication.",
+      "auth/weak-password": "Please use a stronger password.",
+      "auth/missing-email": "Enter your email address first.",
+      "auth/internal-error": "Firebase could not complete the request. Please try again."
+    };
+    return messages[code] || "Sign-in could not be completed. Please check your details and try again.";
+  }
+
+  function firebaseIsReady() {
+    if (authReady && auth) return true;
+    showMessage("Firebase Authentication could not start. Please refresh the page and try again.");
+    return false;
+  }
+
+  if (window.firebase && window.TASK_REWARD_HUB_FIREBASE_CONFIG) {
+    try {
+      const config = window.TASK_REWARD_HUB_FIREBASE_CONFIG;
+      const app = window.firebase.apps.length
+        ? window.firebase.app()
+        : window.firebase.initializeApp(config);
+      auth = app.auth();
+      authReady = true;
+
+      // Keep users signed in across browser restarts until they explicitly sign out.
+      auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL).catch(() => {
+        // Firebase's browser default is also LOCAL; a later sign-in will surface real errors.
+      });
+
+      auth.onAuthStateChanged(user => {
+        if (user && loginForm && !submitting) {
+          showMessage(
+            "You are already signed in. The dashboard page is currently missing from this repository's main branch, so automatic navigation is not available yet.",
+            "success"
+          );
+        }
+      });
+    } catch (error) {
+      console.error("Task Reward Hub Firebase initialization failed:", error);
+      authReady = false;
+      auth = null;
+    }
   }
 
   if (passwordInput && passwordToggle) {
@@ -74,12 +148,16 @@
   }
 
   if (loginForm) {
-    loginForm.addEventListener("submit", event => {
+    loginForm.addEventListener("submit", async event => {
       event.preventDefault();
+      if (submitting) return;
       clearMessage();
+
       const email = document.getElementById("email");
       const password = document.getElementById("password");
-      if (!email || !email.value.trim() || !email.validity.valid) {
+      const normalizedEmail = email ? email.value.trim() : "";
+
+      if (!email || !normalizedEmail || !email.validity.valid) {
         showMessage("Enter a valid email address to continue.");
         if (email) email.focus();
         return;
@@ -89,19 +167,52 @@
         if (password) password.focus();
         return;
       }
-      showMessage("The new login design is ready, but account authentication is not connected yet.");
+      if (!firebaseIsReady()) return;
+
+      setSubmitting(true);
+      try {
+        await auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+        await auth.signInWithEmailAndPassword(normalizedEmail, password.value);
+        showMessage(
+          "Login successful. Your session will remain active on this device until you sign out. The dashboard page is missing from the current main branch, so the next page cannot be opened yet.",
+          "success"
+        );
+      } catch (error) {
+        showMessage(friendlyAuthError(error));
+      } finally {
+        setSubmitting(false);
+      }
     });
   }
 
   if (forgotPassword) {
-    forgotPassword.addEventListener("click", () => {
-      showMessage("Password recovery is not connected yet.");
+    forgotPassword.addEventListener("click", async () => {
+      clearMessage();
+      const email = document.getElementById("email");
+      const normalizedEmail = email ? email.value.trim() : "";
+
+      if (!normalizedEmail || !email.validity.valid) {
+        showMessage("Enter your email address above first, then choose Forgot password.");
+        if (email) email.focus();
+        return;
+      }
+      if (!firebaseIsReady()) return;
+
+      forgotPassword.disabled = true;
+      try {
+        await auth.sendPasswordResetEmail(normalizedEmail);
+        showMessage("If an account exists for this email, Firebase has sent a password reset email. Check your inbox and spam folder.", "success");
+      } catch (error) {
+        showMessage(friendlyAuthError(error));
+      } finally {
+        forgotPassword.disabled = false;
+      }
     });
   }
 
   if (telegramLogin) {
     telegramLogin.addEventListener("click", () => {
-      showMessage("Telegram sign-in is a design preview and is not connected to account authentication yet.");
+      showMessage("Telegram sign-in is not connected to a trusted server-side verification flow yet. Please use email and password for now.");
     });
   }
 })();
