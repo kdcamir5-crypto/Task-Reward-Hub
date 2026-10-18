@@ -3,62 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071326">
-  <meta name="color-scheme" content="dark light">
-  <title>Sign In · Task Reward Hub</title>
+  <meta name="theme-color" content="#101116">
+  <meta name="color-scheme" content="dark">
+  <title>Login · Task Reward Hub</title>
   <link rel="stylesheet" href="css/login.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <main class="login-screen">
-    <div class="ambient ambient-one" aria-hidden="true"></div>
-    <div class="ambient ambient-two" aria-hidden="true"></div>
-    <div class="star-field" aria-hidden="true"></div>
+    <div class="ambient ambient-blue" aria-hidden="true"></div>
+    <div class="ambient ambient-violet" aria-hidden="true"></div>
+    <div class="particle-field" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
     <section class="login-layout" aria-labelledby="page-title">
-      <div class="top-bar">
-        <header class="brand">
-          <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 4.5 41 14v20L24 43.5 7 34V14L24 4.5Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="m16 25 5.2 5.2L33 18.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="brand-copy"><span class="brand-name">TASK REWARD <span>HUB</span></span><span class="brand-caption">YOUR EFFORT. YOUR REWARDS.</span></div>
-        </header>
-        <div class="theme-switch" role="group" aria-label="Choose appearance">
-          <button class="theme-option is-active" id="theme-dark" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.4A8.6 8.6 0 0 1 8.6 3.5 8.7 8.7 0 1 0 20.5 15.4Z"/></svg><span>Dark</span></button>
-          <button class="theme-option" id="theme-light" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><span>Light</span></button>
+      <header class="top-bar">
+        <a class="brand" href="./" aria-label="Task Reward Hub home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48"><path d="M24 4.5 41 14v20L24 43.5 7 34V14L24 4.5Z"/><path d="m15.5 24.5 5.6 5.6L33 18"/></svg>
+          </span>
+          <span class="brand-copy"><strong>TASK REWARD <b>HUB</b></strong><small>YOUR EFFORT. YOUR REWARDS.</small></span>
+        </a>
+
+        <div class="theme-control">
+          <span class="theme-caption">APPEARANCE</span>
+          <div class="theme-switch" role="group" aria-label="Choose dark or OLED mode">
+            <button class="theme-option is-active" id="theme-dark" type="button" aria-pressed="true">Dark</button>
+            <button class="theme-option" id="theme-oled" type="button" aria-pressed="false">OLED <span class="oled-dot"></span></button>
+          </div>
         </div>
-      </div>
+      </header>
 
       <div class="content-grid">
-        <div class="intro-column">
-          <div class="welcome">
-            <span class="eyebrow"><span class="status-dot"></span> YOUR REWARD JOURNEY STARTS HERE</span>
-            <h1 id="page-title">Make your<br>time <span>rewarding.</span></h1>
-            <p class="welcome-copy">One place for your tasks, wallet, and rewards. Sign in and keep your progress moving.</p>
+        <section class="intro-column">
+          <div class="hero-copy">
+            <span class="eyebrow"><span class="status-dot"></span> YOUR FINANCIAL JOURNEY, REIMAGINED</span>
+            <h1 id="page-title">Your hustle.<br><span>Your rewards.</span></h1>
+            <p class="welcome-copy">A smarter space for your tasks, wallet and earning journey. Everything you need, all in one place.</p>
           </div>
-          <div class="earning-panel" aria-label="Task Reward Hub features">
-            <div class="panel-heading"><span class="panel-heading-icon">✦</span><div><strong>Your rewards, in focus</strong><span>Everything you need, in one hub</span></div><span class="live-pill"><i></i> READY</span></div>
-            <div class="feature-grid">
-              <div class="feature-card feature-money"><span class="feature-icon currency-icon">৳</span><span class="feature-label">EARN REWARDS</span><strong>৳ <b>BDT</b> <em>+ $</em></strong><small>Track your earnings</small></div>
-              <div class="feature-card"><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><path d="M3 10h18m-4 5h.01"/></svg></span><span class="feature-label">WALLET</span><strong>Secure balance</strong><small>Keep funds in view</small></div>
-              <div class="feature-card"><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.7 8.5 21 9.4l-4.5 4.4 1.1 6.2L12 17l-5.6 3 1.1-6.2L3 9.4l6.3-.9L12 3Z"/></svg></span><span class="feature-label">DAILY TASKS</span><strong>Small steps</strong><small>Build your progress</small></div>
-              <div class="feature-card"><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19v-1.5a5.5 5.5 0 0 1 11 0V19Zm12-13.5a3 3 0 0 1 0 5.8m2 2a4.5 4.5 0 0 1 3 4.2V19h-3"/></svg></span><span class="feature-label">REFERRALS</span><strong>Grow together</strong><small>Invite your community</small></div>
-            </div>
-            <div class="panel-note"><span class="shield-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-2.8 7.5-7 10-4.2-2.5-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><strong>Designed around your progress</strong><small>Tasks, rewards and wallet tools together.</small></span><span class="note-arrow">↗</span></div>
-          </div>
-        </div>
 
-        <div class="login-card">
-          <div class="card-topline"><span class="card-kicker">MEMBER ACCESS</span><span class="secure-label"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> SECURE LOGIN</span></div>
-          <h2>Welcome back<span>.</span></h2>
-          <p class="card-copy">Enter your details to continue to your account.</p>
+          <div class="wallet-stage" aria-label="Animated digital wallet illustration">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="coin coin-dollar">$</div>
+            <div class="coin coin-bitcoin">₿</div>
+            <div class="wallet-art">
+              <div class="wallet-glow"></div>
+              <svg class="wallet-svg" viewBox="0 0 230 190" role="img" aria-label="Glossy digital wallet with a money bag">
+                <defs>
+                  <linearGradient id="walletBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3aaeff"/><stop offset=".48" stop-color="#1262d5"/><stop offset="1" stop-color="#142a75"/></linearGradient>
+                  <linearGradient id="walletFlap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8deaff"/><stop offset=".55" stop-color="#348bff"/><stop offset="1" stop-color="#2751c5"/></linearGradient>
+                  <linearGradient id="bagGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0a8"/><stop offset=".5" stop-color="#ffbf46"/><stop offset="1" stop-color="#e88716"/></linearGradient>
+                  <filter id="softGlow"><feGaussianBlur stdDeviation="5"/></filter>
+                </defs>
+                <ellipse cx="117" cy="160" rx="74" ry="12" fill="#168dff" opacity=".26" filter="url(#softGlow)"/>
+                <path d="M50 63 139 42Q151 40 158 50L193 94 181 146Q179 157 165 160L58 177Q44 179 40 166L27 94Q25 81 37 72Z" fill="url(#walletBody)" stroke="#66dfff" stroke-opacity=".8" stroke-width="2"/>
+                <path d="M35 82 138 61Q149 59 156 69L181 99 72 123Q57 126 52 113Z" fill="url(#walletFlap)" stroke="#a5f1ff" stroke-opacity=".7" stroke-width="1.5"/>
+                <path d="M124 100 188 87Q198 85 200 96L204 125Q205 134 195 137L130 150Q121 152 119 142L116 111Q115 103 124 100Z" fill="#11285e" stroke="#64d8ff" stroke-width="2"/>
+                <path d="M151 109 188 102Q195 101 196 109L198 120Q199 126 192 127L155 135Q149 136 148 129L146 116Q145 111 151 109Z" fill="#6fe7ff" opacity=".92"/>
+                <circle cx="173" cy="119" r="5" fill="#eaffff"/>
+                <path d="M94 42 108 24Q112 19 118 23L129 34 122 43Z" fill="#4bb8ff" stroke="#a2ecff" stroke-width="1.5"/>
+                <path d="M108 25 124 31 119 39 102 36Z" fill="#1768df"/>
+                <path d="M104 42Q88 51 91 66Q94 79 110 81Q125 83 135 71Q143 60 133 48L126 38 108 39Z" fill="url(#bagGold)" stroke="#ffe6a0" stroke-width="1.5"/>
+                <path d="M108 43 125 44M103 49Q116 55 132 49" fill="none" stroke="#fff0b4" stroke-width="2" stroke-linecap="round"/>
+                <path d="M115 51V71M122 54Q114 49 109 55Q104 61 116 63Q128 65 121 71Q115 75 108 69" fill="none" stroke="#9a5309" stroke-width="3" stroke-linecap="round"/>
+                <path d="M54 90 65 151M69 87 79 148" stroke="#b0edff" stroke-opacity=".25" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="float-chip chip-reward"><span class="chip-icon">৳</span><span><small>REWARDS</small><strong>Earn every day</strong></span><i>↗</i></span>
+            <span class="float-chip chip-secure"><span class="secure-check">✓</span><span><small>YOUR WALLET</small><strong>Always in control</strong></span></span>
+            <span class="stage-caption"><span></span> YOUR NEXT CHAPTER STARTS HERE</span>
+          </div>
+
+          <div class="benefit-row">
+            <div><span class="benefit-icon">✦</span><span><strong>Daily tasks</strong><small>Make progress</small></span></div>
+            <div><span class="benefit-icon">৳</span><span><strong>Reward wallet</strong><small>Track earnings</small></span></div>
+            <div><span class="benefit-icon">↗</span><span><strong>Referrals</strong><small>Grow together</small></span></div>
+          </div>
+        </section>
+
+        <section class="login-card" aria-label="Sign in to Task Reward Hub">
+          <div class="card-topline"><span class="card-kicker">MEMBER ACCESS</span><span class="secure-label"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> PRIVATE & SECURE</span></div>
+          <div class="card-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.5 8.5 21 9.4l-4.7 4.5 1.1 6.3L12 17.1l-5.4 3.1 1.1-6.3L3 9.4l6.5-.9L12 3Z"/></svg></div>
+          <h2>Welcome <span>back.</span></h2>
+          <p class="card-copy">Sign in to pick up where your earning journey left off.</p>
+
+          <button class="telegram-button" id="telegram-login" type="button">
+            <span class="telegram-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.4 4.6-3.2 15c-.2 1.1-.8 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-8c.4-.3-.1-.5-.6-.2L6.1 13.5l-4.6-1.4c-1-.3-1-1 .2-1.5L19.7 3.7c.9-.3 1.9.2 1.7.9Z"/></svg></span>
+            <span>Login with Telegram</span><span class="button-arrow">↗</span>
+          </button>
+          <div class="or-divider"><span></span><small>OR CONTINUE WITH EMAIL</small><span></span></div>
+
           <form class="login-form" id="login-form" novalidate>
-            <div class="field-group"><label for="email">Email address</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"></rect><path d="m5 7 7 5.5L19 7"></path></svg><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div></div>
-            <div class="field-group"><div class="label-row"><label for="password">Password</label><button class="text-button" id="forgot-password" type="button">Forgot password?</button></div><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2.2"></rect><path d="M8 10V7.5a4 4 0 0 1 8 0V10"></path></svg><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="password-toggle" id="toggle-password" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg></button></div></div>
+            <div class="field-group">
+              <label for="email">Email address</label>
+              <div class="input-wrap"><span class="currency-prefix prefix-dollar" aria-hidden="true">$</span><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div>
+            </div>
+            <div class="field-group">
+              <div class="label-row"><label for="password">Password</label><button class="text-button" id="forgot-password" type="button">Forgot password?</button></div>
+              <div class="input-wrap"><span class="currency-prefix prefix-bitcoin" aria-hidden="true">₿</span><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="password-toggle" id="toggle-password" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div>
+            </div>
             <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
-            <button class="sign-in-button" type="submit"><span>Sign In to Your Account</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
+            <button class="sign-in-button" type="submit"><span>Sign In to Your Account</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-6-6 6 6-6 6"/></svg></button>
           </form>
-          <div class="card-divider"><span></span><small>YOUR NEXT STEP STARTS HERE</small><span></span></div>
-          <div class="trust-row"><span class="trust-check">✓</span><span>Personal progress</span><span class="trust-dot">·</span><span>Reward dashboard</span></div>
-        </div>
+          <div class="card-bottom"><span class="bottom-check">✓</span><span>One hub for your tasks, wallet and rewards</span></div>
+        </section>
       </div>
+
       <footer class="login-footer"><span>© TASK REWARD HUB</span><span class="footer-separator">•</span><span>YOUR EFFORT. YOUR REWARDS.</span><span class="footer-secure">✦ BUILT FOR YOUR JOURNEY</span></footer>
     </section>
   </main>
