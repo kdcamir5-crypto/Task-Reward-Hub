@@ -1,0 +1,210 @@
+(() => {
+  "use strict";
+
+  const config = window.TASK_REWARD_HUB_FIREBASE_CONFIG;
+  const toast = document.getElementById("toast");
+  let auth = null;
+  let db = null;
+  let toastHandle = null;
+
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("is-visible");
+    if (toastHandle) clearTimeout(toastHandle);
+    toastHandle = setTimeout(() => toast.classList.remove("is-visible"), 3200);
+  }
+
+  function safeNumber(value) {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() && Number.isFinite(Number(value))) return Number(value);
+    return null;
+  }
+
+  function formatMoney(value) {
+    const number = safeNumber(value);
+    if (number === null) return "—";
+    return number.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function countTasks(value) {
+    if (Array.isArray(value)) return value.length;
+    if (value && typeof value === "object") {
+      if (typeof value.completed === "number") return value.completed;
+      if (typeof value.completedCount === "number") return value.completedCount;
+      return Object.values(value).filter(item => item === true || (item && typeof item === "object" && (item.completed === true || item.status === "completed"))).length;
+    }
+    return safeNumber(value);
+  }
+
+  function countReferrals(value) {
+    if (Array.isArray(value)) return value.length;
+    if (value && typeof value === "object") {
+      if (typeof value.verified === "number") return value.verified;
+      if (typeof value.count === "number") return value.count;
+      return Object.keys(value).length;
+    }
+    return safeNumber(value);
+  }
+
+  function countBots(value) {
+    if (Array.isArray(value)) return value.length;
+    if (value && typeof value === "object") {
+      if (typeof value.count === "number") return value.count;
+      return Object.values(value).filter(item => item === true || (item && typeof item === "object" && (item.unlocked === true || item.status === "unlocked" || item.status === "running"))).length;
+    }
+    return safeNumber(value);
+  }
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  }
+
+  function firstName(user, profile) {
+    const candidates = [profile && profile.name, profile && profile.fullName, profile && profile.displayName, user && user.displayName, user && user.email && user.email.split("@")[0]];
+    const name = candidates.find(value => typeof value === "string" && value.trim());
+    return name ? name.trim().split(/\s+/)[0] : "Member";
+  }
+
+  function initials(name) {
+    return (name || "U").trim().charAt(0).toUpperCase() || "U";
+  }
+
+  function showTab(tabName) {
+    const valid = ["home", "rank", "bots", "feed", "profile"];
+    const tab = valid.includes(tabName) ? tabName : "home";
+    document.querySelectorAll("[data-tab]").forEach(button => {
+      const active = button.dataset.tab === tab;
+      button.classList.toggle("is-active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+    document.querySelectorAll("[data-panel]").forEach(panel => {
+      const active = panel.dataset.panel === tab;
+      panel.hidden = !active;
+      panel.classList.toggle("is-active", active);
+    });
+    const titleByTab = {home:"Home",rank:"Rank",bots:"AI Bots",feed:"Feed",profile:"Profile"};
+    document.title = titleByTab[tab] + " · Task Reward Hub";
+    if (tab === "profile") {
+      const panel = document.getElementById("panel-profile");
+      if (panel) panel.scrollIntoView({ block:"nearest", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+  }
+
+  document.querySelectorAll("[data-tab]").forEach(button => {
+    button.addEventListener("click", () => showTab(button.dataset.tab));
+  });
+  document.querySelectorAll("[data-go]").forEach(button => {
+    button.addEventListener("click", () => showTab(button.dataset.go));
+  });
+
+  async function signOut() {
+    if (!auth) {
+      window.location.replace("../index.html");
+      return;
+    }
+    const button = document.getElementById("sign-out");
+    const profileButton = document.getElementById("profile-sign-out");
+    if (button) button.disabled = true;
+    if (profileButton) profileButton.disabled = true;
+    try {
+      await auth.signOut();
+      window.location.replace("../index.html");
+    } catch (error) {
+      console.error("Task Reward Hub sign-out failed:", error);
+      showToast("Could not sign out. Please try again.");
+      if (button) button.disabled = false;
+      if (profileButton) profileButton.disabled = false;
+    }
+  }
+  document.getElementById("sign-out")?.addEventListener("click", signOut);
+  document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+
+  function renderProfile(user, profile) {
+    const name = firstName(user, profile);
+    const balance = safeNumber(profile.balance);
+    const tasks = countTasks(profile.tasks);
+    const referrals = countReferrals(profile.referrals);
+    const bots = countBots(profile.unlockedBots);
+    const displayName = [profile.name, profile.fullName, user.displayName].find(value => typeof value === "string" && value.trim()) || name;
+
+    setText("welcome-title", "Welcome back.");
+    setText("welcome-subtitle", "Good to see you, " + name + ". Your reward space is ready.");
+    setText("user-avatar", initials(displayName));
+    setText("balance-value", formatMoney(balance));
+    setText("tasks-value", tasks === null ? "—" : String(tasks));
+    setText("referrals-value", referrals === null ? "—" : String(referrals));
+    setText("bots-value", bots === null ? "—" : String(bots));
+    setText("rank-tasks", tasks === null ? "—" : String(tasks));
+    setText("rank-referrals", referrals === null ? "—" : String(referrals));
+    setText("bots-detail-count", bots === null ? "—" : String(bots));
+    setText("bot-description", bots === null ? "Your profile does not yet contain a readable unlocked-bot count." : "You currently have " + bots + " unlocked " + (bots === 1 ? "bot" : "bots") + " recorded in your profile.");
+    setText("profile-name", displayName);
+    setText("profile-email", user.email || "Email not available");
+    setText("profile-role", String(profile.role || "member").toUpperCase());
+    setText("profile-avatar", initials(displayName));
+    setText("profile-balance", "৳" + formatMoney(balance));
+    setText("profile-tasks", tasks === null ? "—" : String(tasks));
+    setText("profile-referrals", referrals === null ? "—" : String(referrals));
+
+    const progress = [Boolean(user.email), Boolean(displayName), balance !== null].filter(Boolean).length / 3 * 100;
+    const progressBar = document.getElementById("profile-progress");
+    if (progressBar) progressBar.style.width = progress + "%";
+    setText("profile-status", progress >= 100 ? "Profile loaded" : "Profile partially loaded");
+    setText("dashboard-message", "Signed in securely as " + (user.email || "your account") + ". Profile values are read from your Firebase user document.");
+
+    // Do not fabricate a rank. A real rank needs the full, verified leaderboard collection.
+    setText("rank-label", "Awaiting leaderboard data");
+    setText("rank-description", "Your profile is connected, but a verified leaderboard position is not available in this build.");
+  }
+
+  async function loadUserProfile(user) {
+    setText("welcome-subtitle", "Loading your account…");
+    setText("dashboard-message", "Loading your Firebase profile…");
+    try {
+      const snapshot = await db.collection("users").doc(user.uid).get();
+      if (!snapshot.exists) {
+        const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member" };
+        renderProfile(user, basic);
+        setText("dashboard-message", "You are signed in, but a users/" + user.uid + " profile document was not found. Existing account data was not changed.");
+        setText("profile-status", "Profile document missing");
+        showToast("Signed in, but the user profile document was not found.");
+        return;
+      }
+      renderProfile(user, snapshot.data() || {});
+    } catch (error) {
+      console.error("Task Reward Hub profile read failed:", error);
+      const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member" };
+      renderProfile(user, basic);
+      setText("dashboard-message", "Signed in, but Firebase could not read your profile. Check Firestore rules and your connection.");
+      setText("profile-status", "Profile unavailable");
+      showToast("Your account is signed in, but profile data could not be loaded.");
+    }
+  }
+
+  if (!window.firebase || !config) {
+    setText("dashboard-message", "Firebase could not initialize. Please return to Login and try again.");
+    showToast("Firebase could not start.");
+    return;
+  }
+
+  try {
+    const app = window.firebase.apps.length ? window.firebase.app() : window.firebase.initializeApp(config);
+    auth = app.auth();
+    db = app.firestore();
+    auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL).catch(error => console.warn("Firebase persistence setting:", error));
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.replace("../index.html");
+        return;
+      }
+      loadUserProfile(user);
+    });
+  } catch (error) {
+    console.error("Task Reward Hub dashboard initialization failed:", error);
+    setText("dashboard-message", "The dashboard could not initialize Firebase. Please return to Login and try again.");
+    showToast("Could not connect to Firebase.");
+  }
+})();
