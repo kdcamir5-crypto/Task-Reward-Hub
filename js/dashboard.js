@@ -58,6 +58,74 @@
     return safeNumber(value);
   }
 
+  let currentUnlockedBotCount = null;
+  let currentMiningRecords = [];
+
+  function botStatus(record) {
+    const status = String((record && record.status) || "").toLowerCase();
+    if (["running", "active", "mining", "started"].includes(status)) return "running";
+    if (["completed", "complete", "finished", "stopped", "expired"].includes(status)) return "completed";
+    if (["pending", "queued", "paused"].includes(status)) return "pending";
+    return status || "unknown";
+  }
+
+  function readableBotName(record, index) {
+    const raw = record && (record.botName || record.name || record.botId || record.packageId || record.bot);
+    if (typeof raw === "string" && raw.trim()) {
+      const value = raw.trim().replace(/[-_]+/g, " ");
+      return value.replace(/\\b\\w/g, letter => letter.toUpperCase());
+    }
+    return "Mining Bot " + (index + 1);
+  }
+
+  function renderBotFleet() {
+    const records = currentMiningRecords;
+    const running = records.filter(record => botStatus(record) === "running");
+    const totalKnown = currentUnlockedBotCount;
+    const activeCount = running.length;
+    const displayCount = totalKnown === null ? records.length : Math.max(totalKnown, records.length);
+    const hasActive = activeCount > 0;
+    const statusText = hasActive ? activeCount + (activeCount === 1 ? " Bot • Online" : " Bots • Online") : (displayCount > 0 ? displayCount + (displayCount === 1 ? " Bot • Not running" : " Bots • Not running") : "0 Bots • Offline");
+    setText("fleet-header-status", (hasActive ? "🟢 " : "🔒 ") + statusText);
+    setText("fleet-live-status", statusText);
+    setText("fleet-active-count", String(activeCount));
+    setText("fleet-hashrate", "— MH/s");
+    const earnedText = document.getElementById("bot-mining-value");
+    const earnedValue = earnedText ? safeNumber(earnedText.textContent.replace(/,/g, "")) : null;
+    setText("fleet-earned", "৳ " + formatMoney(earnedValue === null ? 0 : earnedValue));
+    setText("bots-detail-count", totalKnown === null ? String(records.length) : String(totalKnown));
+    setText("bot-description", totalKnown === null ? "Your bot count is being read from Firebase." : "You have " + totalKnown + " unlocked " + (totalKnown === 1 ? "bot" : "bots") + " in your account.");
+    const list = document.getElementById("fleet-deployed-list");
+    if (!list) return;
+    if (!records.length) {
+      list.innerHTML = '<div class="fleet-empty-card"><div class="fleet-robot-illustration" aria-hidden="true"><span>🤖</span><i></i></div><strong>' + (displayCount > 0 ? displayCount + ' unlocked bot' + (displayCount === 1 ? '' : 's') + ' found' : '0 Bots • Offline') + '</strong><p>' + (displayCount > 0 ? 'আপনার বট অ্যাকাউন্টে আনলক করা আছে, তবে live mining record এখনো পাওয়া যায়নি।' : 'মাইনিং শুরু করতে বট শপ থেকে বট আনলক করুন অথবা verified member রেফার করুন।') + '</p><div class="fleet-empty-actions"><button class="fleet-outline-button" id="fleet-empty-shop" type="button">🤖 বট শপ-এ যান</button><button class="fleet-referral-button" id="fleet-referral-button" type="button">👤+ মেম্বার রেফার করুন</button></div></div>';
+      bindFleetButtons();
+      return;
+    }
+    list.innerHTML = records.map((record, index) => {
+      const status = botStatus(record);
+      const earned = safeNumber(record.earnedReward);
+      const target = safeNumber(record.targetReward);
+      const title = readableBotName(record, index);
+      const statusLabel = status === "running" ? "LIVE MINING" : status === "completed" ? "COMPLETED" : status === "pending" ? "PENDING" : "STATUS UNAVAILABLE";
+      const progress = earned !== null && target !== null && target > 0 ? Math.max(0, Math.min(100, earned / target * 100)) : null;
+      return '<article class="fleet-bot-card"><div class="fleet-bot-card-top"><span class="fleet-bot-avatar">🤖</span><span class="fleet-bot-state ' + (status === "running" ? "is-running" : "") + '">' + statusLabel + '</span></div><h4>' + escapeHtml(title) + '</h4><div class="fleet-bot-stats"><span>মোট অর্জন<strong>৳ ' + formatMoney(earned === null ? 0 : earned) + '</strong></span><span>লক্ষ্য<strong>' + (target === null ? "—" : "৳ " + formatMoney(target)) + '</strong></span></div>' + (progress === null ? '' : '<div class="fleet-progress"><span style="width:' + progress.toFixed(1) + '%"></span></div>') + '<small class="fleet-bot-record">Record: ' + escapeHtml(String(record.status || "unknown")) + '</small></article>';
+    }).join("");
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[character]));
+  }
+
+  function bindFleetButtons() {
+    ["fleet-shop-button", "fleet-unlock-button", "fleet-empty-shop"].forEach(id => {
+      document.getElementById(id)?.addEventListener("click", () => showToast("Bot Shop page is not available in the current main branch yet."));
+    });
+    ["fleet-referral-button"].forEach(id => {
+      document.getElementById(id)?.addEventListener("click", () => showTab("rank"));
+    });
+  }
+
   function setText(id, value) {
     const element = document.getElementById(id);
     if (element) element.textContent = value;
@@ -104,6 +172,8 @@
   document.querySelectorAll("[data-go]").forEach(button => {
     button.addEventListener("click", () => showTab(button.dataset.go));
   });
+
+  bindFleetButtons();
 
   const supportToggle = document.getElementById("support-toggle");
   const supportPopover = document.getElementById("support-popover");
@@ -198,8 +268,10 @@
     setText("bots-value", bots === null ? "—" : String(bots));
     setText("rank-tasks", tasks === null ? "—" : String(tasks));
     setText("rank-referrals", referrals === null ? "—" : String(referrals));
+    currentUnlockedBotCount = bots;
     setText("bots-detail-count", bots === null ? "—" : String(bots));
     setText("bot-description", bots === null ? "Your profile does not yet contain a readable unlocked-bot count." : "You currently have " + bots + " unlocked " + (bots === 1 ? "bot" : "bots") + " recorded in your profile.");
+    renderBotFleet();
     setText("profile-name", displayName);
     setText("profile-email", user.email || "Email not available");
     setText("profile-role", String(profile.role || "member").toUpperCase());
@@ -248,11 +320,13 @@
     // Mining runs securely through GitHub Actions. This listener only displays
     // its saved earnedReward total; it never credits the wallet from the browser.
     miningUnsubscribe = userRef.collection("botMining").onSnapshot(snapshot => {
-      const total = snapshot.docs.reduce((sum, doc) => {
-        const earned = safeNumber((doc.data() || {}).earnedReward);
+      currentMiningRecords = snapshot.docs.map(doc => Object.assign({ id:doc.id }, doc.data() || {}));
+      const total = currentMiningRecords.reduce((sum, record) => {
+        const earned = safeNumber(record.earnedReward);
         return sum + (earned === null ? 0 : earned);
       }, 0);
       setText("bot-mining-value", formatMoney(Math.round((total + Number.EPSILON) * 100) / 100));
+      renderBotFleet();
     }, error => {
       console.error("Task Reward Hub mining balance listener failed:", error);
       setText("bot-mining-value", "—");
