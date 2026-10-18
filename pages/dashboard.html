@@ -221,14 +221,46 @@
         </div>
       </section>
 
-      <section class="tab-panel panel" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">ACCOUNT SETTINGS</p><h2 id="profile-panel-title">My Profile</h2></div><span class="round-mark">◉</span></div>
-        <div class="profile-summary"><div class="profile-avatar" id="profile-avatar">U</div><div><strong id="profile-name">Loading profile…</strong><p id="profile-email">—</p><span class="member-tag" id="profile-role">MEMBER</span></div></div>
-        <div class="info-row"><span>Wallet balance</span><strong id="profile-balance">৳—</strong></div>
-        <div class="info-row"><span>Tasks completed</span><strong id="profile-tasks">—</strong></div>
-        <div class="info-row"><span>Referrals</span><strong id="profile-referrals">—</strong></div>
-        <button class="signout-wide" id="profile-sign-out" type="button">Sign out of Task Reward Hub <span>↗</span></button>
+      <section class="tab-panel panel profile-page" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
+        <div class="profile-section-header">
+          <button class="profile-back-button" id="profile-back-home" type="button" aria-label="হোমে ফিরে যান">←</button>
+          <h2 id="profile-panel-title">Profile &amp; Settings</h2>
+        </div>
+
+        <article class="profile-identity-card">
+          <div class="profile-identity-avatar" id="profile-identity-avatar"><span id="profile-avatar">U</span><img id="profile-photo" alt="Profile picture" hidden></div>
+          <div class="profile-identity-copy">
+            <strong id="profile-name">Loading profile…</strong>
+            <p id="profile-email">—</p>
+            <span class="profile-level-line">ID: <b id="profile-member-id">—</b> <i>•</i> Level 1 (Starter Novice)</span>
+          </div>
+        </article>
+
+        <article class="profile-telegram-card">
+          <div class="profile-telegram-top">
+            <div class="profile-telegram-title"><span class="profile-telegram-logo">➤</span><strong>Telegram Username <b id="profile-telegram-username">@KDCARIYAN</b></strong></div>
+            <div class="profile-telegram-badges"><span class="profile-verified-badge">🔒 Verified</span><button class="profile-open-badge" id="profile-telegram-open" type="button">⚙️ Open ↗</button><span class="profile-locked-badge">🛡️ Locked</span></div>
+          </div>
+          <p class="profile-telegram-policy"><span>ⓘ</span> নিরাপত্তার জন্য আপনার Telegram পরিচয় যাচাই করা থাকতে হবে। কোনো পাসওয়ার্ড বা OTP অন্য কারও সঙ্গে শেয়ার করবেন না।</p>
+        </article>
+
+        <article class="profile-vip-banner">
+          <div class="profile-vip-icon">➤</div>
+          <div class="profile-vip-copy"><strong>Official Telegram VIP Community</strong><span>Official updates, notices &amp; community support</span></div>
+          <span class="profile-official-badge">OFFICIAL</span>
+          <button id="profile-vip-join" type="button" class="profile-vip-join">Join ↗</button>
+        </article>
+
+        <div class="profile-settings-list" aria-label="Profile settings">
+          <button class="profile-menu-card" type="button" data-profile-action="account"><span class="profile-menu-icon account">♙</span><span class="profile-menu-copy"><strong>Account Details &amp; Password</strong><small>আপনার অ্যাকাউন্টের তথ্য ও নিরাপত্তা</small></span><span class="profile-menu-arrow">›</span></button>
+          <button class="profile-menu-card" type="button" data-profile-action="referrals"><span class="profile-menu-icon referrals">♧</span><span class="profile-menu-copy"><strong>My Referral Team</strong><small>আপনার রেফারেল ও টিমের তথ্য</small></span><span class="profile-menu-arrow">›</span></button>
+          <button class="profile-menu-card" type="button" data-profile-action="wallet"><span class="profile-menu-icon wallet">▣</span><span class="profile-menu-copy"><strong>Wallet &amp; Withdrawal</strong><small>ব্যালেন্স ও পেমেন্ট অপশন</small></span><span class="profile-menu-arrow">›</span></button>
+          <button class="profile-menu-card" type="button" data-profile-action="ledger"><span class="profile-menu-icon ledger">▤</span><span class="profile-menu-copy"><strong>Collection History Ledger</strong><small>আপনার লেনদেনের হিস্ট্রি</small></span><span class="profile-menu-arrow">›</span></button>
+          <button class="profile-menu-card" type="button" data-profile-action="support"><span class="profile-menu-icon support">☏</span><span class="profile-menu-copy"><strong>Help &amp; Customer Support</strong><small>সাহায্য ও সাপোর্ট টিম</small></span><span class="profile-menu-arrow">›</span></button>
+          <button class="profile-menu-card profile-signout-card" id="profile-sign-out" type="button"><span class="profile-menu-icon signout">↪</span><span class="profile-menu-copy"><strong>Sign Out</strong><small>নিরাপদে আপনার অ্যাকাউন্ট থেকে বের হন</small></span><span class="profile-menu-arrow">›</span></button>
+        </div>
       </section>
+
     </main>
 
     <nav class="bottom-nav" aria-label="Main navigation">
