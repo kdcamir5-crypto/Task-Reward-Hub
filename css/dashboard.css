@@ -160,3 +160,55 @@ body:not(.reference-home-active) .home-reference-layout{display:none}
 .bottom-nav{position:fixed;z-index:50;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,484px);padding:8px 5px calc(8px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid #e5eaf2;border-bottom:0;border-radius:20px 20px 0 0;background:rgba(255,255,255,.97);box-shadow:0 -7px 25px rgba(24,45,76,.1);backdrop-filter:blur(18px)}
 .nav-item{color:#667791}.nav-item.is-active{color:#2868f4}.nav-item svg{stroke:currentColor}.nav-item span{font-size:10px}
 @media(max-width:390px){.topbar{padding:17px 15px 18px}.topbar-row{gap:7px}.collector-profile{gap:8px}.collector-avatar{width:47px;height:47px;flex-basis:47px}.collector-details>strong{font-size:14px}.collector-id{font-size:9px}.verified-badge,.level-badge{font-size:8px;padding:3px 6px}.header-slogan{left:150px;top:60px;font-size:10px}.topbar .header-actions{right:12px;gap:5px}.topbar .support-button,.topbar .icon-button,.notification-button{width:33px;height:33px}.topbar .live-pill{display:none}.reference-stats{gap:5px}.reference-stats .stat-card{padding-left:2px;padding-right:2px}.reference-stats .stat-label{font-size:6.5px}.reference-quick-grid{gap:6px}.reference-service{min-height:78px}.explore-grid{gap:6px}.explore-card{min-height:98px}}
+
+/* Rank tab only: neon leaderboard; shared header and other tabs are untouched */
+#panel-rank.rank-page{padding:0;border:0;background:transparent;box-shadow:none;color:#eaf5ff;overflow:visible}
+#panel-rank .rank-board{padding:16px 12px 20px;margin:0 -14px 0;background:radial-gradient(ellipse at 50% 28%,rgba(0,102,231,.22),transparent 48%),linear-gradient(150deg,#06285a 0%,#031b40 50%,#04152f 100%);border:1px solid #0874d6;border-radius:23px 23px 0 0;min-height:75vh;box-shadow:inset 0 0 25px rgba(0,123,255,.08)}
+#panel-rank .rank-board-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 23px}
+#panel-rank .rank-title-left{display:flex;align-items:center;gap:9px;min-width:0}
+#panel-rank .rank-trophy-icon{font-size:31px;filter:drop-shadow(0 0 9px #00baff)}
+#panel-rank .rank-title-left h2{margin:0;color:#f4f9ff;font-size:18px;letter-spacing:-.5px}
+#panel-rank .rank-title-left p{margin:4px 0 0;color:#a8d4ff;font-size:10px}
+#panel-rank .your-rank-pill{display:flex;align-items:center;gap:5px;padding:7px 8px;border:1px solid #075da9;border-radius:25px;background:#062754;color:#b4d9ff;white-space:nowrap;font-size:9px}
+#panel-rank .your-rank-pill>span:first-child{font-size:14px}
+#panel-rank .your-rank-pill strong{padding:4px 7px;border:1px solid #1e9fff;border-radius:15px;background:#0757b9;color:#fff;font-size:10px}
+#panel-rank .rank-podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;align-items:end;gap:6px;padding:12px 0 19px}
+#panel-rank .podium-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0;height:174px;padding:19px 4px 12px;border:2px solid var(--podium-color);border-radius:18px 18px 12px 12px;background:linear-gradient(180deg,var(--podium-bg),rgba(3,22,50,.92));box-shadow:0 0 12px var(--podium-glow),inset 0 0 15px var(--podium-glow);text-align:center}
+#panel-rank .podium-silver{--podium-color:#62c7ff;--podium-bg:rgba(18,120,206,.2);--podium-glow:rgba(36,166,255,.3);height:151px}
+#panel-rank .podium-gold{--podium-color:#ffc92f;--podium-bg:rgba(191,134,0,.2);--podium-glow:rgba(255,193,23,.34);height:202px}
+#panel-rank .podium-bronze{--podium-color:#ff8a52;--podium-bg:rgba(202,77,31,.17);--podium-glow:rgba(255,104,53,.3);height:151px}
+#panel-rank .podium-crown{position:absolute;top:-24px;font-size:27px;color:var(--podium-color);text-shadow:0 0 9px var(--podium-glow)}
+#panel-rank .podium-gold .podium-crown{top:-33px;font-size:36px}
+#panel-rank .podium-avatar{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border:3px solid var(--podium-color);border-radius:50%;background:radial-gradient(circle at 35% 25%,#21d9ff,#1550b4 65%,#071c48);box-shadow:0 0 12px var(--podium-glow);color:white;font-size:19px;font-weight:900}
+#panel-rank .podium-gold .podium-avatar{width:70px;height:70px;flex-basis:70px;font-size:24px}
+#panel-rank .avatar-riaz{background:radial-gradient(circle at 35% 25%,#b7e8ff,#236eb8 65%,#08224a)}
+#panel-rank .avatar-yousuf{background:radial-gradient(circle at 35% 25%,#ffd5b2,#b85628 65%,#371a21)}
+#panel-rank .podium-position{position:relative;margin-top:-8px;padding:4px 11px;border:1px solid var(--podium-color);border-radius:15px;background:#073269;color:#fff;font-size:12px;font-weight:900;box-shadow:0 0 10px var(--podium-glow)}
+#panel-rank .podium-gold .podium-position{background:#a97500;font-size:14px}
+#panel-rank .podium-card h3{margin:6px 0 8px;color:#f3f8ff;font-size:11px;line-height:1.2;white-space:nowrap}
+#panel-rank .podium-bots{max-width:100%;padding:6px 8px;border:1px solid var(--podium-color);border-radius:20px;background:rgba(0,47,96,.8);color:#fff;font-size:9px;font-weight:800;white-space:nowrap}
+#panel-rank .rank-search-row{display:flex;gap:8px;margin:0 1px 14px}
+#panel-rank .rank-search-box{display:flex;align-items:center;gap:9px;flex:1;min-width:0;padding:0 13px;border:1px solid #0877c9;border-radius:28px;background:rgba(3,40,81,.9);color:#a9d8ff}
+#panel-rank .rank-search-box>span{font-size:27px;line-height:1}
+#panel-rank .rank-search-box input{width:100%;min-width:0;padding:13px 0;border:0;outline:none;background:transparent;color:#fff;font-size:12px}
+#panel-rank .rank-search-box input::placeholder{color:#9bc5ee}
+#panel-rank .rank-refresh-button{width:45px;height:45px;flex:0 0 45px;border:1px solid #0877c9;border-radius:50%;background:#062b59;color:#e4f6ff;font-size:29px;line-height:1}
+#panel-rank .rank-refresh-button:active{transform:rotate(30deg)}
+#panel-rank .rank-list{display:flex;flex-direction:column;gap:7px}
+#panel-rank .rank-list-row{display:grid;grid-template-columns:44px 42px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:61px;padding:6px 8px;border:1px solid #07599e;border-radius:25px;background:linear-gradient(100deg,rgba(3,39,78,.97),rgba(3,29,62,.97));box-shadow:inset 0 0 10px rgba(0,108,214,.05)}
+#panel-rank .rank-number{display:grid;place-items:center;width:36px;height:36px;border:1px solid #075b9d;border-radius:50%;background:#05284e;color:#13cfff;font-size:15px;font-weight:900}
+#panel-rank .rank-gold{border-color:#ffce35;background:radial-gradient(circle,#ffdf67,#f8a800);color:#402a00;box-shadow:0 0 12px rgba(255,185,0,.65)}
+#panel-rank .rank-silver{border-color:#d7f0ff;background:radial-gradient(circle,#fff,#77b7e8);color:#12345c;box-shadow:0 0 10px rgba(160,219,255,.6)}
+#panel-rank .rank-bronze{border-color:#ff9b5f;background:radial-gradient(circle,#ffe0a7,#f16a3d);color:#57200a;box-shadow:0 0 10px rgba(255,119,61,.55)}
+#panel-rank .rank-row-avatar{width:40px;height:40px;display:grid;place-items:center;border:2px solid #24c5ff;border-radius:50%;background:radial-gradient(circle at 35% 25%,#4bdfff,#1451a4 68%,#081a40);color:#fff;font-size:11px;font-weight:900}
+#panel-rank .avatar-sadia,#panel-rank .avatar-nusrat{border-color:#db9dfd;background:radial-gradient(circle at 35% 25%,#ffe0f3,#9746a9 70%,#2a164c)}
+#panel-rank .avatar-rasel,#panel-rank .avatar-fahim{border-color:#81b9ff;background:radial-gradient(circle at 35% 25%,#f7d9bc,#476f9d 70%,#152744)}
+#panel-rank .avatar-tanjil,#panel-rank .avatar-shakib{border-color:#39d7ff}
+#panel-rank .avatar-arif{border-color:#a7b5ff;background:radial-gradient(circle at 35% 25%,#f7d8c2,#5259a7 70%,#171c4c)}
+#panel-rank .rank-member-name{min-width:0;color:#f1f7ff;font-size:11px;font-weight:800;overflow-wrap:anywhere}
+#panel-rank .rank-member-name span{margin-left:3px}
+#panel-rank .rank-metric{display:flex;align-items:center;justify-content:center;gap:5px;min-width:91px;padding:8px 9px;border:1px solid #078dff;border-radius:22px;background:linear-gradient(100deg,#06488c,#0066c5);box-shadow:inset 0 0 8px rgba(25,188,255,.2);color:#26dcff;font-size:12px}
+#panel-rank .rank-metric b{color:#f3f9ff;font-size:10px;white-space:nowrap}
+#panel-rank .rank-empty-state,#panel-rank .rank-data-note{color:#82b5e5;text-align:center;font-size:10px}
+#panel-rank .rank-data-note{margin:13px 0 0;line-height:1.5}
+@media(max-width:390px){#panel-rank .rank-board{padding:14px 9px 18px;margin-left:-14px;margin-right:-14px}#panel-rank .rank-board-heading{gap:5px;margin-bottom:21px}#panel-rank .rank-trophy-icon{font-size:26px}#panel-rank .rank-title-left h2{font-size:15px}#panel-rank .rank-title-left p{font-size:9px}#panel-rank .your-rank-pill{gap:3px;padding:6px;font-size:8px}#panel-rank .rank-podium{gap:5px}#panel-rank .podium-card{padding-left:2px;padding-right:2px}#panel-rank .podium-avatar{width:48px;height:48px;flex-basis:48px}#panel-rank .podium-gold .podium-avatar{width:58px;height:58px;flex-basis:58px}#panel-rank .podium-card h3{font-size:9px}#panel-rank .podium-bots{font-size:8px;padding:5px 4px}#panel-rank .rank-list-row{grid-template-columns:34px 36px minmax(0,1fr) auto;gap:5px;padding:5px 6px;min-height:55px}#panel-rank .rank-number{width:31px;height:31px;font-size:13px}#panel-rank .rank-row-avatar{width:34px;height:34px;font-size:9px}#panel-rank .rank-member-name{font-size:10px}#panel-rank .rank-metric{min-width:78px;padding:7px 6px;gap:3px;font-size:10px}#panel-rank .rank-metric b{font-size:9px}}
