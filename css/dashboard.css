@@ -71,8 +71,10 @@
 @media(min-width:600px){.topbar{padding:17px 20px 19px}.topbar-row{padding-bottom:16px}.topbar .balance-split .balance-card{padding:18px 20px 15px}}
 
 /* Reference-matched home layout and shared blue profile header */
-body{background:#f1f4f8;color:#14233b;padding:0 0 calc(88px + var(--safe-bottom))}
-.app-shell{max-width:484px;background:#f4f6f9;min-height:100vh;box-shadow:0 0 35px rgba(9,29,68,.15)}
+body{padding:0 0 calc(88px + var(--safe-bottom))}
+.app-shell{max-width:484px;min-height:100vh}
+body.reference-home-active{background:#f1f4f8;color:#14233b}
+body.reference-home-active .app-shell{background:#f4f6f9;box-shadow:0 0 35px rgba(9,29,68,.15)}
 .topbar{height:auto;display:block;padding:17px 16px 18px;border-radius:0 0 0 0;background:linear-gradient(115deg,#293b86 0%,#164b83 55%,#123968 100%);border:0;box-shadow:0 9px 22px rgba(16,48,99,.25)}
 .topbar-row{min-height:0;padding:0 0 13px;display:flex;align-items:flex-start;gap:9px}
 .home-menu-button{width:38px;height:38px;flex:0 0 38px;border:1px solid rgba(255,255,255,.32);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center}
@@ -107,6 +109,7 @@ body{background:#f1f4f8;color:#14233b;padding:0 0 calc(88px + var(--safe-bottom)
 .topbar .balance-split .balance-shine{display:none}
 .topbar .mining-balance-note{display:none}
 main{padding:0 14px 22px}
+body:not(.reference-home-active) main{padding:0 16px 112px}
 .welcome-row{display:none}
 .home-reference-layout{display:flex;flex-direction:column;gap:13px;padding-top:13px}
 .reference-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
@@ -152,7 +155,8 @@ main{padding:0 14px 22px}
 .commission-card h2{margin:0;font-size:14px}.commission-card p{margin:5px 0 10px;max-width:280px;font-size:10px;line-height:1.4;color:#e5efff}.commission-card button{padding:6px 12px;border:0;border-radius:12px;background:#fff;color:#244ca5;font-size:10px;font-weight:800}.commission-card>span{font-size:36px}
 .activity-card{padding:14px;border:1px solid #e0e7f0;border-radius:18px;background:#fff}
 .activity-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.activity-heading h2{margin:0;font-size:13px}.activity-empty{padding:12px 0 2px;margin:0;font-size:10px;color:#6b7b92}
-.tab-panel{background:#fff;color:#14233b}
+body.reference-home-active #panel-home{background:transparent;border:0;box-shadow:none;padding:0}
+body:not(.reference-home-active) .home-reference-layout{display:none}
 .bottom-nav{position:fixed;z-index:50;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,484px);padding:8px 5px calc(8px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid #e5eaf2;border-bottom:0;border-radius:20px 20px 0 0;background:rgba(255,255,255,.97);box-shadow:0 -7px 25px rgba(24,45,76,.1);backdrop-filter:blur(18px)}
 .nav-item{color:#667791}.nav-item.is-active{color:#2868f4}.nav-item svg{stroke:currentColor}.nav-item span{font-size:10px}
 @media(max-width:390px){.topbar{padding:17px 15px 18px}.topbar-row{gap:7px}.collector-profile{gap:8px}.collector-avatar{width:47px;height:47px;flex-basis:47px}.collector-details>strong{font-size:14px}.collector-id{font-size:9px}.verified-badge,.level-badge{font-size:8px;padding:3px 6px}.header-slogan{left:150px;top:60px;font-size:10px}.topbar .header-actions{right:12px;gap:5px}.topbar .support-button,.topbar .icon-button,.notification-button{width:33px;height:33px}.topbar .live-pill{display:none}.reference-stats{gap:5px}.reference-stats .stat-card{padding-left:2px;padding-right:2px}.reference-stats .stat-label{font-size:6.5px}.reference-quick-grid{gap:6px}.reference-service{min-height:78px}.explore-grid{gap:6px}.explore-card{min-height:98px}}
