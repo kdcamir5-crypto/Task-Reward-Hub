@@ -179,9 +179,46 @@
         <p class="fleet-data-note" id="fleet-data-note">Mining details are read-only. Rewards are processed by the secure mining workflow.</p>
       </section>
 
-      <section class="tab-panel panel" id="panel-feed" data-panel="feed" aria-labelledby="feed-panel-title" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">TASK REWARD COMMUNITY</p><h2 id="feed-panel-title">Community Feed</h2></div><span class="round-mark">◎</span></div>
-        <div class="empty-state"><span class="empty-icon">✧</span><strong>Your community space</strong><p>The Feed page is not available in the current main branch yet. This tab is kept in place so the navigation layout stays consistent.</p></div>
+      <section class="tab-panel panel feed-page" id="panel-feed" data-panel="feed" aria-labelledby="feed-panel-title" hidden>
+        <section class="feed-community-banner">
+          <div class="feed-banner-copy">
+            <span class="feed-community-badge">👥 COMMUNITY GROUP FEED</span>
+            <h2 id="feed-panel-title">ইনকাম আপডেট ও কমিউনিটি</h2>
+            <p>আপনার অর্জন, অভিজ্ঞতা ও পেমেন্ট আপডেট শেয়ার করুন সবার সঙ্গে।</p>
+            <span class="feed-live-label"><i></i> ⚡ লাইভ কমিউনিটি ফিড</span>
+          </div>
+          <button class="feed-refresh-button" id="feed-refresh" type="button" aria-label="ফিড রিফ্রেশ করুন" title="রিফ্রেশ">↻</button>
+        </section>
+
+        <form class="feed-compose-card" id="feed-compose-form">
+          <div class="feed-compose-user">
+            <div class="feed-user-avatar" id="feed-user-avatar">K</div>
+            <div class="feed-user-meta"><strong id="feed-user-name">KDCARIYAN</strong><span>Task Reward Hub Member</span></div>
+            <span class="feed-public-badge">🌐 পাবলিক ফিড</span>
+          </div>
+          <label class="feed-compose-label" for="feed-post-text">আপনার আপডেট লিখুন</label>
+          <textarea id="feed-post-text" maxlength="2000" placeholder="আপনার ইনকাম আপডেট, উইথড্রয়াল প্রুফ বা অভিজ্ঞতা শেয়ার করুন..." rows="4"></textarea>
+          <div class="feed-image-preview" id="feed-image-preview" hidden></div>
+          <div class="feed-compose-actions">
+            <button class="feed-image-button" id="feed-image-trigger" type="button">🖼️ ছবি যুক্ত করুন <small>(সর্বোচ্চ ৩টি)</small></button>
+            <button class="feed-submit-button" type="submit">🕊️ পোস্ট করুন</button>
+            <input id="feed-image-input" type="file" accept="image/*" multiple hidden>
+          </div>
+          <p class="feed-compose-message" id="feed-compose-message" role="status" aria-live="polite"></p>
+          <div class="feed-policy-note"><span>ⓘ</span><p>আপনার পোস্ট প্রকাশের আগে অ্যাডমিন যাচাই ও অনুমোদন করতে পারেন। অনুগ্রহ করে ভুয়া প্রুফ বা বিভ্রান্তিকর তথ্য শেয়ার করবেন না।</p></div>
+        </form>
+
+        <div class="feed-tabs" role="tablist" aria-label="ফিড নির্বাচন">
+          <button class="feed-tab is-active" id="feed-public-tab" type="button" role="tab" aria-selected="true" data-feed-view="public">🌐 পাবলিক ফিড</button>
+          <button class="feed-tab" id="feed-mine-tab" type="button" role="tab" aria-selected="false" data-feed-view="mine">👤 আমার পোস্টসমূহ</button>
+        </div>
+        <div class="feed-post-list" id="feed-post-list" aria-live="polite">
+          <div class="feed-empty-state">
+            <div class="feed-empty-illustration" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="12" y="9" width="37" height="45" rx="5"></rect><path d="M21 21h19M21 29h19M21 37h12"></path><path d="M49 19h4v36H20v-1"></path><path d="M45 42l4 4 7-8"></path></svg></div>
+            <strong>কোন পোস্ট পাওয়া যায়নি</strong>
+            <p>এখনো কোনো অনুমোদিত কমিউনিটি পোস্ট নেই। প্রথম পোস্ট শেয়ার করুন—অ্যাডমিন অনুমোদনের পর তা এখানে দেখা যাবে।</p>
+          </div>
+        </div>
       </section>
 
       <section class="tab-panel panel" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
