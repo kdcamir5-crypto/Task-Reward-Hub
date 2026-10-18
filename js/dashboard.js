@@ -99,7 +99,98 @@
     if (!list) return;
     if (!records.length) {
       list.innerHTML = '<div class="fleet-empty-card"><div class="fleet-robot-illustration" aria-hidden="true"><span>🤖</span><i></i></div><strong>' + (displayCount > 0 ? displayCount + ' unlocked bot' + (displayCount === 1 ? '' : 's') + ' found' : '0 Bots • Offline') + '</strong><p>' + (displayCount > 0 ? 'আপনার বট অ্যাকাউন্টে আনলক করা আছে, তবে live mining record এখনো পাওয়া যায়নি।' : 'মাইনিং শুরু করতে বট শপ থেকে বট আনলক করুন অথবা verified member রেফার করুন।') + '</p><div class="fleet-empty-actions"><button class="fleet-outline-button" id="fleet-empty-shop" type="button">🤖 বট শপ-এ যান</button><button class="fleet-referral-button" id="fleet-referral-button" type="button">👤+ মেম্বার রেফার করুন</button></div></div>';
-      bindFleetButtons();
+      // Feed-only UI interactions. Posting is intentionally not written to Firestore
+  // until the community-post collection and moderation rules are confirmed.
+  const feedImageInput = document.getElementById("feed-image-input");
+  const feedImageTrigger = document.getElementById("feed-image-trigger");
+  const feedImagePreview = document.getElementById("feed-image-preview");
+  const feedComposeForm = document.getElementById("feed-compose-form");
+  const feedComposeMessage = document.getElementById("feed-compose-message");
+  const feedPostText = document.getElementById("feed-post-text");
+  const feedPostList = document.getElementById("feed-post-list");
+  let feedSelectedImages = [];
+
+  function renderFeedImagePreview() {
+    if (!feedImagePreview) return;
+    feedImagePreview.replaceChildren();
+    feedImagePreview.hidden = feedSelectedImages.length === 0;
+    feedSelectedImages.forEach((file, index) => {
+      const item = document.createElement("div");
+      item.className = "feed-image-thumb";
+      const image = document.createElement("img");
+      image.alt = "Selected image " + (index + 1);
+      image.src = URL.createObjectURL(file);
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "feed-image-remove";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "ছবি সরান");
+      remove.addEventListener("click", () => {
+        URL.revokeObjectURL(image.src);
+        feedSelectedImages.splice(index, 1);
+        renderFeedImagePreview();
+        if (feedImageInput) {
+          const transfer = new DataTransfer();
+          feedSelectedImages.forEach(selected => transfer.items.add(selected));
+          feedImageInput.files = transfer.files;
+        }
+      });
+      item.append(image, remove);
+      feedImagePreview.append(item);
+    });
+    if (feedImageTrigger) feedImageTrigger.innerHTML = feedSelectedImages.length
+      ? "🖼️ " + feedSelectedImages.length + "টি ছবি যুক্ত হয়েছে <small>(সর্বোচ্চ ৩টি)</small>"
+      : "🖼️ ছবি যুক্ত করুন <small>(সর্বোচ্চ ৩টি)</small>";
+  }
+
+  feedImageTrigger?.addEventListener("click", () => feedImageInput?.click());
+  feedImageInput?.addEventListener("change", () => {
+    const files = Array.from(feedImageInput.files || []);
+    if (files.length > 3) {
+      showToast("সর্বোচ্চ ৩টি ছবি যুক্ত করা যাবে।");
+    }
+    feedSelectedImages = files.filter(file => file.type.startsWith("image/")).slice(0, 3);
+    if (feedSelectedImages.some(file => file.size > 5 * 1024 * 1024)) {
+      feedSelectedImages = feedSelectedImages.filter(file => file.size <= 5 * 1024 * 1024);
+      showToast("প্রতিটি ছবি ৫ MB-এর কম হতে হবে।");
+    }
+    const transfer = new DataTransfer();
+    feedSelectedImages.forEach(file => transfer.items.add(file));
+    feedImageInput.files = transfer.files;
+    renderFeedImagePreview();
+  });
+
+  document.querySelectorAll("[data-feed-view]").forEach(button => {
+    button.addEventListener("click", () => {
+      const mine = button.dataset.feedView === "mine";
+      document.querySelectorAll("[data-feed-view]").forEach(tab => {
+        const active = tab === button;
+        tab.classList.toggle("is-active", active);
+        tab.setAttribute("aria-selected", String(active));
+      });
+      if (feedPostList) {
+        feedPostList.innerHTML = mine
+          ? '<div class="feed-empty-state"><div class="feed-empty-illustration" aria-hidden="true">👤</div><strong>আপনার কোনো পোস্ট নেই</strong><p>আপনার পোস্টসমূহ এখানে দেখা যাবে। পোস্ট জমা ও অনুমোদন ব্যবস্থা সংযুক্ত হলে আপনার পোস্টের অবস্থা এখান থেকে দেখতে পারবেন।</p></div>'
+          : '<div class="feed-empty-state"><div class="feed-empty-illustration" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="12" y="9" width="37" height="45" rx="5"></rect><path d="M21 21h19M21 29h19M21 37h12"></path><path d="M49 19h4v36H20v-1"></path><path d="M45 42l4 4 7-8"></path></svg></div><strong>কোন পোস্ট পাওয়া যায়নি</strong><p>এখনো কোনো অনুমোদিত কমিউনিটি পোস্ট নেই। প্রথম পোস্ট শেয়ার করুন—অ্যাডমিন অনুমোদনের পর তা এখানে দেখা যাবে।</p></div>';
+      }
+    });
+  });
+
+  document.getElementById("feed-refresh")?.addEventListener("click", () => {
+    showToast("ফিডের বর্তমান ভিউ রিফ্রেশ করা হয়েছে।");
+  });
+
+  feedComposeForm?.addEventListener("submit", event => {
+    event.preventDefault();
+    if (!feedPostText?.value.trim() && feedSelectedImages.length === 0) {
+      if (feedComposeMessage) feedComposeMessage.textContent = "পোস্ট করার আগে কিছু লিখুন অথবা ছবি যুক্ত করুন।";
+      feedPostText?.focus();
+      return;
+    }
+    if (feedComposeMessage) feedComposeMessage.textContent = "পোস্ট জমা দেওয়া এখনো Firebase ও অ্যাডমিন অনুমোদন ব্যবস্থার সঙ্গে সংযুক্ত নয়। কোনো পোস্ট জমা হয়নি।";
+  });
+
+  bindFleetButtons();
       return;
     }
     list.innerHTML = records.map((record, index) => {
