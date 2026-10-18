@@ -6,6 +6,8 @@
   let auth = null;
   let db = null;
   let toastHandle = null;
+  let profileUnsubscribe = null;
+  let miningUnsubscribe = null;
 
   function showToast(message) {
     if (!toast) return;
@@ -160,28 +162,44 @@
     setText("rank-description", "Your profile is connected, but a verified leaderboard position is not available in this build.");
   }
 
-  async function loadUserProfile(user) {
+  function loadUserProfile(user) {
+    if (profileUnsubscribe) profileUnsubscribe();
+    if (miningUnsubscribe) miningUnsubscribe();
+
     setText("welcome-subtitle", "Loading your account…");
     setText("dashboard-message", "Loading your Firebase profile…");
-    try {
-      const snapshot = await db.collection("users").doc(user.uid).get();
+
+    const userRef = db.collection("users").doc(user.uid);
+    profileUnsubscribe = userRef.onSnapshot(snapshot => {
       if (!snapshot.exists) {
-        const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member" };
+        const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member", balance:0 };
         renderProfile(user, basic);
-        setText("dashboard-message", "You are signed in, but a users/" + user.uid + " profile document was not found. Existing account data was not changed.");
+        setText("dashboard-message", "You are signed in, but your users profile document was not found. Existing account data was not changed.");
         setText("profile-status", "Profile document missing");
+        setText("balance-value", "—");
         showToast("Signed in, but the user profile document was not found.");
         return;
       }
       renderProfile(user, snapshot.data() || {});
-    } catch (error) {
-      console.error("Task Reward Hub profile read failed:", error);
-      const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member" };
-      renderProfile(user, basic);
+    }, error => {
+      console.error("Task Reward Hub profile listener failed:", error);
       setText("dashboard-message", "Signed in, but Firebase could not read your profile. Check Firestore rules and your connection.");
       setText("profile-status", "Profile unavailable");
-      showToast("Your account is signed in, but profile data could not be loaded.");
-    }
+      showToast("Your account profile could not be refreshed.");
+    });
+
+    // Mining runs securely through GitHub Actions. This listener only displays
+    // its saved earnedReward total; it never credits the wallet from the browser.
+    miningUnsubscribe = userRef.collection("botMining").onSnapshot(snapshot => {
+      const total = snapshot.docs.reduce((sum, doc) => {
+        const earned = safeNumber((doc.data() || {}).earnedReward);
+        return sum + (earned === null ? 0 : earned);
+      }, 0);
+      setText("bot-mining-value", formatMoney(Math.round((total + Number.EPSILON) * 100) / 100));
+    }, error => {
+      console.error("Task Reward Hub mining balance listener failed:", error);
+      setText("bot-mining-value", "—");
+    });
   }
 
   if (!window.firebase || !config) {
