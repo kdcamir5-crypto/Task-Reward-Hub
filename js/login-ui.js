@@ -2,50 +2,66 @@
   "use strict";
   const root = document.documentElement;
   const themeDark = document.getElementById("theme-dark");
-  const themeLight = document.getElementById("theme-light");
+  const themeOled = document.getElementById("theme-oled");
   const telegramApp = window.Telegram && window.Telegram.WebApp;
+  const formMessage = document.getElementById("form-message");
 
   function applyTheme(theme) {
-    const light = theme === "light";
-    root.dataset.theme = light ? "light" : "dark";
+    const oled = theme === "oled";
+    root.dataset.theme = oled ? "oled" : "dark";
     if (themeDark) {
-      themeDark.classList.toggle("is-active", !light);
-      themeDark.setAttribute("aria-pressed", String(!light));
+      themeDark.classList.toggle("is-active", !oled);
+      themeDark.setAttribute("aria-pressed", String(!oled));
     }
-    if (themeLight) {
-      themeLight.classList.toggle("is-active", light);
-      themeLight.setAttribute("aria-pressed", String(light));
+    if (themeOled) {
+      themeOled.classList.toggle("is-active", oled);
+      themeOled.setAttribute("aria-pressed", String(oled));
     }
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", light ? "#edf4ff" : "#071326");
+    if (meta) meta.setAttribute("content", oled ? "#000000" : "#101116");
     if (telegramApp) {
       try {
-        telegramApp.setHeaderColor(light ? "#edf4ff" : "#07162d");
-        telegramApp.setBackgroundColor(light ? "#e8f0fb" : "#030a16");
+        telegramApp.setHeaderColor(oled ? "#000000" : "#15171e");
+        telegramApp.setBackgroundColor(oled ? "#000000" : "#101116");
       } catch (_) {}
     }
-    try { localStorage.setItem("trh-login-theme", light ? "light" : "dark"); } catch (_) {}
+    try { localStorage.setItem("trh-login-theme", oled ? "oled" : "dark"); } catch (_) {}
   }
 
   let initialTheme = "dark";
   try {
     const savedTheme = localStorage.getItem("trh-login-theme");
-    if (savedTheme === "light" || savedTheme === "dark") initialTheme = savedTheme;
+    if (savedTheme === "dark" || savedTheme === "oled") initialTheme = savedTheme;
   } catch (_) {}
   applyTheme(initialTheme);
 
   if (telegramApp) {
-    telegramApp.ready();
-    telegramApp.expand();
+    try {
+      telegramApp.ready();
+      telegramApp.expand();
+    } catch (_) {}
   }
+
   if (themeDark) themeDark.addEventListener("click", () => applyTheme("dark"));
-  if (themeLight) themeLight.addEventListener("click", () => applyTheme("light"));
+  if (themeOled) themeOled.addEventListener("click", () => applyTheme("oled"));
 
   const passwordInput = document.getElementById("password");
   const passwordToggle = document.getElementById("toggle-password");
   const loginForm = document.getElementById("login-form");
-  const formMessage = document.getElementById("form-message");
   const forgotPassword = document.getElementById("forgot-password");
+  const telegramLogin = document.getElementById("telegram-login");
+
+  function showMessage(message) {
+    if (!formMessage) return;
+    formMessage.textContent = message;
+    formMessage.classList.add("is-visible");
+  }
+
+  function clearMessage() {
+    if (!formMessage) return;
+    formMessage.textContent = "";
+    formMessage.classList.remove("is-visible");
+  }
 
   if (passwordInput && passwordToggle) {
     passwordToggle.addEventListener("click", () => {
@@ -57,34 +73,35 @@
     });
   }
 
-  if (loginForm && formMessage) {
+  if (loginForm) {
     loginForm.addEventListener("submit", event => {
       event.preventDefault();
+      clearMessage();
       const email = document.getElementById("email");
       const password = document.getElementById("password");
-      formMessage.classList.remove("is-visible");
-      formMessage.textContent = "";
       if (!email || !email.value.trim() || !email.validity.valid) {
-        formMessage.textContent = "Enter a valid email address to continue.";
-        formMessage.classList.add("is-visible");
+        showMessage("Enter a valid email address to continue.");
         if (email) email.focus();
         return;
       }
       if (!password || !password.value) {
-        formMessage.textContent = "Enter your password to continue.";
-        formMessage.classList.add("is-visible");
+        showMessage("Enter your password to continue.");
         if (password) password.focus();
         return;
       }
-      formMessage.textContent = "The interface is ready. Account authentication is not connected by this design-only update.";
-      formMessage.classList.add("is-visible");
+      showMessage("The new login design is ready, but account authentication is not connected yet.");
     });
   }
 
-  if (forgotPassword && formMessage) {
+  if (forgotPassword) {
     forgotPassword.addEventListener("click", () => {
-      formMessage.textContent = "Password recovery is not connected by this design-only update.";
-      formMessage.classList.add("is-visible");
+      showMessage("Password recovery is not connected yet.");
+    });
+  }
+
+  if (telegramLogin) {
+    telegramLogin.addEventListener("click", () => {
+      showMessage("Telegram sign-in is a design preview and is not connected to account authentication yet.");
     });
   }
 })();
