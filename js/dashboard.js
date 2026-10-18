@@ -117,6 +117,17 @@
     supportToggle.setAttribute("aria-expanded", String(shouldOpen));
   });
   supportPopover?.addEventListener("click", event => event.stopPropagation());
+  document.getElementById("home-support-shortcut")?.addEventListener("click", () => {
+    if (!supportToggle || !supportPopover) return;
+    supportPopover.hidden = false;
+    supportToggle.setAttribute("aria-expanded", "true");
+    supportToggle.focus();
+  });
+  document.getElementById("home-claim-form")?.addEventListener("submit", event => {
+    event.preventDefault();
+    const message = document.getElementById("home-claim-message");
+    if (message) message.textContent = "Code claiming is not connected in this dashboard build yet.";
+  });
   document.addEventListener("click", closeSupportPopover);
   document.addEventListener("keydown", event => {
     if (event.key === "Escape") closeSupportPopover();
@@ -152,6 +163,9 @@
     const bots = countBots(profile.unlockedBots);
     const displayName = [profile.name, profile.fullName, user.displayName].find(value => typeof value === "string" && value.trim()) || name;
 
+    setText("header-user-name", String(displayName).toUpperCase());
+    const collectorId = profile.collectorId || profile.collector_id || profile.referralCode || profile.referral_code || "—";
+    setText("collector-id", String(collectorId));
     setText("welcome-title", "Welcome back.");
     setText("welcome-subtitle", "Good to see you, " + name + ". Your reward space is ready.");
     setText("user-avatar", initials(displayName));
