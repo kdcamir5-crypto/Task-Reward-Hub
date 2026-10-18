@@ -110,11 +110,33 @@
         <p class="small-note" id="dashboard-message" role="status">Loading your account details…</p>
       </section>
 
-      <section class="tab-panel panel" id="panel-rank" data-panel="rank" aria-labelledby="rank-panel-title" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">COMMUNITY LEADERBOARD</p><h2 id="rank-panel-title">Your Rank</h2></div><span class="round-mark">↗</span></div>
-        <div class="rank-highlight"><span class="rank-emblem">★</span><div><small>YOUR CURRENT RANK</small><strong id="rank-label">Not calculated yet</strong><p id="rank-description">Rank data will appear when leaderboard records are available.</p></div></div>
-        <div class="rank-metrics"><div><small>Tasks completed</small><strong id="rank-tasks">—</strong></div><div><small>Referrals</small><strong id="rank-referrals">—</strong></div></div>
-        <p class="small-note">This page does not invent a leaderboard position. Your actual rank requires verified leaderboard data.</p>
+      <section class="tab-panel panel rank-page" id="panel-rank" data-panel="rank" aria-labelledby="rank-panel-title" hidden>
+        <div class="rank-board">
+          <div class="rank-board-heading">
+            <div class="rank-title-left"><span class="rank-trophy-icon" aria-hidden="true">🏆</span><div><h2 id="rank-panel-title">Top 50 Leaderboard</h2><p>See who's leading the community</p></div></div>
+            <div class="your-rank-pill"><span>👑</span><span>Your Rank</span><strong id="rank-label">—</strong></div>
+          </div>
+          <div class="rank-podium" aria-label="Top three leaderboard members">
+            <article class="podium-card podium-silver"><span class="podium-crown">♛</span><div class="podium-avatar avatar-riaz">MR</div><span class="podium-position">#2</span><h3>MD RIAZ</h3><span class="podium-bots">♟ 1070 Bots</span></article>
+            <article class="podium-card podium-gold"><span class="podium-crown">♛</span><div class="podium-avatar avatar-masud">M</div><span class="podium-position">#1</span><h3>Masud</h3><span class="podium-bots">♟ 1114 Bots</span></article>
+            <article class="podium-card podium-bronze"><span class="podium-crown">♛</span><div class="podium-avatar avatar-yousuf">MY</div><span class="podium-position">#3</span><h3>MD YOUSUF</h3><span class="podium-bots">♟ 1030 Bots</span></article>
+          </div>
+          <div class="rank-search-row"><label class="rank-search-box"><span aria-hidden="true">⌕</span><input id="rank-search" type="search" placeholder="Search by name or ID..." autocomplete="off" aria-label="Search leaderboard by name or ID"></label><button id="rank-refresh" class="rank-refresh-button" type="button" aria-label="Refresh leaderboard" title="Refresh leaderboard">⟳</button></div>
+          <div class="rank-list" id="rank-list" aria-live="polite">
+            <article class="rank-list-row" data-name="masud" data-id="rank-1"><span class="rank-number rank-gold">#1</span><span class="rank-row-avatar avatar-masud">M</span><strong class="rank-member-name">Masud <span>👑</span></strong><span class="rank-metric">♟ <b>1114 Bots</b></span></article>
+            <article class="rank-list-row" data-name="md riaz" data-id="rank-2"><span class="rank-number rank-silver">#2</span><span class="rank-row-avatar avatar-riaz">MR</span><strong class="rank-member-name">MD RIAZ</strong><span class="rank-metric">♟ <b>1070 Bots</b></span></article>
+            <article class="rank-list-row" data-name="md yousuf" data-id="rank-3"><span class="rank-number rank-bronze">#3</span><span class="rank-row-avatar avatar-yousuf">MY</span><strong class="rank-member-name">MD YOUSUF</strong><span class="rank-metric">♟ <b>1030 Bots</b></span></article>
+            <article class="rank-list-row" data-name="sadia akter" data-id="rank-4"><span class="rank-number">#4</span><span class="rank-row-avatar avatar-sadia">SA</span><strong class="rank-member-name">Sadia Akter</strong><span class="rank-metric">♟ <b>985 Bots</b></span></article>
+            <article class="rank-list-row" data-name="rasel ahmed" data-id="rank-5"><span class="rank-number">#5</span><span class="rank-row-avatar avatar-rasel">RA</span><strong class="rank-member-name">Rasel Ahmed</strong><span class="rank-metric">♟ <b>942 Bots</b></span></article>
+            <article class="rank-list-row" data-name="tanjil khan" data-id="rank-6"><span class="rank-number">#6</span><span class="rank-row-avatar avatar-tanjil">TK</span><strong class="rank-member-name">Tanjil Khan</strong><span class="rank-metric">♟ <b>901 Bots</b></span></article>
+            <article class="rank-list-row" data-name="arif hasan" data-id="rank-7"><span class="rank-number">#7</span><span class="rank-row-avatar avatar-arif">AH</span><strong class="rank-member-name">Arif Hasan</strong><span class="rank-metric">♟ <b>876 Bots</b></span></article>
+            <article class="rank-list-row" data-name="nusrat jahan" data-id="rank-8"><span class="rank-number">#8</span><span class="rank-row-avatar avatar-nusrat">NJ</span><strong class="rank-member-name">Nusrat Jahan</strong><span class="rank-metric">♟ <b>842 Bots</b></span></article>
+            <article class="rank-list-row" data-name="shakib khan" data-id="rank-9"><span class="rank-number">#9</span><span class="rank-row-avatar avatar-shakib">SK</span><strong class="rank-member-name">Shakib Khan</strong><span class="rank-metric">♟ <b>798 Bots</b></span></article>
+            <article class="rank-list-row" data-name="fahim ahmed" data-id="rank-10"><span class="rank-number">#10</span><span class="rank-row-avatar avatar-fahim">FA</span><strong class="rank-member-name">Fahim Ahmed</strong><span class="rank-metric">♟ <b>754 Bots</b></span></article>
+            <p class="rank-empty-state" id="rank-empty" hidden>No matching members found.</p>
+          </div>
+          <p class="rank-data-note" id="rank-data-note">Leaderboard preview · connect verified bot totals for live Top 50 rankings.</p>
+        </div>
       </section>
 
       <section class="tab-panel panel" id="panel-bots" data-panel="bots" aria-labelledby="bots-panel-title" hidden>
