@@ -73,7 +73,7 @@
     const raw = record && (record.botName || record.name || record.botId || record.packageId || record.bot);
     if (typeof raw === "string" && raw.trim()) {
       const value = raw.trim().replace(/[-_]+/g, " ");
-      return value.replace(/\\b\\w/g, letter => letter.toUpperCase());
+      return value.replace(/\b\w/g, letter => letter.toUpperCase());
     }
     return "Mining Bot " + (index + 1);
   }
