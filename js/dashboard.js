@@ -1368,7 +1368,7 @@
       };
       for (const userDoc of snapshot.docs) {
         const data = userDoc.data() || {};
-        const collectorId = String(data.collectorId || data.collector_id || data.referralCode || "");
+        const collectorId = String(data.collectorId || "");
         if (!/^\d{8}$/.test(collectorId)) continue;
         const name = String(data.name || data.fullName || "Member").trim().slice(0,80) || "Member";
         const bots = Array.isArray(data.unlockedBots) ? data.unlockedBots.length : 0;
