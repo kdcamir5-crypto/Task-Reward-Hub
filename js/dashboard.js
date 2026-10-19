@@ -1108,8 +1108,8 @@
     setInputValueUnlessFocused("profile-email-input", user.email || "");
     setInputValueUnlessFocused("profile-phone-input", profile.phoneNumber || profile.phone_number || profile.phone || "");
     setInputValueUnlessFocused("profile-telegram-input", telegramName);
-    setText("profile-referral-code", String(collectorId));
-    setText("profile-role-badge", "🛡 " + String(profile.role || "USER").toUpperCase());
+    setText("profile-referral-code", referralCodeFor(user, profile));
+    setText("profile-role-badge", profile.role === "admin" ? "🛡 ADMIN" : "🛡 USER");
     setText("profile-referral-reward", "+ ৳0.00 / ref");
     const profilePhoto = document.getElementById("profile-photo");
     if (profilePhoto) {
