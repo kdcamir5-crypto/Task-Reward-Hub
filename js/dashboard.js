@@ -407,6 +407,77 @@
     document.body.classList.remove("withdrawal-drawer-open");
   }
 
+
+  let moneyHistoryType = "withdrawals";
+  let moneyHistoryStatus = "pending";
+  let moneyHistoryRows = [];
+  let ledgerRows = [];
+  function historyStatusKey(status) {
+    const s=String(status||"").toLowerCase();
+    if(["approved","paid","completed","success","successful","processed"].includes(s))return "paid";
+    if(["rejected","declined","cancelled","canceled","failed"].includes(s))return "rejected";
+    return "pending";
+  }
+  function historyAmount(row) {
+    const v=row&&(row.amount!==undefined?row.amount:row.value!==undefined?row.value:row.reward!==undefined?row.reward:row.earnedReward);
+    return safeNumber(v)||0;
+  }
+  function historyDate(row) {
+    const raw=row&&(row.createdAt||row.created_at||row.timestamp||row.date||row.updatedAt);
+    const d=raw&&typeof raw.toDate==="function"?raw.toDate():raw instanceof Date?raw:raw?new Date(raw):null;
+    return d&&!Number.isNaN(d.getTime())?d.toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"তারিখ পাওয়া যায়নি";
+  }
+  function setHistoryTheme(drawer) { if(drawer)drawer.dataset.theme=document.getElementById("wallet-page")?.dataset.theme==="oled"?"oled":"cyber"; }
+  function openMoneyHistoryDrawer() {
+    const o=document.getElementById("money-history-overlay"),d=document.getElementById("money-history-drawer");
+    if(!o||!d)return;setHistoryTheme(d);o.hidden=false;d.hidden=false;document.body.classList.add("history-drawer-open");
+    moneyHistoryType="withdrawals";moneyHistoryStatus="pending";
+    document.getElementById("money-history-title").textContent="💸 উইথড্র হিস্ট্রি";
+    document.querySelectorAll("[data-history-type]").forEach(b=>{const on=b.dataset.historyType===moneyHistoryType;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));});
+    document.querySelectorAll("[data-history-status]").forEach(b=>b.classList.toggle("is-active",b.dataset.historyStatus===moneyHistoryStatus));
+    loadMoneyHistory();
+  }
+  function closeMoneyHistoryDrawer() {
+    document.getElementById("money-history-overlay").hidden=true;document.getElementById("money-history-drawer").hidden=true;document.body.classList.remove("history-drawer-open");
+  }
+  function renderMoneyHistory() {
+    ["paid","pending","rejected"].forEach(k=>setText("history-"+k+"-total","৳"+formatMoney(moneyHistoryRows.filter(r=>historyStatusKey(r.status)===k).reduce((n,r)=>n+historyAmount(r),0))));
+    const rows=moneyHistoryRows.filter(r=>historyStatusKey(r.status)===moneyHistoryStatus),list=document.getElementById("money-history-list");if(!list)return;
+    if(!rows.length){list.innerHTML='<div class="history-empty"><span>▱</span><strong>'+escapeHtml(moneyHistoryType==="withdrawals"?"কোনো উইথড্র রিকোয়েস্ট পাওয়া যায়নি":"কোনো টাকা জমার রেকর্ড পাওয়া যায়নি")+'</strong><p>আপনার লেনদেনের রেকর্ড এখানে দেখা যাবে।</p></div>';return;}
+    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+(moneyHistoryType==="withdrawals"?"↗":"↙")+'</span><div class="history-row-main"><strong>'+escapeHtml(moneyHistoryType==="withdrawals"?"উত্তোলন":"টাকা জমা")+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(String(r.type||r.method||r.provider||""))+'</small></div><div class="history-row-side"><strong>৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"pending"))+'</small></div></article>').join("");
+  }
+  async function loadMoneyHistory() {
+    const list=document.getElementById("money-history-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>হিস্ট্রি লোড হচ্ছে…</strong></div>';
+    if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
+    const col=moneyHistoryType==="withdrawals"?"withdrawals":"deposits";
+    try{const snap=await db.collection(col).where("uid","==",walletUser.uid).get();moneyHistoryRows=snap.docs.map(doc=>Object.assign({id:doc.id},doc.data())).sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderMoneyHistory();}
+    catch(error){console.error("History read failed",col,error);if(list)list.innerHTML='<div class="history-empty"><strong>হিস্ট্রি লোড করা যায়নি</strong><p>Firestore permission বা connection পরীক্ষা করতে হবে।</p></div>';}
+  }
+  document.querySelectorAll("[data-history-type]").forEach(b=>b.addEventListener("click",()=>{moneyHistoryType=b.dataset.historyType;document.querySelectorAll("[data-history-type]").forEach(x=>{const on=x===b;x.classList.toggle("is-active",on);x.setAttribute("aria-pressed",String(on));});document.getElementById("money-history-title").textContent=moneyHistoryType==="withdrawals"?"💸 উইথড্র হিস্ট্রি":"💰 টাকা জমার হিস্ট্রি";loadMoneyHistory();}));
+  document.querySelectorAll("[data-history-status]").forEach(b=>b.addEventListener("click",()=>{moneyHistoryStatus=b.dataset.historyStatus;document.querySelectorAll("[data-history-status]").forEach(x=>x.classList.toggle("is-active",x===b));renderMoneyHistory();}));
+  document.querySelectorAll("[data-history-close]").forEach(b=>b.addEventListener("click",closeMoneyHistoryDrawer));
+  document.getElementById("money-history-overlay")?.addEventListener("click",closeMoneyHistoryDrawer);
+  document.getElementById("history-new-withdrawal")?.addEventListener("click",()=>{closeMoneyHistoryDrawer();openWithdrawalDrawer();});
+  function openFullLedgerDrawer(){const o=document.getElementById("ledger-overlay"),d=document.getElementById("ledger-drawer");if(!o||!d)return;setHistoryTheme(d);o.hidden=false;d.hidden=false;document.body.classList.add("history-drawer-open");loadFullLedger();}
+  function closeFullLedgerDrawer(){document.getElementById("ledger-overlay").hidden=true;document.getElementById("ledger-drawer").hidden=true;document.body.classList.remove("history-drawer-open");}
+  function renderFullLedger(){
+    const f=document.querySelector("[data-ledger-filter].is-active")?.dataset.ledgerFilter||"all";
+    const rows=ledgerRows.filter(r=>f==="all"||(f==="money"?["withdrawals","deposits"].includes(r.kind):!["withdrawals","deposits"].includes(r.kind))),list=document.getElementById("ledger-list");if(!list)return;
+    if(!rows.length){list.innerHTML='<div class="history-empty"><span>▤</span><strong>কোনো সংরক্ষিত লেনদেন পাওয়া যায়নি</strong><p>নতুন রেকর্ড তৈরি হলে এখানে দেখাবে।</p></div>';return;}
+    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(r.detail||r.type||r.botId||"")+'</small></div><div class="history-row-side"><strong>'+(r.kind==="withdrawals"?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>').join("");
+  }
+  async function loadFullLedger(){
+    const list=document.getElementById("ledger-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>সব রেকর্ড খোঁজা হচ্ছে…</strong></div>';
+    if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
+    const specs=[["withdrawals","withdrawals","↗","উত্তোলন"],["deposits","deposits","↙","টাকা জমা"],["botMining","botMining","🤖","Bot Mining"]];
+    const sets=await Promise.all(specs.map(async s=>{try{const snap=await db.collection(s[0]).where("uid","==",walletUser.uid).get();return snap.docs.map(doc=>Object.assign({id:doc.id,kind:s[1],icon:s[2],title:s[3]},doc.data()));}catch(error){console.warn("Ledger source unavailable",s[0],error);return [];}}));
+    ledgerRows=sets.flat().sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderFullLedger();
+  }
+  document.querySelectorAll("[data-ledger-filter]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-ledger-filter]").forEach(x=>x.classList.toggle("is-active",x===b));renderFullLedger();}));
+  document.querySelectorAll("[data-ledger-close]").forEach(b=>b.addEventListener("click",closeFullLedgerDrawer));
+  document.getElementById("ledger-overlay")?.addEventListener("click",closeFullLedgerDrawer);
+  document.addEventListener("keydown",event=>{if(event.key!=="Escape")return;if(!document.getElementById("money-history-drawer")?.hidden)closeMoneyHistoryDrawer();if(!document.getElementById("ledger-drawer")?.hidden)closeFullLedgerDrawer();});
+
   document.getElementById("wallet-withdraw-button")?.addEventListener("click", openWithdrawalDrawer);
   document.getElementById("withdrawal-close")?.addEventListener("click", closeWithdrawalDrawer);
   document.getElementById("withdrawal-overlay")?.addEventListener("click", closeWithdrawalDrawer);
