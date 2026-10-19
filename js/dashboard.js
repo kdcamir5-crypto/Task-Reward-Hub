@@ -384,7 +384,7 @@
 
     setText("header-user-name", String(displayName).toUpperCase());
     setText("tap-user-name", String(displayName).toUpperCase());
-    setText("tap-user-avatar", initials(displayName));
+    setText("tap-user-initials", initials(displayName));
     setText("tap-bdt-balance", formatMoney(balance));
     setText("tap-coin-value", "0");
     setText("tap-usd-balance", "0.00");
