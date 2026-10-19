@@ -328,7 +328,11 @@
     window.setTimeout(() => { if (spinInProgress) finish(); }, 5600);
   }
 
-  document.querySelectorAll("[data-referral-open]").forEach(b=>b.addEventListener("click",openReferralPage));
+  document.querySelectorAll("[data-referral-card]").forEach(card=>{
+    card.addEventListener("click",event=>{event.preventDefault();openReferralPage();});
+    card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();openReferralPage();}});
+  });
+  document.querySelectorAll("[data-referral-open]").forEach(b=>b.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();openReferralPage();}));
   document.getElementById("referral-back")?.addEventListener("click",closeReferralPage);
   document.getElementById("referral-search")?.addEventListener("input",renderReferralPage);
   document.querySelectorAll("[data-referral-filter]").forEach(b=>b.addEventListener("click",()=>{referralFilter=b.dataset.referralFilter||"all";document.querySelectorAll("[data-referral-filter]").forEach(o=>o.classList.toggle("is-active",o.dataset.referralFilter===referralFilter));renderReferralPage();}));
