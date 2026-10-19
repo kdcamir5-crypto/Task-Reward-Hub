@@ -209,7 +209,7 @@
   }
 
 
-  let walletUser = null, walletProfile = {}, walletDocRef = null, walletReturnTab = "home", selectedMfsProvider = "bKash";
+  let walletUser = null, walletProfile = {}, walletDocRef = null, walletProfileAvailable = false, walletReturnTab = "home", selectedMfsProvider = "bKash";
   function walletMoney(value) {
     const number = safeNumber(value);
     return number === null ? "—" : formatMoney(number);
@@ -222,7 +222,7 @@
     return digits.length === 11 ? digits.slice(0, 4) + "••••" + digits.slice(-3) : "Number unavailable";
   }
   function renderWalletPage() {
-    const balance = safeNumber(walletProfile && walletProfile.balance);
+    const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
     setText("wallet-main-balance", walletMoney(balance));
     setText("wallet-usd-equivalent", "≈ $— USD · Conversion unavailable");
     const saved = Array.isArray(walletProfile && walletProfile.linkedMfsWallets) ? walletProfile.linkedMfsWallets : [];
@@ -811,6 +811,7 @@
         const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member", balance:0 };
         currentReferralProfile=basic;
         walletProfile = basic;
+        walletProfileAvailable = false;
         renderProfile(user, basic);
         renderWalletPage();
         renderReferralPage();
@@ -822,6 +823,7 @@
       }
       currentReferralProfile=snapshot.data() || {};
       walletProfile = currentReferralProfile;
+      walletProfileAvailable = true;
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
       renderReferralPage();
