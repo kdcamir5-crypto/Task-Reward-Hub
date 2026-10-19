@@ -171,7 +171,9 @@
   }
 
   function showTab(tabName) {
-    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active");
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active");
+    const supportPage = document.getElementById("support-page");
+    if (supportPage) supportPage.hidden = true;
     const referralPage = document.getElementById("referral-page");
     if (referralPage) referralPage.hidden = true;
     const spinPage = document.getElementById("spin-wheel-page");
@@ -426,34 +428,73 @@
   bindFleetButtons();
 
   const supportToggle = document.getElementById("support-toggle");
-  const supportPopover = document.getElementById("support-popover");
-  function closeSupportPopover() {
-    if (!supportToggle || !supportPopover) return;
-    supportPopover.hidden = true;
-    supportToggle.setAttribute("aria-expanded", "false");
+  let supportReturnTab = "home";
+  function openSupportPage() {
+    const page = document.getElementById("support-page");
+    if (!page) { showToast("Support interface could not be opened."); return; }
+    const activeTab = document.querySelector(".bottom-nav [data-tab].is-active");
+    if (activeTab?.dataset.tab) supportReturnTab = activeTab.dataset.tab;
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active");
+    ["referral-page", "spin-wheel-page", "tap-earning-page", "bot-shop-page"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.hidden = true;
+    });
+    document.querySelectorAll("[data-panel]").forEach(panel => {
+      panel.hidden = true;
+      panel.classList.remove("is-active");
+    });
+    const home = document.querySelector(".home-reference-layout");
+    if (home) home.hidden = true;
+    page.hidden = false;
+    document.body.classList.add("support-page-active");
+    document.title = "Admin Support · Task Reward Hub";
+    if (supportToggle) supportToggle.setAttribute("aria-expanded", "true");
+    const busy = document.getElementById("support-busy-toast");
+    if (busy) busy.hidden = true;
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  function closeSupportPage() {
+    const page = document.getElementById("support-page");
+    if (page) page.hidden = true;
+    document.body.classList.remove("support-page-active");
+    if (supportToggle) supportToggle.setAttribute("aria-expanded", "false");
+    showTab(supportReturnTab);
   }
   supportToggle?.addEventListener("click", event => {
-    event.stopPropagation();
-    if (!supportPopover) return;
-    const shouldOpen = supportPopover.hidden;
-    supportPopover.hidden = !shouldOpen;
-    supportToggle.setAttribute("aria-expanded", String(shouldOpen));
+    event.preventDefault();
+    openSupportPage();
   });
-  supportPopover?.addEventListener("click", event => event.stopPropagation());
-  document.getElementById("home-support-shortcut")?.addEventListener("click", () => {
-    if (!supportToggle || !supportPopover) return;
-    supportPopover.hidden = false;
-    supportToggle.setAttribute("aria-expanded", "true");
-    supportToggle.focus();
+  document.getElementById("home-support-shortcut")?.addEventListener("click", openSupportPage);
+  document.getElementById("support-back")?.addEventListener("click", closeSupportPage);
+  document.getElementById("support-close")?.addEventListener("click", closeSupportPage);
+  document.querySelectorAll("[data-support-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const page = document.getElementById("support-page");
+      if (!page) return;
+      const theme = button.dataset.supportTheme === "oled" ? "oled" : "cyber";
+      page.dataset.theme = theme;
+      document.querySelectorAll("[data-support-theme]").forEach(option => {
+        const active = option.dataset.supportTheme === theme;
+        option.classList.toggle("is-active", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
+  document.getElementById("support-call-button")?.addEventListener("click", () => {
+    const banner = document.getElementById("support-busy-toast");
+    if (banner) {
+      banner.hidden = false;
+      banner.classList.remove("is-visible");
+      requestAnimationFrame(() => banner.classList.add("is-visible"));
+    }
+  });
+  document.querySelectorAll("[data-support-demo]").forEach(button => {
+    button.addEventListener("click", () => showToast("Demo only — মেসেজ, ফাইল বা ভয়েস পাঠানো হবে না। যোগাযোগের জন্য WhatsApp বা Telegram ব্যবহার করুন।"));
   });
   document.getElementById("home-claim-form")?.addEventListener("submit", event => {
     event.preventDefault();
     const message = document.getElementById("home-claim-message");
     if (message) message.textContent = "Code claiming is not connected in this dashboard build yet.";
-  });
-  document.addEventListener("click", closeSupportPopover);
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeSupportPopover();
   });
 
   async function signOut() {
@@ -487,15 +528,7 @@
         return;
       }
       if (action === "support") {
-        const supportToggle = document.getElementById("support-toggle");
-        const supportPopover = document.getElementById("support-popover");
-        if (supportToggle && supportPopover) {
-          supportPopover.hidden = false;
-          supportToggle.setAttribute("aria-expanded", "true");
-          supportToggle.focus();
-        } else {
-          showToast("Customer support link is not configured in this dashboard.");
-        }
+        openSupportPage();
         return;
       }
       const messages = {
