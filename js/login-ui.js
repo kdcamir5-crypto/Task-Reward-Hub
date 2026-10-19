@@ -295,7 +295,10 @@
         if (createdUser) {
           try { await createdUser.delete(); } catch (_) {}
         }
-        showSignupMessage(friendlyAuthError(error));
+        const errorCode = error && error.code ? error.code : "unknown";
+        const errorDetail = error && error.message ? String(error.message).slice(0, 180) : "No additional details from Firebase.";
+        console.error("Signup diagnostic:", errorCode, errorDetail);
+        showSignupMessage(friendlyAuthError(error) + " (Code: " + errorCode + ")");
       } finally {
         signupBusy = false;
         submitting = false;
