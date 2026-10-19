@@ -1045,8 +1045,8 @@
       });
 
       if (result && result.reward_event_type === "valued") {
-        showToast("Ad completed. Your reward will appear after the secure server verifies the Monetag postback.");
-        if (sponsoredCopy) sponsoredCopy.textContent = "Ad completed · verifying reward securely";
+        showToast("Ad watched successfully! Please check your balance for the reward.");
+        if (sponsoredCopy) sponsoredCopy.textContent = "Ad watched successfully";
       } else {
         showToast("This ad did not qualify for a reward. No balance was added by the app.");
         if (sponsoredCopy) sponsoredCopy.textContent = "Watch a qualifying rewarded ad";
