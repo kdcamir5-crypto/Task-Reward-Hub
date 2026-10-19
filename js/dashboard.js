@@ -209,7 +209,7 @@
   }
 
 
-  let walletUser = null, walletProfile = {}, walletDocRef = null, walletProfileAvailable = false, walletReturnTab = "home", selectedMfsProvider = "bKash";
+  let walletUser = null, walletProfile = {}, walletDocRef = null, walletProfileAvailable = false, walletReturnTab = "home", selectedMfsProvider = "bKash", walletRecords = [], walletRecordsUnsubscribe = null, withdrawalSubmitting = false;
   function walletMoney(value) {
     const number = safeNumber(value);
     return number === null ? "—" : formatMoney(number);
@@ -225,7 +225,7 @@
     const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
     setText("wallet-main-balance", walletMoney(balance));
     setText("wallet-usd-equivalent", "≈ $— USD · Conversion unavailable");
-    const saved = Array.isArray(walletProfile && walletProfile.linkedMfsWallets) ? walletProfile.linkedMfsWallets : [];
+    const saved = walletRecords;
     const badge = document.getElementById("wallet-count-badge");
     if (badge) badge.textContent = Math.min(saved.length, 5) + "/5 Used";
     const list = document.getElementById("wallet-linked-list");
@@ -235,8 +235,9 @@
       return;
     }
     list.innerHTML = saved.slice(0, 5).map(item => {
-      const provider = ["bKash","Nagad","Rocket"].includes(item.provider) ? item.provider : "MFS Wallet";
-      const number = maskWalletNumber(item.mobileNumber);
+      const providerValue = item.type || item.provider;
+      const provider = ["bKash","Nagad","Rocket"].includes(providerValue) ? providerValue : "MFS Wallet";
+      const number = maskWalletNumber(item.number || item.mobileNumber);
       const dateValue = item.boundAt ? new Date(item.boundAt) : null;
       const dateText = dateValue && !Number.isNaN(dateValue.getTime()) ? dateValue.toLocaleDateString(undefined, {month:"short", day:"2-digit"}) : "Date unavailable";
       return '<article class="wlt-linked-row"><span class="wlt-linked-logo ' + walletProviderClass(provider) + '">' + escapeHtml(provider === "bKash" ? "b" : provider === "Nagad" ? "N" : provider === "Rocket" ? "R" : "▣") + '</span><span class="wlt-linked-copy"><strong>' + escapeHtml(provider) + ' ' + escapeHtml(String(item.accountType || "Personal")) + '</strong><small>' + escapeHtml(number) + '</small></span><span class="wlt-linked-status"><b>🔒 Locked</b><small>' + escapeHtml(dateText) + '</small></span></article>';
@@ -311,13 +312,13 @@
     const message = document.getElementById("wallet-form-message");
     const submit = document.getElementById("wallet-bind-submit");
     const mobileNumber = String(input?.value || "").replace(/\s+/g, "");
-    const saved = Array.isArray(walletProfile && walletProfile.linkedMfsWallets) ? walletProfile.linkedMfsWallets : [];
+    const saved = walletRecords;
     if (!/^01[3-9]\d{8}$/.test(mobileNumber)) {
       if (message) message.textContent = "বাংলাদেশের সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।";
       input?.focus();
       return;
     }
-    if (!walletUser || !walletDocRef || !db) {
+    if (!walletUser || !db) {
       if (message) message.textContent = "Firebase profile is unavailable. Wallet was not saved.";
       return;
     }
@@ -325,25 +326,19 @@
       if (message) message.textContent = "সর্বোচ্চ ৫টি Wallet যুক্ত করা যাবে।";
       return;
     }
-    if (saved.some(item => item && item.provider === selectedMfsProvider && String(item.mobileNumber || "") === mobileNumber)) {
-      if (message) message.textContent = "এই Wallet ইতিমধ্যে যুক্ত করা হয়েছে।";
-      return;
-    }
-    if (saved.some(item => item && String(item.mobileNumber || "") === mobileNumber)) {
+    if (saved.some(item => item && String(item.number || "") === mobileNumber)) {
       if (message) message.textContent = "এই মোবাইল নম্বরটি ইতিমধ্যে একটি Wallet-এ যুক্ত আছে।";
       return;
     }
     if (submit) { submit.disabled = true; submit.textContent = "Saving securely…"; }
     if (message) message.textContent = "";
     try {
-      const next = saved.concat([{
-        provider: selectedMfsProvider,
-        accountType: document.getElementById("wallet-account-type")?.value || "Personal",
-        mobileNumber,
-        locked: true,
-        boundAt: new Date().toISOString()
-      }]);
-      await walletDocRef.update({ linkedMfsWallets: next });
+      await db.collection("wallets").add({
+        uid: walletUser.uid,
+        type: selectedMfsProvider,
+        number: mobileNumber,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
       if (input) input.value = "";
       if (message) message.textContent = "Wallet binding saved. This wallet is now locked.";
       showToast("E-Wallet successfully bound and locked.");
@@ -355,9 +350,116 @@
       if (submit) { submit.disabled = false; submit.innerHTML = "🔒 Bind &amp; Lock E-Wallet"; }
     }
   });
-  document.getElementById("wallet-withdraw-button")?.addEventListener("click", () => {
-    showToast("Withdrawal requests are not connected to this dashboard yet. No request was submitted.");
+
+  function renderWithdrawalWalletOptions() {
+    const select = document.getElementById("withdrawal-wallet");
+    if (!select) return;
+    const previous = select.value;
+    const valid = walletRecords.filter(item => item && ["bKash","Nagad","Rocket"].includes(item.type) && /^01[3-9]\d{8}$/.test(String(item.number || "")));
+    if (!valid.length) {
+      select.innerHTML = '<option value="">No verified wallet linked yet</option>';
+      select.disabled = true;
+      return;
+    }
+    select.disabled = false;
+    select.innerHTML = '<option value="">Choose a verified wallet</option>' + valid.map(item => {
+      const number = String(item.number);
+      const label = item.type + " (Personal) - " + number;
+      return '<option value="' + escapeHtml(item.id) + '">' + escapeHtml(label) + '</option>';
+    }).join("");
+    if (valid.some(item => item.id === previous)) select.value = previous;
+  }
+
+  function openWithdrawalDrawer() {
+    const overlay = document.getElementById("withdrawal-overlay");
+    const drawer = document.getElementById("withdrawal-drawer");
+    if (!overlay || !drawer) return;
+    renderWithdrawalWalletOptions();
+    const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
+    setText("withdrawal-balance-note", "Available balance: ৳" + walletMoney(balance));
+    setText("withdrawal-message", "");
+    const amount = document.getElementById("withdrawal-amount");
+    if (amount) amount.value = "";
+    overlay.hidden = false;
+    drawer.hidden = false;
+    document.body.classList.add("withdrawal-drawer-open");
+    drawer.dataset.theme = document.getElementById("wallet-page")?.dataset.theme === "oled" ? "oled" : "cyber";
+    window.setTimeout(() => amount?.focus({ preventScroll: true }), 180);
+  }
+
+  function closeWithdrawalDrawer() {
+    const overlay = document.getElementById("withdrawal-overlay");
+    const drawer = document.getElementById("withdrawal-drawer");
+    if (overlay) overlay.hidden = true;
+    if (drawer) drawer.hidden = true;
+    document.body.classList.remove("withdrawal-drawer-open");
+    withdrawalSubmitting = false;
+  }
+
+  document.getElementById("wallet-withdraw-button")?.addEventListener("click", openWithdrawalDrawer);
+  document.getElementById("withdrawal-close")?.addEventListener("click", closeWithdrawalDrawer);
+  document.getElementById("withdrawal-overlay")?.addEventListener("click", closeWithdrawalDrawer);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !document.getElementById("withdrawal-drawer")?.hidden) closeWithdrawalDrawer();
   });
+
+  document.getElementById("withdrawal-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (withdrawalSubmitting) return;
+    const amountInput = document.getElementById("withdrawal-amount");
+    const walletSelect = document.getElementById("withdrawal-wallet");
+    const message = document.getElementById("withdrawal-message");
+    const submit = document.getElementById("withdrawal-submit");
+    const amount = Number(amountInput?.value);
+    const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
+    const destination = walletRecords.find(item => item && item.id === walletSelect?.value);
+    if (!walletUser || !db || !walletProfileAvailable) {
+      if (message) message.textContent = "আপনার Firebase profile এখনো লোড হয়নি। আবার চেষ্টা করুন।";
+      return;
+    }
+    if (!Number.isFinite(amount) || amount < 100 || amount > 5000 || !Number.isInteger(amount)) {
+      if (message) message.textContent = "Withdraw amount ৳100 থেকে ৳5,000-এর মধ্যে পূর্ণ সংখ্যা হতে হবে।";
+      amountInput?.focus();
+      return;
+    }
+    if (balance === null || amount > balance) {
+      if (message) message.textContent = "আপনার available balance এই withdrawal-এর জন্য যথেষ্ট নয়।";
+      return;
+    }
+    if (!destination || !["bKash","Nagad","Rocket"].includes(destination.type) || !/^01[3-9]\d{8}$/.test(String(destination.number || ""))) {
+      if (message) message.textContent = "আগে একটি verified E-Wallet bind করুন।";
+      return;
+    }
+    withdrawalSubmitting = true;
+    if (submit) { submit.disabled = true; submit.textContent = "Submitting request…"; }
+    if (message) message.textContent = "";
+    try {
+      const pending = await db.collection("withdrawals").where("uid", "==", walletUser.uid).where("status", "==", "pending").limit(1).get();
+      if (!pending.empty) {
+        if (message) message.textContent = "আপনার একটি withdrawal request ইতিমধ্যে pending আছে। Admin review শেষ হলে আবার request করতে পারবেন।";
+        return;
+      }
+      await db.collection("withdrawals").add({
+        uid: walletUser.uid,
+        amount,
+        type: destination.type,
+        number: String(destination.number),
+        status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      if (message) message.textContent = "Withdrawal request জমা হয়েছে। Admin review-এর জন্য অপেক্ষা করুন।";
+      showToast("Withdrawal request submitted for admin review.");
+      if (amountInput) amountInput.value = "";
+    } catch (error) {
+      console.error("Withdrawal request failed:", error);
+      if (message) message.textContent = "Request জমা হয়নি। Firestore rules বা connection পরীক্ষা করে আবার চেষ্টা করুন।";
+      showToast("Withdrawal request could not be submitted.");
+    } finally {
+      withdrawalSubmitting = false;
+      if (submit) { submit.disabled = false; submit.textContent = "🚀 Confirm Payout Request"; }
+    }
+  });
+
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
   function referralCodeFor(user,profile){const s=profile&&(profile.referralCode||profile.referral_code||profile.collectorId||profile.collector_id);if(typeof s==="string"&&/^[A-Za-z0-9_-]{4,40}$/.test(s.trim()))return s.trim().toUpperCase();return "REF"+String(user&&user.uid||"MEMBER").replace(/[^a-zA-Z0-9]/g,"").toUpperCase().slice(0,12);}
@@ -804,6 +906,18 @@
     setText("welcome-subtitle", "Loading your account…");
     setText("dashboard-message", "Loading your Firebase profile…");
 
+    if (walletRecordsUnsubscribe) walletRecordsUnsubscribe();
+    walletRecords = [];
+    walletRecordsUnsubscribe = db.collection("wallets").where("uid", "==", user.uid).onSnapshot(snapshot => {
+      walletRecords = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderWalletPage();
+      renderWithdrawalWalletOptions();
+    }, error => {
+      console.error("Linked wallet load failed:", error);
+      walletRecords = [];
+      renderWalletPage();
+      renderWithdrawalWalletOptions();
+    });
     const userRef = db.collection("users").doc(user.uid);
     walletDocRef = userRef;
     profileUnsubscribe = userRef.onSnapshot(snapshot => {
