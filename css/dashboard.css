@@ -510,20 +510,15 @@ body:not(.reference-home-active) .home-reference-layout{display:none}
 @media(max-width:340px){.tap-page-topline{flex-wrap:wrap}.tap-theme-switch{margin-left:auto}.tap-balance-card>div{font-size:7px}.tap-balance-card>strong{font-size:14px}.tap-sponsored-copy strong{font-size:9px}.tap-sponsored-tag{display:none}.tap-metric-card{gap:5px}.tap-metric-card small{font-size:6px}.tap-shortcut-card>strong{font-size:7px}}
 
 
-/* Standalone Tap Earning screen: hide the dashboard shell only while this view is active. */
-body.tap-earning-active{padding:0!important;margin:0!important;min-height:100vh;background:#050b16!important;overflow-x:hidden}
-body.tap-earning-active .ambient,
-body.tap-earning-active .topbar,
-body.tap-earning-active .bottom-nav,
+/* Tap Earning replaces only the main content. The shared header and bottom navigation stay in their original positions and keep their original styling. */
 body.tap-earning-active .home-reference-layout,
 body.tap-earning-active .tab-panel,
-body.tap-earning-active #bot-shop-page{display:none!important}
-body.tap-earning-active .app-shell{width:100%;max-width:484px;min-height:100vh;min-height:100dvh;margin:0 auto;background:#050b16;box-shadow:none}
-body.tap-earning-active main{width:100%;min-height:100vh;min-height:100dvh;margin:0;padding:0!important}
-body.tap-earning-active .tap-earning-page:not([hidden]){display:block;width:100%;max-width:none;min-height:100vh;min-height:100dvh;margin:0;padding:18px 13px calc(24px + env(safe-area-inset-bottom));border:0;border-radius:0;box-shadow:none;overflow:hidden}
+body.tap-earning-active #bot-shop-page,
+body.tap-earning-active .ambient{display:none!important}
+body.tap-earning-active .tap-earning-page:not([hidden]){display:block;width:100%;max-width:none;margin:0 0 16px;min-height:calc(100vh - 270px);min-height:calc(100dvh - 270px);padding:18px 13px 24px;border-radius:19px;overflow:hidden}
 .tap-page-topline{align-items:center}
 .tap-back-button{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;padding:0;border:1px solid var(--tap-line);border-radius:11px;background:rgba(255,255,255,.06);color:var(--tap-text);font-size:23px;line-height:1;cursor:pointer}
 .tap-page-heading{min-width:0;flex:1}
 .tap-page-heading h1{margin-top:6px}
 body.tap-earning-active .tap-page-topline{gap:9px}
-@media(max-width:360px){body.tap-earning-active .tap-earning-page:not([hidden]){padding:14px 9px calc(20px + env(safe-area-inset-bottom))}.tap-back-button{width:32px;height:32px;flex-basis:32px}.tap-page-heading h1{font-size:22px}}
+@media(max-width:360px){body.tap-earning-active .tap-earning-page:not([hidden]){padding:14px 9px 20px;min-height:calc(100dvh - 250px)}.tap-back-button{width:32px;height:32px;flex-basis:32px}.tap-page-heading h1{font-size:22px}}
