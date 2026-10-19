@@ -171,7 +171,9 @@
   }
 
   function showTab(tabName) {
-    document.body.classList.remove("tap-earning-active");
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active");
+    const spinPage = document.getElementById("spin-wheel-page");
+    if (spinPage) spinPage.hidden = true;
     const valid = ["home", "rank", "bots", "feed", "profile"];
     const tab = valid.includes(tabName) ? tabName : "home";
     document.querySelectorAll("[data-tab]").forEach(button => {
@@ -199,6 +201,148 @@
       if (panel) panel.scrollIntoView({ block:"nearest", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }
   }
+
+
+  function openSpinWheel() {
+    const page = document.getElementById("spin-wheel-page");
+    if (!page) { showToast("Lucky Spin interface could not be opened."); return; }
+    const shop = document.getElementById("bot-shop-page");
+    if (shop) shop.hidden = true;
+    const tapPage = document.getElementById("tap-earning-page");
+    if (tapPage) tapPage.hidden = true;
+    document.querySelectorAll("[data-panel]").forEach(panel => { panel.hidden = true; panel.classList.remove("is-active"); });
+    const homeLayout = document.querySelector(".home-reference-layout");
+    if (homeLayout) homeLayout.hidden = true;
+    page.hidden = false;
+    document.body.classList.add("spin-wheel-active");
+    document.title = "Lucky Spin · Task Reward Hub";
+    updateSpinWalletDisplay();
+    renderSpinHistory();
+    updateSpinCount();
+  }
+
+  function closeSpinWheel() {
+    const page = document.getElementById("spin-wheel-page");
+    if (page) page.hidden = true;
+    document.body.classList.remove("spin-wheel-active");
+    showTab("home");
+  }
+
+  const spinRewards = [
+    { label: "৳১০", color: "#ff625f" },
+    { label: "$0.20", color: "#ff9b37" },
+    { label: "৳৩০০", color: "#15b98b" },
+    { label: "৳0.50", color: "#3479ff" },
+    { label: "৳৫০", color: "#cf4bd9" },
+    { label: "$1", color: "#f3c72f" },
+    { label: "৳২০", color: "#20b9d1" },
+    { label: "$0.10", color: "#a05cf5" }
+  ];
+  const spinStorageKey = "trh_lucky_spin_v1";
+  let spinInProgress = false;
+  let spinRotation = 0;
+
+  function readSpinState() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(spinStorageKey) || "{}");
+      const today = new Date().toLocaleDateString("en-CA");
+      return raw.date === today ? { date: today, used: Number(raw.used) || 0, history: Array.isArray(raw.history) ? raw.history : [] } : { date: today, used: 0, history: [] };
+    } catch (_) {
+      return { date: new Date().toLocaleDateString("en-CA"), used: 0, history: [] };
+    }
+  }
+
+  function saveSpinState(state) {
+    try { localStorage.setItem(spinStorageKey, JSON.stringify(state)); } catch (_) {}
+  }
+
+  function updateSpinCount() {
+    const state = readSpinState();
+    const remaining = Math.max(0, 2 - state.used);
+    const count = document.getElementById("spin-count");
+    const button = document.getElementById("spin-now-button");
+    if (count) count.textContent = String(remaining);
+    if (button) {
+      button.disabled = remaining <= 0 || spinInProgress;
+      button.innerHTML = remaining <= 0 ? "✓ TODAY'S SPINS USED" : '<span>▶</span> SPIN &amp; WIN NOW';
+    }
+  }
+
+  function updateSpinWalletDisplay() {
+    const bdt = document.getElementById("spin-bdt-balance");
+    const usd = document.getElementById("spin-usd-balance");
+    const current = document.getElementById("balance-value");
+    if (bdt && current) bdt.textContent = current.textContent.trim() === "—" ? "0.00" : current.textContent.trim();
+    if (usd) usd.textContent = "0.00";
+  }
+
+  function renderSpinHistory() {
+    const list = document.getElementById("spin-history-list");
+    if (!list) return;
+    const history = readSpinState().history;
+    if (!history.length) {
+      list.innerHTML = '<p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p>';
+      return;
+    }
+    list.innerHTML = history.slice(0, 8).map(item => '<article class="spin-history-row"><span class="spin-history-gem">✦</span><span><strong>' + escapeHtml(item.reward) + ' · Reward preview</strong><small>' + escapeHtml(item.time) + '</small></span><span class="spin-history-tag">PREVIEW</span></article>').join("");
+  }
+
+  function runSpinWheel() {
+    if (spinInProgress) return;
+    const state = readSpinState();
+    if (state.used >= 2) { showToast("আজকের দুটি ফ্রি স্পিন শেষ। আগামীকাল আবার চেষ্টা করুন।"); updateSpinCount(); return; }
+    const disc = document.getElementById("spin-wheel-disc");
+    const button = document.getElementById("spin-now-button");
+    const result = document.getElementById("spin-result-message");
+    if (!disc || !button) return;
+    spinInProgress = true;
+    button.disabled = true;
+    if (result) result.textContent = "চাকা ঘুরছে… শুভকামনা!";
+    const selected = Math.floor(Math.random() * spinRewards.length);
+    const segmentAngle = 360 / spinRewards.length;
+    const target = 360 * 5 + (360 - (selected * segmentAngle + segmentAngle / 2));
+    spinRotation += target;
+    disc.style.transform = "rotate(" + spinRotation + "deg)";
+    const finish = () => {
+      const current = readSpinState();
+      current.used = Math.min(2, current.used + 1);
+      const now = new Date();
+      current.history.unshift({ reward: spinRewards[selected].label, time: now.toLocaleString([], { dateStyle: "short", timeStyle: "short" }) });
+      current.history = current.history.slice(0, 8);
+      saveSpinState(current);
+      spinInProgress = false;
+      if (result) result.textContent = "আপনার স্পিন ফলাফল: " + spinRewards[selected].label + " — এটি প্রিভিউ, আসল ব্যালেন্সে যোগ হয়নি।";
+      updateSpinCount();
+      renderSpinHistory();
+      updateSpinWalletDisplay();
+    };
+    disc.addEventListener("transitionend", finish, { once: true });
+    window.setTimeout(() => { if (spinInProgress) finish(); }, 5600);
+  }
+
+  document.getElementById("spin-wheel-open")?.addEventListener("click", openSpinWheel);
+  document.getElementById("spin-wheel-back")?.addEventListener("click", closeSpinWheel);
+  document.getElementById("spin-now-button")?.addEventListener("click", runSpinWheel);
+  document.getElementById("spin-sound-button")?.addEventListener("click", event => {
+    const button = event.currentTarget;
+    const enabled = button.getAttribute("aria-pressed") !== "true";
+    button.setAttribute("aria-pressed", String(enabled));
+    button.textContent = enabled ? "🔔" : "🔊";
+    showToast(enabled ? "Sound control enabled (sound integration pending)." : "Sound control muted.");
+  });
+  document.querySelectorAll("[data-spin-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const page = document.getElementById("spin-wheel-page");
+      if (!page) return;
+      const theme = button.dataset.spinTheme === "oled" ? "oled" : "cyber";
+      page.dataset.theme = theme;
+      document.querySelectorAll("[data-spin-theme]").forEach(option => {
+        const active = option.dataset.spinTheme === theme;
+        option.classList.toggle("is-active", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
 
   function openTapEarning() {
     const page = document.getElementById("tap-earning-page");
