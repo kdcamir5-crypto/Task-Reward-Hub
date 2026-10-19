@@ -486,6 +486,23 @@
           <div class="profile-referral-code"><small>MY REFERRAL CODE</small><strong id="profile-referral-code">—</strong><button type="button" id="profile-copy-referral">▣ Copy</button><span id="profile-referral-reward">+ ৳0.00 / ref</span></div>
         </article>
 
+
+        <section class="profile-avatar-picker" aria-labelledby="profile-avatar-picker-title">
+          <div class="profile-avatar-picker-heading"><strong id="profile-avatar-picker-title">Choose a Profile Avatar</strong><span>Pick one or upload your own photo</span></div>
+          <div class="profile-avatar-options" role="group" aria-label="Available profile avatars">
+            <button type="button" class="profile-avatar-option" data-profile-avatar="👨🏻‍💻" aria-label="Male avatar 1">👨🏻‍💻</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="👨🏽‍🚀" aria-label="Male avatar 2">👨🏽‍🚀</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="🧑🏻‍🎤" aria-label="Avatar 3">🧑🏻‍🎤</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="👩🏻‍💻" aria-label="Female avatar 1">👩🏻‍💻</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="👩🏽‍🚀" aria-label="Female avatar 2">👩🏽‍🚀</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="👩🏻‍🎨" aria-label="Female avatar 3">👩🏻‍🎨</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="🧑🏾‍🚀" aria-label="Avatar 7">🧑🏾‍🚀</button>
+            <button type="button" class="profile-avatar-option" data-profile-avatar="🦸🏻‍♂️" aria-label="Hero avatar">🦸🏻‍♂️</button>
+          </div>
+          <p id="profile-avatar-message" role="status" aria-live="polite">Choose an avatar, then tap Save Avatar.</p>
+          <button type="button" id="profile-avatar-save" class="profile-avatar-save">Save Avatar</button>
+        </section>
+
         <form id="profile-information-form" class="profile-form-card" novalidate>
           <div class="profile-form-heading"><span>👤</span><div><h3>Personal Information</h3><p>Keep your account details up to date</p></div></div>
           <label class="profile-field"><span>Full Name <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">♙</span><input id="profile-full-name-input" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required></span></label>
