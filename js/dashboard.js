@@ -449,7 +449,7 @@
   async function loadMoneyHistory() {
     const list=document.getElementById("money-history-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>হিস্ট্রি লোড হচ্ছে…</strong></div>';
     if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
-    const col=moneyHistoryType==="withdrawals"?"withdrawals":"deposits";
+    const col=moneyHistoryType==="withdrawals"?"withdrawals":"walletDeposits";
     try{const snap=await db.collection(col).where("uid","==",walletUser.uid).get();moneyHistoryRows=snap.docs.map(doc=>Object.assign({id:doc.id},doc.data())).sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderMoneyHistory();}
     catch(error){console.error("History read failed",col,error);if(list)list.innerHTML='<div class="history-empty"><strong>হিস্ট্রি লোড করা যায়নি</strong><p>Firestore permission বা connection পরীক্ষা করতে হবে।</p></div>';}
   }
@@ -464,13 +464,19 @@
     const f=document.querySelector("[data-ledger-filter].is-active")?.dataset.ledgerFilter||"all";
     const rows=ledgerRows.filter(r=>f==="all"||(f==="money"?["withdrawals","deposits"].includes(r.kind):!["withdrawals","deposits"].includes(r.kind))),list=document.getElementById("ledger-list");if(!list)return;
     if(!rows.length){list.innerHTML='<div class="history-empty"><span>▤</span><strong>কোনো সংরক্ষিত লেনদেন পাওয়া যায়নি</strong><p>নতুন রেকর্ড তৈরি হলে এখানে দেখাবে।</p></div>';return;}
-    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(r.detail||r.type||r.botId||"")+'</small></div><div class="history-row-side"><strong>'+(r.kind==="withdrawals"?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>').join("");
+    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(r.detail||r.type||r.botId||"")+'</small></div><div class="history-row-side"><strong>'+(["withdrawals","purchases"].includes(r.kind)?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>').join("");
   }
   async function loadFullLedger(){
     const list=document.getElementById("ledger-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>সব রেকর্ড খোঁজা হচ্ছে…</strong></div>';
     if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
-    const specs=[["withdrawals","withdrawals","↗","উত্তোলন"],["deposits","deposits","↙","টাকা জমা"],["botMining","botMining","🤖","Bot Mining"]];
-    const sets=await Promise.all(specs.map(async s=>{try{const snap=await db.collection(s[0]).where("uid","==",walletUser.uid).get();return snap.docs.map(doc=>Object.assign({id:doc.id,kind:s[1],icon:s[2],title:s[3]},doc.data()));}catch(error){console.warn("Ledger source unavailable",s[0],error);return [];}}));
+    const specs=[
+      {name:"withdrawals",kind:"withdrawals",icon:"↗",title:"উত্তোলন",query:()=>db.collection("withdrawals").where("uid","==",walletUser.uid).get()},
+      {name:"walletDeposits",kind:"deposits",icon:"↙",title:"টাকা জমা",query:()=>db.collection("walletDeposits").where("uid","==",walletUser.uid).get()},
+      {name:"botPurchaseRequests",kind:"purchases",icon:"🤖",title:"Bot Purchase",query:()=>db.collection("botPurchaseRequests").where("uid","==",walletUser.uid).get()},
+      {name:"task submissions",kind:"rewards",icon:"🎯",title:"Task Submission",query:()=>db.collection("submissions").where("uid","==",walletUser.uid).get()},
+      {name:"botMining",kind:"rewards",icon:"⛏️",title:"Bot Mining",query:()=>db.collection("users").doc(walletUser.uid).collection("botMining").get()}
+    ];
+    const sets=await Promise.all(specs.map(async s=>{try{const snap=await s.query();return snap.docs.map(doc=>Object.assign({id:doc.id,kind:s.kind,icon:s.icon,title:s.title},doc.data()));}catch(error){console.warn("Ledger source unavailable",s.name,error);return [];}}));
     ledgerRows=sets.flat().sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderFullLedger();
   }
   document.querySelectorAll("[data-ledger-filter]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-ledger-filter]").forEach(x=>x.classList.toggle("is-active",x===b));renderFullLedger();}));
