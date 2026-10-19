@@ -8,6 +8,51 @@
   let toastHandle = null;
   let profileUnsubscribe = null;
   let miningUnsubscribe = null;
+  const collectorIdMigrationTasks = new Map();
+
+  function generateCollectorId() {
+    return String(Math.floor(10000000 + Math.random() * 90000000));
+  }
+
+  async function ensureCollectorId(user, profile) {
+    const existing = profile && (profile.collectorId || profile.collector_id);
+    if (typeof existing === "string" && /^\d{8}$/.test(existing.trim())) return existing.trim();
+    if (!user || !user.uid || !db) return null;
+    if (collectorIdMigrationTasks.has(user.uid)) return collectorIdMigrationTasks.get(user.uid);
+
+    const task = (async () => {
+      let lastError = null;
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const collectorId = generateCollectorId();
+        const batch = db.batch();
+        batch.set(db.collection("collectorIds").doc(collectorId), {
+          uid: user.uid,
+          collectorId: collectorId,
+          createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.update(db.collection("users").doc(user.uid), {
+          collectorId: collectorId,
+          referralCode: collectorId,
+          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+        });
+        try {
+          await batch.commit();
+          return collectorId;
+        } catch (error) {
+          lastError = error;
+          if (error && error.code !== "already-exists" && error.code !== "permission-denied") throw error;
+        }
+      }
+      throw lastError || new Error("Could not allocate a unique Collector ID.");
+    })();
+
+    collectorIdMigrationTasks.set(user.uid, task);
+    try {
+      return await task;
+    } finally {
+      collectorIdMigrationTasks.delete(user.uid);
+    }
+  }
 
   function showToast(message) {
     if (!toast) return;
@@ -737,7 +782,7 @@
 
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
-  function referralCodeFor(user,profile){const s=profile&&(profile.referralCode||profile.referral_code||profile.collectorId||profile.collector_id);if(typeof s==="string"&&/^[A-Za-z0-9_-]{4,40}$/.test(s.trim()))return s.trim().toUpperCase();return "REF"+String(user&&user.uid||"MEMBER").replace(/[^a-zA-Z0-9]/g,"").toUpperCase().slice(0,12);}
+  function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
   function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value","0.00");const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
   function openReferralPage(){syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
   function closeReferralPage(){const p=document.getElementById("referral-page");if(p)p.hidden=true;document.body.classList.remove("referral-page-active");showTab("home");}
@@ -1372,6 +1417,12 @@
         return;
       }
       currentReferralProfile=snapshot.data() || {};
+      if (!/^\d{8}$/.test(String(currentReferralProfile.collectorId || currentReferralProfile.collector_id || ""))) {
+        ensureCollectorId(user, currentReferralProfile).catch(error => {
+          console.error("Task Reward Hub Collector ID assignment failed:", error);
+          setText("dashboard-message", "Your profile loaded, but Collector ID could not be assigned. Firebase rules need to allow the Collector ID reservation.");
+        });
+      }
       walletProfile = currentReferralProfile;
       walletProfileAvailable = true;
       renderProfile(user, currentReferralProfile);
