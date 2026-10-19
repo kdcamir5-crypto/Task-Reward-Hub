@@ -1336,6 +1336,49 @@
       button.textContent = reveal ? "◎" : "◉";
     });
   });
+
+  let pendingProfileAvatar = null;
+  document.querySelectorAll("[data-profile-avatar]").forEach(option => {
+    option.addEventListener("click", () => {
+      pendingProfileAvatar = option.dataset.profileAvatar || null;
+      document.querySelectorAll("[data-profile-avatar]").forEach(item => {
+        item.classList.toggle("is-selected", item === option);
+        item.setAttribute("aria-pressed", String(item === option));
+      });
+      const preview = document.getElementById("profile-avatar");
+      const photo = document.getElementById("profile-photo");
+      if (preview && pendingProfileAvatar) { preview.textContent = pendingProfileAvatar; preview.hidden = false; }
+      if (photo) photo.hidden = true;
+      const header = document.getElementById("user-avatar");
+      if (header && pendingProfileAvatar) {
+        const dot = header.querySelector(".online-dot");
+        header.textContent = pendingProfileAvatar;
+        if (dot) header.appendChild(dot);
+      }
+      const message = document.getElementById("profile-avatar-message");
+      if (message) message.textContent = "Avatar selected. Tap Save Avatar to keep it on your account.";
+    });
+  });
+  document.getElementById("profile-avatar-save")?.addEventListener("click", async () => {
+    const user = auth && auth.currentUser;
+    const button = document.getElementById("profile-avatar-save");
+    const message = document.getElementById("profile-avatar-message");
+    if (!user || !db) { if (message) message.textContent = "Please sign in again before saving your avatar."; return; }
+    if (!pendingProfileAvatar) { if (message) message.textContent = "Choose an avatar first."; return; }
+    if (button) { button.disabled = true; button.textContent = "Saving…"; }
+    try {
+      await db.collection("users").doc(user.uid).update({ profileAvatar: pendingProfileAvatar });
+      if (message) message.textContent = "Avatar saved successfully!";
+      pendingProfileAvatar = null;
+    } catch (error) {
+      console.error("Profile avatar save failed:", error);
+      if (message) message.textContent = "Avatar could not be saved. Please check Firebase Rules.";
+      showToast("Avatar could not be saved. Please check Firebase Rules.");
+    } finally {
+      if (button) { button.disabled = false; button.textContent = "Save Avatar"; }
+    }
+  });
+
   document.getElementById("profile-photo-input")?.addEventListener("change", event => {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -1605,7 +1648,7 @@
     setText("collector-id", String(collectorId));
     setText("welcome-title", "Welcome back.");
     setText("welcome-subtitle", "Good to see you, " + name + ". Your reward space is ready.");
-    setText("user-avatar", initials(displayName));
+    setText("user-avatar", profile.profileAvatar || ["👨🏻‍💻", "👩🏻‍💻", "👨🏽‍🚀", "👩🏽‍🚀", "🧑🏻‍🎤", "👩🏻‍🎨", "🧑🏾‍🚀", "🦸🏻‍♂️"][String(user.uid || displayName).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0) % 8]);
     setText("balance-value", formatMoney(balance));
     setText("tasks-value", tasks === null ? "—" : String(tasks));
     setText("referrals-value", referrals === null ? "—" : String(referrals));
@@ -1628,21 +1671,36 @@
     setText("profile-role-badge", profile.role === "admin" ? "🛡 ADMIN" : "🛡 USER");
     setText("profile-referral-reward", "+ ৳0.00 / ref");
     const profilePhoto = document.getElementById("profile-photo");
+    const savedAvatar = typeof profile.profileAvatar === "string" && profile.profileAvatar ? profile.profileAvatar : "";
+    const defaultAvatars = ["👨🏻‍💻", "👩🏻‍💻", "👨🏽‍🚀", "👩🏽‍🚀", "🧑🏻‍🎤", "👩🏻‍🎨", "🧑🏾‍🚀", "🦸🏻‍♂️"];
+    const avatarSeed = String(user.uid || displayName).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    const activeAvatar = savedAvatar || defaultAvatars[avatarSeed % defaultAvatars.length];
+    const photoUrl = profile.profilePhotoData || profile.photoURL || profile.photoUrl || profile.avatarUrl || user.photoURL;
+    const hasPhoto = !savedAvatar && typeof photoUrl === "string" && (/^https:\/\//i.test(photoUrl) || /^data:image\/(png|jpeg|webp);base64,/i.test(photoUrl));
     if (profilePhoto) {
-      const photoUrl = profile.profilePhotoData || profile.photoURL || profile.photoUrl || profile.avatarUrl || user.photoURL;
-      if (typeof photoUrl === "string" && (/^https:\/\//i.test(photoUrl) || /^data:image\/(png|jpeg|webp);base64,/i.test(photoUrl))) {
-        profilePhoto.src = photoUrl;
-        profilePhoto.hidden = false;
-      } else {
-        profilePhoto.removeAttribute("src");
-        profilePhoto.hidden = true;
-      }
+      if (hasPhoto) { profilePhoto.src = photoUrl; profilePhoto.hidden = false; }
+      else { profilePhoto.removeAttribute("src"); profilePhoto.hidden = true; }
     }
+    setText("profile-avatar", savedAvatar ? activeAvatar : (hasPhoto ? "" : activeAvatar));
+    const avatarInitials = document.getElementById("profile-avatar");
+    if (avatarInitials) {
+      avatarInitials.hidden = hasPhoto;
+      avatarInitials.textContent = hasPhoto ? "" : activeAvatar;
+    }
+    const headerAvatar = document.getElementById("user-avatar");
+    if (headerAvatar) {
+      const onlineDot = headerAvatar.querySelector(".online-dot");
+      headerAvatar.textContent = activeAvatar;
+      if (onlineDot) headerAvatar.appendChild(onlineDot);
+      headerAvatar.style.fontSize = "23px";
+    }
+    document.querySelectorAll("[data-profile-avatar]").forEach(option => {
+      option.classList.toggle("is-selected", option.dataset.profileAvatar === activeAvatar);
+      option.setAttribute("aria-pressed", String(option.dataset.profileAvatar === activeAvatar));
+    });
     setText("profile-email", user.email || "Email not available");
     setText("profile-role", String(profile.role || "member").toUpperCase());
     setText("profile-avatar", initials(displayName));
-    const avatarInitials = document.getElementById("profile-avatar");
-    if (avatarInitials) avatarInitials.hidden = Boolean(profile.profilePhotoData || profile.photoURL || profile.photoUrl || profile.avatarUrl || user.photoURL);
     setText("profile-balance", "৳" + formatMoney(balance));
     setText("profile-tasks", tasks === null ? "—" : String(tasks));
     setText("profile-referrals", referrals === null ? "—" : String(referrals));
