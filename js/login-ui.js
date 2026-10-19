@@ -117,8 +117,7 @@
         return collectorId;
       } catch (error) {
         lastError = error;
-        if (error && error.code === "permission-denied") throw error;
-        if (error && error.code !== "already-exists") throw error;
+        if (error && error.code !== "already-exists" && error.code !== "permission-denied") throw error;
       }
     }
     throw lastError || new Error("Could not allocate a unique Collector ID.");
