@@ -1340,7 +1340,7 @@
   async function syncPublicLeaderboard(user, profile) {
     if (!user || !profile || !db) return;
     const collectorId = String(profile.collectorId || profile.collector_id || profile.referralCode || "");
-    if (!/^\\d{8}$/.test(collectorId)) return;
+    if (!/^\d{8}$/.test(collectorId)) return;
     const name = String(profile.name || profile.fullName || user.displayName || (user.email ? user.email.split("@")[0] : "Member")).trim().slice(0,80) || "Member";
     const bots = Array.isArray(profile.unlockedBots) ? profile.unlockedBots.length : 0;
     try {
