@@ -7,6 +7,24 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Public-to-signed-in payment configuration. The future Admin Panel should
+    // edit appSettings/paymentSettings instead of hardcoding payment numbers.
+    match /appSettings/{settingId} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin()
+        && settingId == 'paymentSettings'
+        && request.resource.data.keys().hasOnly(['bkashNumber', 'instructions', 'active', 'updatedAt', 'updatedBy'])
+        && request.resource.data.bkashNumber is string
+        && (request.resource.data.bkashNumber == '' || request.resource.data.bkashNumber.matches('^01[3-9][0-9]{8}$'))
+        && request.resource.data.instructions is string
+        && request.resource.data.instructions.size() <= 600
+        && request.resource.data.active is bool
+        && (!request.resource.data.active || request.resource.data.bkashNumber.matches('^01[3-9][0-9]{8}$'))
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
@@ -93,23 +111,46 @@ service cloud.firestore {
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow create: if signedIn()
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'type', 'amount', 'senderNumber', 'trxId', 'status', 'createdAt'])
-        && request.resource.data.type in ['bKash', 'Nagad']
+        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'type', 'amount', 'senderNumber', 'trxId', 'status', 'createdAt', 'rejectionReason', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.type == 'bKash'
         && request.resource.data.amount is int
-        && request.resource.data.amount >= 10 && request.resource.data.amount <= 50000
+        && request.resource.data.amount >= 100 && request.resource.data.amount <= 50000
         && request.resource.data.senderNumber is string
         && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
         && request.resource.data.trxId is string
-        && request.resource.data.trxId.size() >= 5 && request.resource.data.trxId.size() <= 100
+        && request.resource.data.trxId.matches('^[A-Z0-9]{5,100}$')
         && request.resource.data.status == 'pending'
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.depositId == depositId;
       allow update: if isAdmin()
         && resource.data.status == 'pending'
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt', 'rejectionReason'])
         && request.resource.data.status in ['approved', 'rejected']
         && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
+        && request.resource.data.reviewedAt == request.time
+        && (request.resource.data.status == 'approved'
+          ? (!('rejectionReason' in request.resource.data.keys()) || request.resource.data.rejectionReason == '')
+          : request.resource.data.rejectionReason is string
+            && request.resource.data.rejectionReason.size() >= 3
+            && request.resource.data.rejectionReason.size() <= 300);
       allow delete: if false;
+    }
+
+    // Reserve each bKash Transaction ID atomically with its deposit request.
+    // Marker documents cannot be edited or deleted, preventing re-use of a new TRX ID.
+    match /usedDepositTransactions/{trxId} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'depositId', 'trxId', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.depositId is string
+        && request.resource.data.trxId == trxId
+        && trxId.matches('^[A-Za-z0-9]{5,100}$')
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.trxId == trxId;
+      allow update, delete: if false;
     }
 
     // Bot purchases: requests remain pending until admin approves/rejects.

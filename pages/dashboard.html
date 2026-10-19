@@ -139,6 +139,52 @@
         </section>
         <p class="wlt-footnote">Balance is read from your signed-in Firebase profile. No demo balance, sample wallet number, or fabricated transaction is used.</p>
       </section>
+
+      <section id="deposit-page" class="deposit-page" data-theme="cyber" aria-labelledby="deposit-page-title" hidden>
+        <div class="dpt-topline">
+          <button id="deposit-back" class="dpt-back" type="button" aria-label="Back to profile">←</button>
+          <div class="dpt-title-wrap"><span class="dpt-kicker">ACCOUNT FINANCE</span><h1 id="deposit-page-title">Deposit Money</h1></div>
+          <span class="dpt-secure-pill">🔒 SECURE</span>
+        </div>
+        <section class="dpt-balance-card" aria-label="Available balance">
+          <div class="dpt-balance-top"><span>AVAILABLE BALANCE</span><span>BDT</span></div>
+          <div class="dpt-balance-amount"><span>৳</span><strong id="deposit-current-balance">—</strong></div>
+          <p>আপনার ব্যালেন্স অ্যাডমিন Deposit Approve করার পরই বাড়বে।</p>
+        </section>
+        <section class="dpt-payment-card" aria-labelledby="deposit-payment-title">
+          <div class="dpt-card-heading">
+            <span class="dpt-bkash-mark" aria-hidden="true">b</span>
+            <div><h2 id="deposit-payment-title">bKash Personal</h2><p>Manual payment verification</p></div>
+            <span class="dpt-manual-pill">MANUAL</span>
+          </div>
+          <div class="dpt-destination">
+            <label>Official bKash Number</label>
+            <div class="dpt-destination-value"><strong id="deposit-bkash-number">Not configured</strong><button id="deposit-copy-number" type="button" disabled>Copy</button></div>
+            <p id="deposit-settings-status" role="status" aria-live="polite">Payment settings are loading…</p>
+          </div>
+          <div class="dpt-instruction-box"><strong>Payment Instructions</strong><p id="deposit-instructions">পেমেন্ট করার আগে অ্যাডমিনের নির্দেশনা দেখুন।</p></div>
+        </section>
+        <form id="deposit-form" class="dpt-form-card" novalidate>
+          <div class="dpt-section-heading"><div><span>01</span><h2>Deposit Amount</h2></div><small>No deposit fee</small></div>
+          <div class="dpt-amount-shortcuts" role="group" aria-label="Quick amount selection">
+            <button type="button" data-deposit-amount="100">৳100</button>
+            <button type="button" data-deposit-amount="200">৳200</button>
+            <button type="button" data-deposit-amount="500">৳500</button>
+            <button type="button" data-deposit-amount="1000">৳1,000</button>
+          </div>
+          <label class="dpt-field-label" for="deposit-amount">Amount (BDT)</label>
+          <div class="dpt-input-wrap"><span>৳</span><input id="deposit-amount" type="number" inputmode="numeric" min="100" max="50000" step="1" placeholder="Minimum ৳100" required></div>
+          <small class="dpt-field-hint">Minimum ৳100 · Maximum ৳50,000 · Deposit fee ৳0</small>
+          <label class="dpt-field-label" for="deposit-sender-number">Your bKash Personal Number</label>
+          <input class="dpt-text-input" id="deposit-sender-number" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" minlength="11" pattern="01[3-9][0-9]{8}" placeholder="01XXXXXXXXX" required>
+          <label class="dpt-field-label" for="deposit-trx-id">bKash Transaction ID</label>
+          <input class="dpt-text-input" id="deposit-trx-id" type="text" inputmode="text" autocomplete="off" maxlength="100" pattern="[A-Za-z0-9]{5,100}" placeholder="Enter Transaction ID" required>
+          <div class="dpt-fee-row"><span>Deposit fee</span><strong>৳0.00</strong></div>
+          <button id="deposit-submit" class="dpt-submit-button" type="submit" disabled>Submit Deposit Request <span>→</span></button>
+          <p id="deposit-message" class="dpt-form-message" role="status" aria-live="polite"></p>
+        </form>
+        <aside class="dpt-security-note"><span>🛡️</span><div><strong>Secure Deposit Notice</strong><p>Transaction ID জমা দিলেই টাকা যোগ হবে না। অ্যাডমিন প্রকৃত bKash পেমেন্ট যাচাই করে Approve করলে তবেই ব্যালেন্স আপডেট হবে।</p></div></aside>
+      </section>
       <section id="referral-page" class="referral-page" data-theme="cyber" hidden>
       <div class="rf-head"><button id="referral-back" type="button" aria-label="Back">←</button><div><small>COMMUNITY REWARDS</small><h1>Referred Members <span>(রেফারেল তালিকা)</span></h1></div><b>👥 <span id="referral-member-count">0</span> জন</b></div>
       <a class="rf-community" href="https://t.me/Taskrewardhub_bot" target="_blank" rel="noopener noreferrer"><strong>➤</strong><span><small>OFFICIAL TELEGRAM</small><b>Official Telegram VIP Community</b></span><em>Join Telegram ↗</em></a>
@@ -461,7 +507,7 @@
         <section class="profile-shortcuts-card" aria-labelledby="profile-shortcuts-title">
           <div class="profile-form-heading"><span>🧭</span><div><h3 id="profile-shortcuts-title">Quick Shortcuts</h3><p>Jump to your account services</p></div></div>
           <button type="button" class="profile-shortcut-row" id="profile-shortcut-dashboard"><span class="profile-shortcut-icon shortcut-dashboard">🌐</span><span><strong>Collector Dashboard</strong><small>Return to your home dashboard</small></span><b>›</b></button>
-          <button type="button" class="profile-shortcut-row" id="profile-shortcut-deposit"><span class="profile-shortcut-icon shortcut-deposit">＋</span><span><strong>Deposit New Income</strong><small>Deposit interface is not available yet</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-deposit"><span class="profile-shortcut-icon shortcut-deposit">＋</span><span><strong>Deposit Money</strong><small>Add funds with bKash Personal</small></span><b>›</b></button>
           <button type="button" class="profile-shortcut-row" id="profile-shortcut-ledger"><span class="profile-shortcut-icon shortcut-ledger">▤</span><span><strong>Collection Ledger History</strong><small>Review your available transaction records</small></span><b>›</b></button>
           <button type="button" class="profile-shortcut-row profile-shortcut-signout" id="profile-sign-out"><span class="profile-shortcut-icon shortcut-signout">↪</span><span><strong>Sign Out Account</strong><small>Safely sign out of this account</small></span><b>›</b></button>
         </section>

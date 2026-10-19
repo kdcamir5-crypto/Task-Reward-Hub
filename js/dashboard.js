@@ -171,11 +171,13 @@
   }
 
   function showTab(tabName) {
-    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active");
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active", "deposit-page-active");
     const supportPage = document.getElementById("support-page");
     if (supportPage) supportPage.hidden = true;
     const walletPage = document.getElementById("wallet-page");
     if (walletPage) walletPage.hidden = true;
+    const depositPage = document.getElementById("deposit-page");
+    if (depositPage) depositPage.hidden = true;
     const referralPage = document.getElementById("referral-page");
     if (referralPage) referralPage.hidden = true;
     const spinPage = document.getElementById("spin-wheel-page");
@@ -211,6 +213,7 @@
 
 
   let walletUser = null, walletProfile = {}, walletDocRef = null, walletProfileAvailable = false, walletReturnTab = "home", selectedMfsProvider = "bKash", walletRecords = [], walletRecordsUnsubscribe = null, withdrawalSubmitting = false;
+  let depositReturnTab = "profile", depositSettings = null, depositSettingsUnsubscribe = null, depositSubmitting = false;
   function walletMoney(value) {
     const number = safeNumber(value);
     return number === null ? "—" : formatMoney(number);
@@ -270,6 +273,174 @@
     document.body.classList.remove("wallet-page-active");
     showTab(walletReturnTab);
   }
+
+  function depositSettingsReady() {
+    return !!(depositSettings && depositSettings.active === true && /^01[3-9][0-9]{8}$/.test(String(depositSettings.bkashNumber || "")));
+  }
+  function renderDepositSettings(data) {
+    depositSettings = data && typeof data === "object" ? data : null;
+    const number = String(depositSettings && depositSettings.bkashNumber || "").replace(/\s+/g, "");
+    const ready = depositSettingsReady();
+    setText("deposit-bkash-number", ready ? number : "Not configured");
+    setText("deposit-settings-status", ready
+      ? "Payment details are configured by the admin. Please verify the number before paying."
+      : depositSettings && depositSettings.active === false
+        ? "Deposits are temporarily disabled by the admin."
+        : "The admin has not configured an active bKash Personal number yet.");
+    setText("deposit-instructions", String(depositSettings && depositSettings.instructions || "Payment instructions will appear here after the admin configures them."));
+    const copy = document.getElementById("deposit-copy-number");
+    if (copy) copy.disabled = !ready;
+    const submit = document.getElementById("deposit-submit");
+    if (submit) submit.disabled = !ready || depositSubmitting;
+  }
+  function loadDepositSettings() {
+    if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
+    depositSettingsUnsubscribe = null;
+    if (!db) {
+      renderDepositSettings(null);
+      setText("deposit-settings-status", "Firebase connection is not ready. Please try again.");
+      return;
+    }
+    depositSettingsUnsubscribe = db.collection("appSettings").doc("paymentSettings").onSnapshot(snapshot => {
+      renderDepositSettings(snapshot.exists ? snapshot.data() : null);
+    }, error => {
+      console.error("Deposit payment settings could not be loaded:", error);
+      renderDepositSettings(null);
+      setText("deposit-settings-status", "Payment settings could not be loaded. Please contact support.");
+    });
+  }
+  function renderDepositBalance() {
+    setText("deposit-current-balance", walletProfileAvailable ? formatMoney(walletProfile && walletProfile.balance) : "—");
+  }
+  function openDepositPage() {
+    if (!walletUser || !db) {
+      showToast("Please sign in before submitting a deposit request.");
+      return;
+    }
+    const page = document.getElementById("deposit-page");
+    if (!page) { showToast("Deposit interface could not be opened."); return; }
+    const activeTab = document.querySelector(".bottom-nav [data-tab].is-active");
+    const profileVisible = !!(document.getElementById("panel-profile") && !document.getElementById("panel-profile").hidden);
+    depositReturnTab = profileVisible || activeTab?.dataset.tab === "profile" ? "profile" : (activeTab?.dataset.tab || "profile");
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active");
+    ["wallet-page", "support-page", "referral-page", "spin-wheel-page", "tap-earning-page", "bot-shop-page"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.hidden = true;
+    });
+    document.querySelectorAll("[data-panel]").forEach(panel => {
+      panel.hidden = true;
+      panel.classList.remove("is-active");
+    });
+    const home = document.querySelector(".home-reference-layout");
+    if (home) home.hidden = true;
+    page.hidden = false;
+    document.body.classList.add("deposit-page-active");
+    syncProfileNavigation("profile");
+    renderDepositBalance();
+    setText("deposit-message", "");
+    document.title = "Deposit · Task Reward Hub";
+    loadDepositSettings();
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  function closeDepositPage() {
+    const page = document.getElementById("deposit-page");
+    if (page) page.hidden = true;
+    document.body.classList.remove("deposit-page-active");
+    if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
+    depositSettingsUnsubscribe = null;
+    showTab(depositReturnTab || "profile");
+  }
+  document.getElementById("deposit-back")?.addEventListener("click", closeDepositPage);
+  document.getElementById("deposit-copy-number")?.addEventListener("click", () => {
+    if (!depositSettingsReady()) return;
+    copyReferralValue(String(depositSettings.bkashNumber), "bKash number copied.");
+  });
+  document.querySelectorAll("[data-deposit-amount]").forEach(button => {
+    button.addEventListener("click", () => {
+      const amount = document.getElementById("deposit-amount");
+      if (amount) amount.value = button.dataset.depositAmount;
+      document.querySelectorAll("[data-deposit-amount]").forEach(option => option.classList.toggle("is-selected", option === button));
+    });
+  });
+  document.getElementById("deposit-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (depositSubmitting) return;
+    const amountInput = document.getElementById("deposit-amount");
+    const senderInput = document.getElementById("deposit-sender-number");
+    const trxInput = document.getElementById("deposit-trx-id");
+    const message = document.getElementById("deposit-message");
+    const submit = document.getElementById("deposit-submit");
+    const amount = Number(amountInput && amountInput.value);
+    const senderNumber = String(senderInput && senderInput.value || "").replace(/\s+/g, "");
+    const trxId = String(trxInput && trxInput.value || "").trim().toUpperCase();
+    if (!walletUser || !db || !walletProfileAvailable) {
+      if (message) message.textContent = "আপনার Firebase profile লোড হয়নি। আবার চেষ্টা করুন।";
+      return;
+    }
+    if (!depositSettingsReady()) {
+      if (message) message.textContent = "Admin এখনো bKash payment settings চালু করেননি।";
+      return;
+    }
+    if (!Number.isInteger(amount) || amount < 100 || amount > 50000) {
+      if (message) message.textContent = "Deposit amount ৳100 থেকে ৳50,000-এর মধ্যে পূর্ণ সংখ্যা হতে হবে।";
+      if (amountInput) amountInput.focus();
+      return;
+    }
+    if (!/^01[3-9][0-9]{8}$/.test(senderNumber)) {
+      if (message) message.textContent = "সঠিক ১১ সংখ্যার bKash Personal নম্বর লিখুন।";
+      if (senderInput) senderInput.focus();
+      return;
+    }
+    if (!/^[A-Z0-9]{5,100}$/.test(trxId)) {
+      if (message) message.textContent = "Transaction ID-তে ৫–১০০টি ইংরেজি অক্ষর বা সংখ্যা থাকতে হবে।";
+      if (trxInput) trxInput.focus();
+      return;
+    }
+    depositSubmitting = true;
+    if (submit) { submit.disabled = true; submit.textContent = "Submitting request…"; }
+    if (message) message.textContent = "";
+    try {
+      const depositRef = db.collection("walletDeposits").doc();
+      const usedTrxRef = db.collection("usedDepositTransactions").doc(trxId);
+      const profileName = currentReferralProfile && (currentReferralProfile.fullName || currentReferralProfile.name || currentReferralProfile.displayName);
+      const userName = String(profileName || walletUser.displayName || (walletUser.email ? walletUser.email.split("@")[0] : "Member")).slice(0, 100);
+      const batch = db.batch();
+      batch.set(depositRef, {
+        uid: walletUser.uid,
+        userName,
+        email: String(walletUser.email || "").slice(0, 200),
+        type: "bKash",
+        amount,
+        senderNumber,
+        trxId,
+        status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      batch.set(usedTrxRef, {
+        uid: walletUser.uid,
+        depositId: depositRef.id,
+        trxId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await batch.commit();
+      if (message) message.textContent = "আপনার Deposit Request জমা হয়েছে। Admin যাচাই না করা পর্যন্ত ব্যালেন্স পরিবর্তন হবে না।";
+      if (amountInput) amountInput.value = "";
+      if (senderInput) senderInput.value = "";
+      if (trxInput) trxInput.value = "";
+      document.querySelectorAll("[data-deposit-amount]").forEach(option => option.classList.remove("is-selected"));
+      showToast("Deposit request submitted for admin review.");
+    } catch (error) {
+      console.error("Deposit request submission failed:", error);
+      if (message) message.textContent = error && error.code === "permission-denied"
+        ? "Request জমা হয়নি। Transaction ID আগে ব্যবহার হয়েছে, অথবা Firebase Security Rules এখনো deploy করা হয়নি।"
+        : "Deposit request জমা হয়নি। Internet connection ও Firebase configuration পরীক্ষা করে আবার চেষ্টা করুন।";
+      showToast("Deposit request could not be submitted.");
+    } finally {
+      depositSubmitting = false;
+      if (submit) { submit.textContent = "Submit Deposit Request →"; submit.disabled = !depositSettingsReady(); }
+    }
+  });
+
   document.addEventListener("click", event => {
     const target = event.target instanceof Element ? event.target.closest("[data-withdrawal-open]") : null;
     if (!target) return;
@@ -464,9 +635,18 @@
   function closeFullLedgerDrawer(){document.getElementById("ledger-overlay").hidden=true;document.getElementById("ledger-drawer").hidden=true;document.body.classList.remove("history-drawer-open");}
   function renderFullLedger(){
     const f=document.querySelector("[data-ledger-filter].is-active")?.dataset.ledgerFilter||"all";
-    const rows=ledgerRows.filter(r=>f==="all"||(f==="money"?["withdrawals","deposits"].includes(r.kind):!["withdrawals","deposits"].includes(r.kind))),list=document.getElementById("ledger-list");if(!list)return;
+    const rows=ledgerRows.filter(r=>f==="all"||(f==="money"?["withdrawals","deposits"].includes(r.kind):!["withdrawals","deposits"].includes(r.kind)));
+    const list=document.getElementById("ledger-list");
+    if(!list)return;
     if(!rows.length){list.innerHTML='<div class="history-empty"><span>▤</span><strong>কোনো সংরক্ষিত লেনদেন পাওয়া যায়নি</strong><p>নতুন রেকর্ড তৈরি হলে এখানে দেখাবে।</p></div>';return;}
-    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(r.detail||r.type||r.botId||"")+'</small></div><div class="history-row-side"><strong>'+(["withdrawals","purchases"].includes(r.kind)?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>').join("");
+    list.innerHTML=rows.map(r=>{
+      const details=[r.detail||r.type||r.botId||""];
+      if(r.kind==="deposits"&&r.trxId)details.push("Transaction ID: "+r.trxId);
+      if(r.kind==="deposits"&&r.status==="pending")details.push("Admin review pending");
+      if(r.kind==="deposits"&&r.status==="rejected"&&r.rejectionReason)details.push("Reject reason: "+r.rejectionReason);
+      const detailMarkup=details.filter(Boolean).map(detail=>'<small>'+escapeHtml(detail)+'</small>').join("");
+      return '<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small>'+detailMarkup+'</div><div class="history-row-side"><strong>'+(["withdrawals","purchases"].includes(r.kind)?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>';
+    }).join("");
   }
   async function loadFullLedger(){
     const list=document.getElementById("ledger-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>সব রেকর্ড খোঁজা হচ্ছে…</strong></div>';
@@ -736,14 +916,15 @@
       ? '<path d="M3 7h18v13H3z"/><path d="M3 7l2-4h14l2 4M12 10v7M9 13h6"/>'
       : '<rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M8 16h8"/>';
     if (navButton) {
-      navButton.setAttribute("aria-label", profileActive ? "Deposit (not available yet)" : "AI Bots");
-      navButton.title = profileActive ? "Deposit interface coming later" : "AI Bots";
+      navButton.setAttribute("aria-label", profileActive ? "Deposit" : "AI Bots");
+      navButton.title = profileActive ? "Open Deposit" : "AI Bots";
     }
   }
   document.querySelectorAll("[data-tab]").forEach(button => {
     button.addEventListener("click", () => {
       const currentProfile = document.getElementById("panel-profile") && !document.getElementById("panel-profile").hidden;
-      if (button.dataset.tab === "bots" && currentProfile) return;
+      const depositOpen = document.getElementById("deposit-page") && !document.getElementById("deposit-page").hidden;
+      if (button.dataset.tab === "bots" && (currentProfile || depositOpen)) { openDepositPage(); return; }
       showTab(button.dataset.tab);
     });
   });
@@ -895,7 +1076,7 @@
     if (input && document.activeElement !== input) input.value = value == null ? "" : String(value);
   }
   document.getElementById("profile-shortcut-dashboard")?.addEventListener("click", () => showTab("home"));
-  document.getElementById("profile-shortcut-deposit")?.addEventListener("click", () => showToast("Deposit interface is not available yet."));
+  document.getElementById("profile-shortcut-deposit")?.addEventListener("click", openDepositPage);
   document.getElementById("profile-shortcut-ledger")?.addEventListener("click", openFullLedgerDrawer);
   document.getElementById("profile-copy-referral")?.addEventListener("click", () => {
     if (!currentReferralUser) { showToast("Your referral code is not ready yet."); return; }
@@ -1185,6 +1366,7 @@
       walletProfileAvailable = true;
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
+      renderDepositBalance();
       renderReferralPage();
     }, error => {
       console.error("Task Reward Hub profile listener failed:", error);
