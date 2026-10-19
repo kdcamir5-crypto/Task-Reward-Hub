@@ -40,10 +40,10 @@
         </div>
       </div>
       <section class="balance-split" aria-label="Account balances">
-        <article class="balance-card panel main-balance-card" aria-labelledby="balance-heading">
+        <article class="balance-card panel main-balance-card" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances" aria-labelledby="balance-heading">
           <div class="balance-top"><span id="balance-heading">BDT BALANCE</span><span class="wallet-icon"><svg viewBox="0 0 24 24"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H20v16H5.5A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 7h17M15 13h5"/><circle cx="15" cy="13" r=".7"/></svg></span></div>
           <div class="balance-value"><span class="currency">৳</span><strong id="balance-value">—</strong></div>
-          <div class="balance-foot"><span class="balance-status"><i></i> + Withdraw</span><span class="balance-note">BDT</span></div>
+          <div class="balance-foot"><span class="balance-status" data-wallet-open role="button" tabindex="0"><i></i> + Withdraw</span><span class="balance-note">BDT</span></div>
           <div class="balance-shine" aria-hidden="true"></div>
         </article>
         <article class="balance-card panel mining-balance-card" aria-labelledby="mining-balance-heading">
@@ -68,7 +68,7 @@
           <div class="reference-section-title"><h2>⚡ Quick Access</h2><button type="button" data-go="feed">All Services →</button></div>
           <div class="quick-grid reference-quick-grid">
             <button class="reference-service" type="button" data-referral-open><span>🤝</span><strong>Referrals</strong><small>Invite Friends</small></button>
-            <button class="reference-service" type="button" data-go="profile"><span>🏦</span><strong>Withdraw</strong><small>Get Your Money</small></button>
+            <button class="reference-service" type="button" data-wallet-open><span>🏦</span><strong>Withdraw</strong><small>Get Your Money</small></button>
             <button class="reference-service" type="button" data-go="feed"><span>🗓️</span><strong>History</strong><small>Transactions</small></button>
             <button class="reference-service" type="button" data-go="feed"><span>🎫</span><strong>Claim Code</strong><small>Get Bonus</small></button>
             <button class="reference-service" type="button" data-go="profile"><span>💳</span><strong>My Wallet</strong><small>Balance & Coins</small></button>
@@ -98,6 +98,47 @@
         <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-go="feed">View Ledger</button></div><p class="activity-empty">Your recent account activity will appear here when available.</p></section>
       </section>
 
+      <section id="wallet-page" class="wallet-page" data-theme="cyber" aria-labelledby="wallet-page-title" hidden>
+        <div class="wlt-topline">
+          <button id="wallet-back" class="wlt-back" type="button" aria-label="Back">←</button>
+          <div class="wlt-title-wrap"><span class="wlt-kicker">ACCOUNT FINANCE</span><h1 id="wallet-page-title">Wallet &amp; Balances</h1></div>
+          <div class="wlt-theme-switch" role="group" aria-label="Wallet theme">
+            <button type="button" data-wallet-theme="cyber" class="is-active" aria-pressed="true">Cyber</button>
+            <button type="button" data-wallet-theme="oled" aria-pressed="false">OLED</button>
+          </div>
+        </div>
+        <section class="wlt-master-card" aria-label="Main account balance">
+          <div class="wlt-master-top"><span><i></i> MAIN ACCOUNT BALANCE</span><span class="wlt-master-lock">🔒 SECURE</span></div>
+          <div class="wlt-main-amount"><span>৳</span><strong id="wallet-main-balance">—</strong></div>
+          <p id="wallet-usd-equivalent">≈ $— USD · Conversion unavailable</p>
+          <button id="wallet-withdraw-button" class="wlt-withdraw-button" type="button">📝 Request Withdraw <span>→</span></button>
+          <div class="wlt-master-shine" aria-hidden="true"></div>
+        </section>
+        <section class="wlt-linked-section">
+          <div class="wlt-section-heading"><div><span class="wlt-kicker">PAYMENT DESTINATIONS</span><h2>Linked MFS E-Wallets</h2></div><span class="wlt-count-badge" id="wallet-count-badge">0/5 Used</span></div>
+          <div class="wlt-limit-line"><span>🔐 Locked after binding</span><b>Max 5 Wallets</b></div>
+          <div id="wallet-linked-list" class="wlt-linked-list" aria-live="polite"><div class="wlt-empty"><span>▣</span><strong>No linked wallets yet</strong><p>Bind a payment wallet below. No sample account is displayed.</p></div></div>
+        </section>
+        <section class="wlt-bind-section">
+          <div class="wlt-section-heading"><div><span class="wlt-kicker">SECURE PAYMENT SETUP</span><h2>➕ Bind New E-Wallet</h2></div><span class="wlt-no-edit">🔒 No Edit Allowed</span></div>
+          <form id="wallet-bind-form" novalidate>
+            <label class="wlt-step-label"><span>1</span> Select MFS provider</label>
+            <div class="wlt-provider-grid" role="group" aria-label="Select MFS provider">
+              <button class="wlt-provider is-selected" type="button" data-mfs-provider="bKash" aria-pressed="true"><span class="wlt-provider-logo wlt-bkash-logo">b</span><strong>bKash</strong><small>Personal</small></button>
+              <button class="wlt-provider" type="button" data-mfs-provider="Nagad" aria-pressed="false"><span class="wlt-provider-logo wlt-nagad-logo">N</span><strong>Nagad</strong><small>Personal</small></button>
+              <button class="wlt-provider" type="button" data-mfs-provider="Rocket" aria-pressed="false"><span class="wlt-provider-logo wlt-rocket-logo">R</span><strong>Rocket</strong><small>Personal</small></button>
+            </div>
+            <label class="wlt-step-label" for="wallet-account-type"><span>2</span> Account type</label>
+            <select id="wallet-account-type" class="wlt-account-select" required><option value="Personal">Personal Account</option></select>
+            <label class="wlt-step-label" for="wallet-mobile-number"><span>3</span> Wallet mobile number (11 digits)</label>
+            <input id="wallet-mobile-number" class="wlt-mobile-input" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" minlength="11" pattern="01[3-9][0-9]{8}" placeholder="e.g. 01712345678" required>
+            <div class="wlt-security-note"><span>🛡️</span><p><strong>Security notice</strong> Wallets are locked after binding and cannot be edited or removed here. Only bind a number you own. Never share your PIN or OTP.</p></div>
+            <button class="wlt-bind-button" id="wallet-bind-submit" type="submit">🔒 Bind &amp; Lock E-Wallet</button>
+            <p class="wlt-form-message" id="wallet-form-message" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <p class="wlt-footnote">Balance is read from your signed-in Firebase profile. No demo balance, sample wallet number, or fabricated transaction is used.</p>
+      </section>
       <section id="referral-page" class="referral-page" data-theme="cyber" hidden>
       <div class="rf-head"><button id="referral-back" type="button" aria-label="Back">←</button><div><small>COMMUNITY REWARDS</small><h1>Referred Members <span>(রেফারেল তালিকা)</span></h1></div><b>👥 <span id="referral-member-count">0</span> জন</b></div>
       <a class="rf-community" href="https://t.me/Taskrewardhub_bot" target="_blank" rel="noopener noreferrer"><strong>➤</strong><span><small>OFFICIAL TELEGRAM</small><b>Official Telegram VIP Community</b></span><em>Join Telegram ↗</em></a>
@@ -160,7 +201,7 @@
         </section>
 
         <div class="tap-balance-grid">
-          <article class="tap-balance-card tap-bdt-card"><div><span>BDT BALANCE</span><i>৳</i></div><strong>৳<b id="tap-bdt-balance">0.00</b></strong><small>Available wallet balance</small><span class="tap-card-glow"></span></article>
+          <article class="tap-balance-card tap-bdt-card" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances"><div><span>BDT BALANCE</span><i>৳</i></div><strong>৳<b id="tap-bdt-balance">0.00</b></strong><small>Available wallet balance</small><span class="tap-card-glow"></span></article>
           <article class="tap-balance-card tap-usd-card"><div><span>USD EQUIV.</span><i>$</i></div><strong>$<b id="tap-usd-balance">0.00</b></strong><small>USD value not yet calculated</small><span class="tap-card-glow"></span></article>
         </div>
 
@@ -442,7 +483,7 @@
           <p class="spin-result-message" id="spin-result-message" role="status" aria-live="polite">স্পিন শুরু করতে উপরের বাটনে চাপ দিন।</p>
         </section>
         <div class="spin-balance-grid">
-          <article class="spin-balance-card spin-balance-bdt"><div><span class="spin-wallet-symbol">৳</span><span>টাকা ওয়ালেট</span></div><strong>৳ <b id="spin-bdt-balance">0.00</b></strong><small>আপনার বর্তমান BDT ব্যালেন্স</small></article>
+          <article class="spin-balance-card spin-balance-bdt" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances"><div><span class="spin-wallet-symbol">৳</span><span>টাকা ওয়ালেট</span></div><strong>৳ <b id="spin-bdt-balance">0.00</b></strong><small>আপনার বর্তমান BDT ব্যালেন্স</small></article>
           <article class="spin-balance-card spin-balance-usd"><div><span class="spin-wallet-symbol">$</span><span>ডলার ব্যালেন্স</span></div><strong>$ <b id="spin-usd-balance">0.00</b></strong><small>USD wallet সংযুক্ত নয়</small></article>
         </div>
         <section class="spin-history-card"><div class="spin-history-heading"><h2>⏳ সাম্প্রতিক স্পিন হিস্ট্রি</h2><span>LOCAL HISTORY</span></div><div id="spin-history-list" class="spin-history-list"><p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p></div></section>
