@@ -214,11 +214,6 @@
     page.hidden = false;
     document.body.classList.add("tap-earning-active");
     document.title = "Tap Earning · Task Reward Hub";
-    window.scrollTo({ top: 0, behavior: "auto" });
-    page.scrollIntoView({
-      block: "start",
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-    });
   }
 
   document.querySelectorAll("[data-tab]").forEach(button => {
