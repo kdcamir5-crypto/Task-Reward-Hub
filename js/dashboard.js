@@ -181,6 +181,8 @@
     });
     const botShop = document.getElementById("bot-shop-page");
     if (botShop) botShop.hidden = true;
+    const tapPage = document.getElementById("tap-earning-page");
+    if (tapPage) tapPage.hidden = true;
     document.querySelectorAll("[data-panel]").forEach(panel => {
       const active = panel.dataset.panel === tab;
       panel.hidden = !active;
@@ -197,11 +199,63 @@
     }
   }
 
+  function openTapEarning() {
+    const page = document.getElementById("tap-earning-page");
+    if (!page) {
+      showToast("Tap Earning interface could not be opened.");
+      return;
+    }
+    const shop = document.getElementById("bot-shop-page");
+    if (shop) shop.hidden = true;
+    document.querySelectorAll("[data-panel]").forEach(panel => { panel.hidden = true; panel.classList.remove("is-active"); });
+    const homeLayout = document.querySelector(".home-reference-layout");
+    if (homeLayout) homeLayout.hidden = true;
+    page.hidden = false;
+    document.title = "Tap Earning · Task Reward Hub";
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+
   document.querySelectorAll("[data-tab]").forEach(button => {
     button.addEventListener("click", () => showTab(button.dataset.tab));
   });
   document.querySelectorAll("[data-go]").forEach(button => {
     button.addEventListener("click", () => showTab(button.dataset.go));
+  });
+  document.querySelectorAll("[data-tap-open]").forEach(button => {
+    button.addEventListener("click", openTapEarning);
+  });
+  document.querySelectorAll("[data-tap-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const page = document.getElementById("tap-earning-page");
+      if (!page) return;
+      const theme = button.dataset.tapTheme === "oled" ? "oled" : "cyber";
+      page.dataset.theme = theme;
+      document.querySelectorAll("[data-tap-theme]").forEach(option => {
+        const active = option.dataset.tapTheme === theme;
+        option.classList.toggle("is-active", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
+  document.getElementById("tap-main-button")?.addEventListener("click", event => {
+    const button = event.currentTarget;
+    button.classList.add("is-tapped");
+    window.setTimeout(() => button.classList.remove("is-tapped"), 180);
+    showToast("Tap reward system is not connected yet. No coins or balance were changed.");
+  });
+  document.getElementById("tap-sponsored-card")?.addEventListener("click", () => {
+    showToast("Sponsored video ads are not connected yet. No ad reward was claimed.");
+  });
+  document.querySelectorAll("[data-tap-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.tapAction;
+      const messages = {
+        invite: "Referral sharing will be connected in the Tap Earning flow.",
+        ads: "Ad provider integration is not connected yet. No reward was claimed.",
+        withdraw: "Your existing wallet and withdrawal flow has not been changed."
+      };
+      showToast(messages[action] || "This Tap Earning action is not connected yet.");
+    });
   });
 
   bindFleetButtons();
@@ -329,6 +383,12 @@
     const displayName = [profile.name, profile.fullName, user.displayName].find(value => typeof value === "string" && value.trim()) || name;
 
     setText("header-user-name", String(displayName).toUpperCase());
+    setText("tap-user-name", String(displayName).toUpperCase());
+    setText("tap-user-avatar", initials(displayName));
+    setText("tap-bdt-balance", formatMoney(balance));
+    setText("tap-coin-value", "0");
+    setText("tap-usd-balance", "0.00");
+    setText("tap-referrals-value", referrals === null ? "0" : String(referrals));
     setText("feed-user-name", String(displayName).toUpperCase());
     setText("feed-user-avatar", initials(displayName));
     const collectorId = profile.collectorId || profile.collector_id || profile.referralCode || profile.referral_code || "—";
