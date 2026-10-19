@@ -171,9 +171,11 @@
   }
 
   function showTab(tabName) {
-    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active");
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active");
     const supportPage = document.getElementById("support-page");
     if (supportPage) supportPage.hidden = true;
+    const walletPage = document.getElementById("wallet-page");
+    if (walletPage) walletPage.hidden = true;
     const referralPage = document.getElementById("referral-page");
     if (referralPage) referralPage.hidden = true;
     const spinPage = document.getElementById("spin-wheel-page");
@@ -206,6 +208,156 @@
     }
   }
 
+
+  let walletUser = null, walletProfile = {}, walletDocRef = null, walletReturnTab = "home", selectedMfsProvider = "bKash";
+  function walletMoney(value) {
+    const number = safeNumber(value);
+    return number === null ? "—" : formatMoney(number);
+  }
+  function walletProviderClass(provider) {
+    return provider === "bKash" ? "wlt-bkash" : provider === "Nagad" ? "wlt-nagad" : "wlt-rocket";
+  }
+  function maskWalletNumber(number) {
+    const digits = String(number || "").replace(/\D/g, "");
+    return digits.length === 11 ? digits.slice(0, 4) + "••••" + digits.slice(-3) : "Number unavailable";
+  }
+  function renderWalletPage() {
+    const balance = safeNumber(walletProfile && walletProfile.balance);
+    setText("wallet-main-balance", walletMoney(balance));
+    setText("wallet-usd-equivalent", "≈ $— USD · Conversion unavailable");
+    const saved = Array.isArray(walletProfile && walletProfile.linkedMfsWallets) ? walletProfile.linkedMfsWallets : [];
+    const badge = document.getElementById("wallet-count-badge");
+    if (badge) badge.textContent = Math.min(saved.length, 5) + "/5 Used";
+    const list = document.getElementById("wallet-linked-list");
+    if (!list) return;
+    if (!saved.length) {
+      list.innerHTML = '<div class="wlt-empty"><span>▣</span><strong>No linked wallets yet</strong><p>Bind a payment wallet below. No sample account is displayed.</p></div>';
+      return;
+    }
+    list.innerHTML = saved.slice(0, 5).map(item => {
+      const provider = ["bKash","Nagad","Rocket"].includes(item.provider) ? item.provider : "MFS Wallet";
+      const number = maskWalletNumber(item.mobileNumber);
+      const dateValue = item.boundAt ? new Date(item.boundAt) : null;
+      const dateText = dateValue && !Number.isNaN(dateValue.getTime()) ? dateValue.toLocaleDateString(undefined, {month:"short", day:"2-digit"}) : "Date unavailable";
+      return '<article class="wlt-linked-row"><span class="wlt-linked-logo ' + walletProviderClass(provider) + '">' + escapeHtml(provider === "bKash" ? "b" : provider === "Nagad" ? "N" : provider === "Rocket" ? "R" : "▣") + '</span><span class="wlt-linked-copy"><strong>' + escapeHtml(provider) + ' ' + escapeHtml(String(item.accountType || "Personal")) + '</strong><small>' + escapeHtml(number) + '</small></span><span class="wlt-linked-status"><b>🔒 Locked</b><small>' + escapeHtml(dateText) + '</small></span></article>';
+    }).join("");
+  }
+  function openWalletPage() {
+    const page = document.getElementById("wallet-page");
+    if (!page) { showToast("Wallet interface could not be opened."); return; }
+    const activeTab = document.querySelector(".bottom-nav [data-tab].is-active");
+    if (activeTab?.dataset.tab) walletReturnTab = activeTab.dataset.tab;
+    document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active");
+    ["support-page","referral-page","spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.hidden = true;
+    });
+    document.querySelectorAll("[data-panel]").forEach(panel => { panel.hidden = true; panel.classList.remove("is-active"); });
+    const home = document.querySelector(".home-reference-layout");
+    if (home) home.hidden = true;
+    page.hidden = false;
+    document.body.classList.add("wallet-page-active");
+    document.title = "Wallet & Balances · Task Reward Hub";
+    renderWalletPage();
+    window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  }
+  function closeWalletPage() {
+    const page = document.getElementById("wallet-page");
+    if (page) page.hidden = true;
+    document.body.classList.remove("wallet-page-active");
+    showTab(walletReturnTab);
+  }
+  document.addEventListener("click", event => {
+    const target = event.target instanceof Element ? event.target.closest("[data-wallet-open]") : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openWalletPage();
+  }, true);
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const target = event.target instanceof Element ? event.target.closest("[data-wallet-open][role='button']") : null;
+    if (!target) return;
+    event.preventDefault();
+    openWalletPage();
+  });
+  document.getElementById("wallet-back")?.addEventListener("click", closeWalletPage);
+  document.querySelectorAll("[data-wallet-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const page = document.getElementById("wallet-page");
+      if (!page) return;
+      const theme = button.dataset.walletTheme === "oled" ? "oled" : "cyber";
+      page.dataset.theme = theme;
+      document.querySelectorAll("[data-wallet-theme]").forEach(option => {
+        const active = option.dataset.walletTheme === theme;
+        option.classList.toggle("is-active", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
+  document.querySelectorAll("[data-mfs-provider]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedMfsProvider = button.dataset.mfsProvider || "bKash";
+      document.querySelectorAll("[data-mfs-provider]").forEach(option => {
+        const active = option.dataset.mfsProvider === selectedMfsProvider;
+        option.classList.toggle("is-selected", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
+  document.getElementById("wallet-bind-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const input = document.getElementById("wallet-mobile-number");
+    const message = document.getElementById("wallet-form-message");
+    const submit = document.getElementById("wallet-bind-submit");
+    const mobileNumber = String(input?.value || "").replace(/\s+/g, "");
+    const saved = Array.isArray(walletProfile && walletProfile.linkedMfsWallets) ? walletProfile.linkedMfsWallets : [];
+    if (!/^01[3-9]\d{8}$/.test(mobileNumber)) {
+      if (message) message.textContent = "বাংলাদেশের সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।";
+      input?.focus();
+      return;
+    }
+    if (!walletUser || !walletDocRef || !db) {
+      if (message) message.textContent = "Firebase profile is unavailable. Wallet was not saved.";
+      return;
+    }
+    if (saved.length >= 5) {
+      if (message) message.textContent = "সর্বোচ্চ ৫টি Wallet যুক্ত করা যাবে।";
+      return;
+    }
+    if (saved.some(item => item && item.provider === selectedMfsProvider && String(item.mobileNumber || "") === mobileNumber)) {
+      if (message) message.textContent = "এই Wallet ইতিমধ্যে যুক্ত করা হয়েছে।";
+      return;
+    }
+    if (saved.some(item => item && String(item.mobileNumber || "") === mobileNumber)) {
+      if (message) message.textContent = "এই মোবাইল নম্বরটি ইতিমধ্যে একটি Wallet-এ যুক্ত আছে।";
+      return;
+    }
+    if (submit) { submit.disabled = true; submit.textContent = "Saving securely…"; }
+    if (message) message.textContent = "";
+    try {
+      const next = saved.concat([{
+        provider: selectedMfsProvider,
+        accountType: document.getElementById("wallet-account-type")?.value || "Personal",
+        mobileNumber,
+        locked: true,
+        boundAt: new Date().toISOString()
+      }]);
+      await walletDocRef.update({ linkedMfsWallets: next });
+      if (input) input.value = "";
+      if (message) message.textContent = "Wallet binding saved. This wallet is now locked.";
+      showToast("E-Wallet successfully bound and locked.");
+    } catch (error) {
+      console.error("Wallet binding failed:", error);
+      if (message) message.textContent = "Wallet save failed. Check Firestore permissions and try again. No wallet was added.";
+      showToast("Wallet could not be saved. No changes were confirmed.");
+    } finally {
+      if (submit) { submit.disabled = false; submit.innerHTML = "🔒 Bind &amp; Lock E-Wallet"; }
+    }
+  });
+  document.getElementById("wallet-withdraw-button")?.addEventListener("click", () => {
+    showToast("Withdrawal requests are not connected to this dashboard yet. No request was submitted.");
+  });
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
   function referralCodeFor(user,profile){const s=profile&&(profile.referralCode||profile.referral_code||profile.collectorId||profile.collector_id);if(typeof s==="string"&&/^[A-Za-z0-9_-]{4,40}$/.test(s.trim()))return s.trim().toUpperCase();return "REF"+String(user&&user.uid||"MEMBER").replace(/[^a-zA-Z0-9]/g,"").toUpperCase().slice(0,12);}
@@ -416,10 +568,10 @@
   document.querySelectorAll("[data-tap-action]").forEach(button => {
     button.addEventListener("click", () => {
       const action = button.dataset.tapAction;
+      if (action === "withdraw") { openWalletPage(); return; }
       const messages = {
         invite: "Referral sharing will be connected in the Tap Earning flow.",
-        ads: "Ad provider integration is not connected yet. No reward was claimed.",
-        withdraw: "Your existing wallet and withdrawal flow has not been changed."
+        ads: "Ad provider integration is not connected yet. No reward was claimed."
       };
       showToast(messages[action] || "This Tap Earning action is not connected yet.");
     });
@@ -523,6 +675,10 @@
   document.querySelectorAll("[data-profile-action]").forEach(button => {
     button.addEventListener("click", () => {
       const action = button.dataset.profileAction;
+      if (action === "wallet") {
+        openWalletPage();
+        return;
+      }
       if (action === "referrals") {
         openReferralPage();
         return;
@@ -533,7 +689,7 @@
       }
       const messages = {
         account:"Account details and password settings are not available in this dashboard yet.",
-        wallet:"Wallet and withdrawal are not connected to this Profile menu yet.",
+        wallet:"Wallet interface is opening…",
         ledger:"Collection history ledger is not connected to this Profile menu yet."
       };
       showToast(messages[action] || "This setting is not available yet.");
@@ -584,6 +740,8 @@
     setText("tap-user-name", String(displayName).toUpperCase());
     setText("tap-user-initials", initials(displayName));
     setText("tap-bdt-balance", formatMoney(balance));
+    walletProfile = profile || {};
+    renderWalletPage();
     setText("tap-coin-value", "0");
     setText("tap-usd-balance", "0.00");
     setText("tap-referrals-value", referrals === null ? "0" : String(referrals));
@@ -639,6 +797,7 @@
 
   function loadUserProfile(user) {
     currentReferralUser=user;
+    walletUser = user;
     if (profileUnsubscribe) profileUnsubscribe();
     if (miningUnsubscribe) miningUnsubscribe();
 
@@ -646,11 +805,14 @@
     setText("dashboard-message", "Loading your Firebase profile…");
 
     const userRef = db.collection("users").doc(user.uid);
+    walletDocRef = userRef;
     profileUnsubscribe = userRef.onSnapshot(snapshot => {
       if (!snapshot.exists) {
         const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member", balance:0 };
         currentReferralProfile=basic;
+        walletProfile = basic;
         renderProfile(user, basic);
+        renderWalletPage();
         renderReferralPage();
         setText("dashboard-message", "You are signed in, but your users profile document was not found. Existing account data was not changed.");
         setText("profile-status", "Profile document missing");
@@ -659,7 +821,9 @@
         return;
       }
       currentReferralProfile=snapshot.data() || {};
+      walletProfile = currentReferralProfile;
       renderProfile(user, currentReferralProfile);
+      renderWalletPage();
       renderReferralPage();
     }, error => {
       console.error("Task Reward Hub profile listener failed:", error);
