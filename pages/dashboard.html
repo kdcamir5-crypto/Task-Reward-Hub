@@ -492,6 +492,27 @@
 
     </main>
 
+    <div id="withdrawal-overlay" class="withdrawal-overlay" hidden></div>
+    <section id="withdrawal-drawer" class="withdrawal-drawer" role="dialog" aria-modal="true" aria-labelledby="withdrawal-drawer-title" aria-describedby="withdrawal-drawer-description" hidden>
+      <div class="wd-drag-indicator" aria-hidden="true"></div>
+      <div class="wd-heading">
+        <div><span class="wd-kicker">SECURE PAYOUT</span><h2 id="withdrawal-drawer-title">Request Payout Settlement</h2></div>
+        <button id="withdrawal-close" class="wd-close" type="button" aria-label="Close withdrawal form">×</button>
+      </div>
+      <p id="withdrawal-drawer-description" class="wd-description">Select your verified E-Wallet to receive funds.</p>
+      <form id="withdrawal-form" novalidate>
+        <label class="wd-label" for="withdrawal-amount">Withdrawal Amount (৳)</label>
+        <input id="withdrawal-amount" class="wd-input" type="number" inputmode="decimal" min="100" max="5000" step="1" placeholder="Min. 100 · Max. 5,000" required>
+        <label class="wd-label" for="withdrawal-wallet">Select Destination E-Wallet</label>
+        <select id="withdrawal-wallet" class="wd-input wd-select" required>
+          <option value="">Loading verified wallets…</option>
+        </select>
+        <p id="withdrawal-balance-note" class="wd-balance-note">Available balance: ৳—</p>
+        <p id="withdrawal-message" class="wd-message" role="status" aria-live="polite"></p>
+        <button id="withdrawal-submit" class="wd-submit" type="submit">🚀 Confirm Payout Request</button>
+      </form>
+      <p class="wd-footnote">Requests are submitted for admin review. Submission does not mean the payout is approved.</p>
+    </section>
     <nav class="bottom-nav" aria-label="Main navigation">
       <button class="nav-item is-active" type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
       <button class="nav-item" type="button" data-tab="rank"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span>Rank</span></button>
