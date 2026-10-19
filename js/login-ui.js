@@ -280,7 +280,7 @@
           fullName: fullName,
           phoneNumber: phoneNumber,
           email: contactEmail,
-          role: "member",
+          role: "user",
           balance: 0,
           tasks: 0,
           referrals: 0,
