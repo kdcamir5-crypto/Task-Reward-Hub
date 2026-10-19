@@ -276,6 +276,11 @@
     openWithdrawalDrawer();
   }, true);
   document.addEventListener("click", event => {
+    const target = event.target instanceof Element ? event.target.closest("[data-money-history-open]") : null;
+    if (!target) return;
+    event.preventDefault(); event.stopPropagation(); openMoneyHistoryDrawer();
+  }, true);
+  document.addEventListener("click", event => {
     const target = event.target instanceof Element ? event.target.closest("[data-wallet-open]") : null;
     if (!target) return;
     event.preventDefault();
@@ -795,10 +800,10 @@
         openSupportPage();
         return;
       }
+      if (action === "ledger") { openFullLedgerDrawer(); return; }
       const messages = {
         account:"Account details and password settings are not available in this dashboard yet.",
-        wallet:"Wallet interface is opening…",
-        ledger:"Collection history ledger is not connected to this Profile menu yet."
+        wallet:"Wallet interface is opening…"
       };
       showToast(messages[action] || "This setting is not available yet.");
     });
