@@ -182,6 +182,7 @@
     if (spinPage) spinPage.hidden = true;
     const valid = ["home", "rank", "bots", "feed", "profile"];
     const tab = valid.includes(tabName) ? tabName : "home";
+    syncProfileNavigation(tab);
     document.querySelectorAll("[data-tab]").forEach(button => {
       const active = button.dataset.tab === tab;
       button.classList.toggle("is-active", active);
@@ -723,8 +724,26 @@
     document.title = "Tap Earning · Task Reward Hub";
   }
 
+  function syncProfileNavigation(tabName) {
+    const navButton = document.getElementById("nav-bots-tab");
+    const navLabel = document.getElementById("nav-bots-label");
+    const navIcon = document.getElementById("nav-bots-icon");
+    const profileActive = tabName === "profile";
+    if (navLabel) navLabel.textContent = profileActive ? "Deposit" : "AI Bots";
+    if (navIcon) navIcon.innerHTML = profileActive
+      ? '<path d="M3 7h18v13H3z"/><path d="M3 7l2-4h14l2 4M12 10v7M9 13h6"/>'
+      : '<rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M8 16h8"/>';
+    if (navButton) {
+      navButton.setAttribute("aria-label", profileActive ? "Deposit (not available yet)" : "AI Bots");
+      navButton.title = profileActive ? "Deposit interface coming later" : "AI Bots";
+    }
+  }
   document.querySelectorAll("[data-tab]").forEach(button => {
-    button.addEventListener("click", () => showTab(button.dataset.tab));
+    button.addEventListener("click", () => {
+      const currentProfile = document.getElementById("panel-profile") && !document.getElementById("panel-profile").hidden;
+      if (button.dataset.tab === "bots" && currentProfile) return;
+      showTab(button.dataset.tab);
+    });
   });
   document.querySelectorAll("[data-go]").forEach(button => {
     button.addEventListener("click", () => showTab(button.dataset.go));
@@ -860,29 +879,155 @@
   }
   document.getElementById("sign-out")?.addEventListener("click", signOut);
   document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+  let pendingProfilePhotoData = null;
+  function setProfileFormMessage(id, message, type) {
+    const node = document.getElementById(id);
+    if (!node) return;
+    node.textContent = message || "";
+    node.classList.toggle("is-error", type === "error");
+    node.classList.toggle("is-success", type === "success");
+  }
+  function setInputValueUnlessFocused(id, value) {
+    const input = document.getElementById(id);
+    if (input && document.activeElement !== input) input.value = value == null ? "" : String(value);
+  }
+  document.getElementById("profile-shortcut-dashboard")?.addEventListener("click", () => showTab("home"));
+  document.getElementById("profile-shortcut-deposit")?.addEventListener("click", () => showToast("Deposit interface is not available yet."));
+  document.getElementById("profile-shortcut-ledger")?.addEventListener("click", openFullLedgerDrawer);
+  document.getElementById("profile-copy-referral")?.addEventListener("click", () => {
+    if (!currentReferralUser) { showToast("Your referral code is not ready yet."); return; }
+    copyReferralValue(referralCodeFor(currentReferralUser, currentReferralProfile), "Referral code copied.");
+  });
+  document.querySelectorAll("[data-password-toggle]").forEach(button => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      if (!input) return;
+      const reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      button.setAttribute("aria-label", (reveal ? "Hide " : "Show ") + input.id.replace("profile-", "").replaceAll("-", " "));
+      button.textContent = reveal ? "◎" : "◉";
+    });
+  });
+  document.getElementById("profile-photo-input")?.addEventListener("change", event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!file.type || !file.type.startsWith("image/")) {
+      showToast("Please select an image file.");
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast("Choose an image smaller than 10 MB.");
+      event.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => showToast("Could not read this image. Please try another file.");
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => showToast("This image could not be opened.");
+      image.onload = () => {
+        const scale = Math.min(1, 320 / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) { showToast("Image editing is not available in this browser."); return; }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const data = canvas.toDataURL("image/jpeg", 0.68);
+        if (data.length > 450000) { showToast("This image is too large after compression. Choose another image."); return; }
+        pendingProfilePhotoData = data;
+        const photo = document.getElementById("profile-photo");
+        if (photo) { photo.src = data; photo.hidden = false; }
+        const initialsNode = document.getElementById("profile-avatar");
+        if (initialsNode) initialsNode.hidden = true;
+        setProfileFormMessage("profile-save-message", "Profile picture selected. Save your profile to keep it.", "");
+      };
+      image.src = String(reader.result || "");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("profile-information-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const user = auth && auth.currentUser;
+    if (!user || !db) { setProfileFormMessage("profile-save-message", "You must be signed in to update your profile.", "error"); return; }
+    const name = String(document.getElementById("profile-full-name-input")?.value || "").trim();
+    const phone = String(document.getElementById("profile-phone-input")?.value || "").trim();
+    const telegram = String(document.getElementById("profile-telegram-input")?.value || "").trim();
+    if (!name) { setProfileFormMessage("profile-save-message", "Full name is required.", "error"); return; }
+    if (name.length > 80 || phone.length > 24 || telegram.length > 120) {
+      setProfileFormMessage("profile-save-message", "Please check the length of your profile details.", "error"); return;
+    }
+    const button = document.getElementById("profile-save-button");
+    if (button) { button.disabled = true; button.textContent = "Saving profile…"; }
+    setProfileFormMessage("profile-save-message", "Saving your profile details…", "");
+    const updates = { name: name, fullName: name, phoneNumber: phone, telegramUsername: telegram, profileUpdatedAt: window.firebase.firestore.FieldValue.serverTimestamp() };
+    if (pendingProfilePhotoData) updates.profilePhotoData = pendingProfilePhotoData;
+    try {
+      await db.collection("users").doc(user.uid).update(updates);
+      if (user.displayName !== name) {
+        try { await user.updateProfile({ displayName: name }); } catch (profileError) { console.warn("Firebase Auth display-name update was not available:", profileError); }
+      }
+      pendingProfilePhotoData = null;
+      setProfileFormMessage("profile-save-message", "Profile changes saved successfully.", "success");
+      showToast("Profile updated.");
+    } catch (error) {
+      console.error("Profile update failed:", error);
+      const message = error && error.code === "permission-denied"
+        ? "Profile could not be saved because Firestore rules denied this update. Your existing account data was not changed."
+        : "Profile could not be saved. Check your connection and try again.";
+      setProfileFormMessage("profile-save-message", message, "error");
+    } finally {
+      if (button) { button.disabled = false; button.textContent = "💾 Save Profile Changes"; }
+    }
+  });
+
+  document.getElementById("profile-password-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const user = auth && auth.currentUser;
+    const current = String(document.getElementById("profile-current-password")?.value || "");
+    const next = String(document.getElementById("profile-new-password")?.value || "");
+    const confirm = String(document.getElementById("profile-confirm-password")?.value || "");
+    if (!user || !user.email) { setProfileFormMessage("profile-password-message", "A signed-in email/password account is required to change your password here.", "error"); return; }
+    if (!current || !next || !confirm) { setProfileFormMessage("profile-password-message", "Please fill in all three password fields.", "error"); return; }
+    if (next.length < 6) { setProfileFormMessage("profile-password-message", "New password must contain at least 6 characters.", "error"); return; }
+    if (next !== confirm) { setProfileFormMessage("profile-password-message", "New password and confirmation do not match.", "error"); return; }
+    if (current === next) { setProfileFormMessage("profile-password-message", "Choose a new password different from your current password.", "error"); return; }
+    const button = document.getElementById("profile-password-button");
+    if (button) { button.disabled = true; button.textContent = "Updating password…"; }
+    setProfileFormMessage("profile-password-message", "Verifying your current password…", "");
+    try {
+      const credential = window.firebase.auth.EmailAuthProvider.credential(user.email, current);
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(next);
+      document.getElementById("profile-password-form").reset();
+      setProfileFormMessage("profile-password-message", "Password updated successfully.", "success");
+      showToast("Password updated successfully.");
+    } catch (error) {
+      console.error("Password update failed:", error);
+      let message = "Password could not be updated. Please try again.";
+      if (error && (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential")) message = "Current password is incorrect.";
+      else if (error && error.code === "auth/weak-password") message = "Choose a stronger password with at least 6 characters.";
+      else if (error && error.code === "auth/requires-recent-login") message = "Please sign in again, then retry the password change.";
+      else if (error && error.code === "auth/too-many-requests") message = "Too many attempts. Wait a little before trying again.";
+      else if (error && error.code === "auth/operation-not-allowed") message = "Password change is not enabled for this sign-in method.";
+      setProfileFormMessage("profile-password-message", message, "error");
+    } finally {
+      if (button) { button.disabled = false; button.textContent = "🔒 Update Password"; }
+    }
+  });
+
 
   document.getElementById("profile-back-home")?.addEventListener("click", () => showTab("home"));
   document.querySelectorAll("[data-profile-action]").forEach(button => {
     button.addEventListener("click", () => {
       const action = button.dataset.profileAction;
-      if (action === "wallet") {
-        openWalletPage();
-        return;
-      }
-      if (action === "referrals") {
-        openReferralPage();
-        return;
-      }
-      if (action === "support") {
-        openSupportPage();
-        return;
-      }
+      if (action === "wallet") { openWalletPage(); return; }
+      if (action === "referrals") { openReferralPage(); return; }
+      if (action === "support") { openSupportPage(); return; }
       if (action === "ledger") { openFullLedgerDrawer(); return; }
-      const messages = {
-        account:"Account details and password settings are not available in this dashboard yet.",
-        wallet:"Wallet interface is opening…"
-      };
-      showToast(messages[action] || "This setting is not available yet.");
+      showToast("This setting is not available yet.");
     });
   });
   document.getElementById("profile-telegram-open")?.addEventListener("click", () => {
@@ -954,12 +1099,19 @@
     renderBotFleet();
     setText("profile-name", displayName);
     setText("profile-member-id", String(collectorId));
-    const telegramName = profile.telegramUsername || profile.telegram_username || profile.telegram || "@KDCARIYAN";
-    setText("profile-telegram-username", String(telegramName).startsWith("@") ? String(telegramName) : "@" + String(telegramName));
+    const telegramName = profile.telegramUsername || profile.telegram_username || profile.telegram || "";
+    setText("profile-telegram-username", telegramName ? (String(telegramName).startsWith("@") ? String(telegramName) : "@" + String(telegramName)) : "Not set");
+    setInputValueUnlessFocused("profile-full-name-input", displayName);
+    setInputValueUnlessFocused("profile-email-input", user.email || "");
+    setInputValueUnlessFocused("profile-phone-input", profile.phoneNumber || profile.phone_number || profile.phone || "");
+    setInputValueUnlessFocused("profile-telegram-input", telegramName);
+    setText("profile-referral-code", String(collectorId));
+    setText("profile-role-badge", "🛡 " + String(profile.role || "USER").toUpperCase());
+    setText("profile-referral-reward", "+ ৳0.00 / ref");
     const profilePhoto = document.getElementById("profile-photo");
     if (profilePhoto) {
-      const photoUrl = profile.photoURL || profile.photoUrl || profile.photoURL || profile.avatarUrl || user.photoURL;
-      if (typeof photoUrl === "string" && /^https:\/\//i.test(photoUrl)) {
+      const photoUrl = profile.profilePhotoData || profile.photoURL || profile.photoUrl || profile.avatarUrl || user.photoURL;
+      if (typeof photoUrl === "string" && (/^https:\/\//i.test(photoUrl) || /^data:image\/(png|jpeg|webp);base64,/i.test(photoUrl))) {
         profilePhoto.src = photoUrl;
         profilePhoto.hidden = false;
       } else {
@@ -970,6 +1122,8 @@
     setText("profile-email", user.email || "Email not available");
     setText("profile-role", String(profile.role || "member").toUpperCase());
     setText("profile-avatar", initials(displayName));
+    const avatarInitials = document.getElementById("profile-avatar");
+    if (avatarInitials) avatarInitials.hidden = Boolean(profile.profilePhotoData || profile.photoURL || profile.photoUrl || profile.avatarUrl || user.photoURL);
     setText("profile-balance", "৳" + formatMoney(balance));
     setText("profile-tasks", tasks === null ? "—" : String(tasks));
     setText("profile-referrals", referrals === null ? "—" : String(referrals));
