@@ -9,14 +9,25 @@
   const passwordInput = document.getElementById("password");
   const passwordToggle = document.getElementById("toggle-password");
   const loginForm = document.getElementById("login-form");
+  const signupForm = document.getElementById("signup-form");
   const forgotPassword = document.getElementById("forgot-password");
   const telegramLogin = document.getElementById("telegram-login");
+  const showSignIn = document.getElementById("show-sign-in");
+  const showSignUp = document.getElementById("show-sign-up");
+  const authHeading = document.getElementById("auth-heading");
+  const authCopy = document.getElementById("auth-copy");
+  const signupMessage = document.getElementById("signup-message");
+  const signupSubmit = document.getElementById("signup-submit");
+  const signupSubmitLabel = signupSubmit ? signupSubmit.querySelector("span") : null;
   const submitButton = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
   const submitButtonLabel = submitButton ? submitButton.querySelector("span") : null;
+  const divider = document.querySelector(".or-divider");
 
   let auth = null;
+  let db = null;
   let authReady = false;
   let submitting = false;
+  let signupBusy = false;
 
   function applyTheme(theme) {
     const oled = theme === "oled";
@@ -48,12 +59,8 @@
   applyTheme(initialTheme);
 
   if (telegramApp) {
-    try {
-      telegramApp.ready();
-      telegramApp.expand();
-    } catch (_) {}
+    try { telegramApp.ready(); telegramApp.expand(); } catch (_) {}
   }
-
   if (themeDark) themeDark.addEventListener("click", () => applyTheme("dark"));
   if (themeOled) themeOled.addEventListener("click", () => applyTheme("oled"));
 
@@ -64,7 +71,6 @@
     formMessage.dataset.kind = kind || "error";
     formMessage.setAttribute("role", kind === "success" ? "status" : "alert");
   }
-
   function clearMessage() {
     if (!formMessage) return;
     formMessage.textContent = "";
@@ -72,91 +78,121 @@
     delete formMessage.dataset.kind;
     formMessage.setAttribute("role", "status");
   }
-
+  function showSignupMessage(message, kind) {
+    if (!signupMessage) return;
+    signupMessage.textContent = message;
+    signupMessage.classList.add("is-visible");
+    signupMessage.dataset.kind = kind || "error";
+    signupMessage.setAttribute("role", kind === "success" ? "status" : "alert");
+  }
+  function clearSignupMessage() {
+    if (!signupMessage) return;
+    signupMessage.textContent = "";
+    signupMessage.classList.remove("is-visible");
+    delete signupMessage.dataset.kind;
+    signupMessage.setAttribute("role", "status");
+  }
   function setSubmitting(value) {
     submitting = value;
     if (submitButton) {
       submitButton.disabled = value;
       submitButton.setAttribute("aria-busy", String(value));
     }
-    if (submitButtonLabel) {
-      submitButtonLabel.textContent = value ? "Please wait…" : "Sign In to Your Account";
-    }
+    if (submitButtonLabel) submitButtonLabel.textContent = value ? "Please wait…" : "Sign In to Your Account";
   }
-
   function friendlyAuthError(error) {
     const code = error && error.code ? error.code : "";
     const messages = {
       "auth/invalid-email": "Please enter a valid email address.",
       "auth/user-disabled": "This account has been disabled. Please contact support.",
-      "auth/user-not-found": "No account was found for this email address.",
-      "auth/wrong-password": "The email or password is incorrect.",
-      "auth/invalid-credential": "The email or password is incorrect.",
+      "auth/user-not-found": "No account was found for these details.",
+      "auth/wrong-password": "The username/email or password is incorrect.",
+      "auth/invalid-credential": "The username/email or password is incorrect.",
+      "auth/email-already-in-use": "This username is already taken. Please choose another one.",
       "auth/too-many-requests": "Too many attempts. Please wait a little and try again.",
       "auth/network-request-failed": "Network error. Check your internet connection and try again.",
       "auth/operation-not-allowed": "Email/password sign-in is not enabled in Firebase Authentication.",
-      "auth/weak-password": "Please use a stronger password.",
+      "auth/weak-password": "Please use a stronger password (at least 6 characters).",
       "auth/missing-email": "Enter your email address first.",
       "auth/internal-error": "Firebase could not complete the request. Please try again."
     };
-    return messages[code] || "Sign-in could not be completed. Please check your details and try again.";
+    return messages[code] || "The request could not be completed. Please check your details and try again.";
   }
-
-  function firebaseIsReady() {
-    if (authReady && auth) return true;
-    showMessage("Firebase Authentication could not start. Please refresh the page and try again.");
+  function firebaseIsReady(messageTarget) {
+    if (authReady && auth && db) return true;
+    if (messageTarget === "signup") showSignupMessage("Firebase could not start. Please refresh the page and try again.");
+    else showMessage("Firebase Authentication could not start. Please refresh the page and try again.");
     return false;
   }
+  function setMode(mode) {
+    const signup = mode === "signup";
+    if (loginForm) loginForm.hidden = signup;
+    if (signupForm) signupForm.hidden = !signup;
+    if (telegramLogin) telegramLogin.hidden = signup;
+    if (divider) divider.hidden = signup;
+    if (showSignIn) {
+      showSignIn.classList.toggle("is-active", !signup);
+      showSignIn.setAttribute("aria-pressed", String(!signup));
+    }
+    if (showSignUp) {
+      showSignUp.classList.toggle("is-active", signup);
+      showSignUp.setAttribute("aria-pressed", String(signup));
+    }
+    if (authHeading) authHeading.innerHTML = signup ? 'Join <span>the hub.</span>' : 'Welcome <span>back.</span>';
+    if (authCopy) authCopy.textContent = signup
+      ? "Create your account to start your earning journey."
+      : "Sign in to pick up where your earning journey left off.";
+    clearMessage();
+    clearSignupMessage();
+  }
+  if (showSignIn) showSignIn.addEventListener("click", () => setMode("signin"));
+  if (showSignUp) showSignUp.addEventListener("click", () => setMode("signup"));
 
   if (window.firebase && window.TASK_REWARD_HUB_FIREBASE_CONFIG) {
     try {
       const config = window.TASK_REWARD_HUB_FIREBASE_CONFIG;
-      const app = window.firebase.apps.length
-        ? window.firebase.app()
-        : window.firebase.initializeApp(config);
+      const app = window.firebase.apps.length ? window.firebase.app() : window.firebase.initializeApp(config);
       auth = app.auth();
+      db = app.firestore();
       authReady = true;
-
-      // Keep users signed in across browser restarts until they explicitly sign out.
-      auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL).catch(() => {
-        // Firebase's browser default is also LOCAL; a later sign-in will surface real errors.
-      });
-
+      auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
       auth.onAuthStateChanged(user => {
-        if (user && loginForm && !submitting) {
-          window.location.replace("pages/dashboard.html");
-        }
+        if (user && !submitting && !signupBusy) window.location.replace("pages/dashboard.html");
       });
     } catch (error) {
       console.error("Task Reward Hub Firebase initialization failed:", error);
       authReady = false;
       auth = null;
+      db = null;
     }
   }
 
-  if (passwordInput && passwordToggle) {
-    passwordToggle.addEventListener("click", () => {
-      const showing = passwordInput.type === "text";
-      passwordInput.type = showing ? "password" : "text";
-      passwordToggle.setAttribute("aria-pressed", String(!showing));
-      passwordToggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
-      passwordInput.focus({ preventScroll: true });
+  function attachPasswordToggle(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+    if (!input || !button) return;
+    button.addEventListener("click", () => {
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      button.setAttribute("aria-pressed", String(!showing));
+      button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      input.focus({ preventScroll: true });
     });
   }
+  attachPasswordToggle("password", "toggle-password");
+  attachPasswordToggle("signup-password", "toggle-signup-password");
 
   if (loginForm) {
     loginForm.addEventListener("submit", async event => {
       event.preventDefault();
       if (submitting) return;
       clearMessage();
-
-      const email = document.getElementById("email");
+      const loginId = document.getElementById("email");
       const password = document.getElementById("password");
-      const normalizedEmail = email ? email.value.trim() : "";
-
-      if (!email || !normalizedEmail || !email.validity.valid) {
-        showMessage("Enter a valid email address to continue.");
-        if (email) email.focus();
+      const identifier = loginId ? loginId.value.trim() : "";
+      if (!identifier) {
+        showMessage("Enter your email address or username.");
+        if (loginId) loginId.focus();
         return;
       }
       if (!password || !password.value) {
@@ -165,11 +201,11 @@
         return;
       }
       if (!firebaseIsReady()) return;
-
       setSubmitting(true);
       try {
         await auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
-        await auth.signInWithEmailAndPassword(normalizedEmail, password.value);
+        const authEmail = identifier.includes("@") ? identifier : identifier.toLowerCase() + "@accounts.task-reward-hub.invalid";
+        await auth.signInWithEmailAndPassword(authEmail, password.value);
         window.location.replace("pages/dashboard.html");
       } catch (error) {
         showMessage(friendlyAuthError(error));
@@ -179,22 +215,113 @@
     });
   }
 
+  if (signupForm) {
+    signupForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (signupBusy) return;
+      clearSignupMessage();
+      const usernameInput = document.getElementById("signup-username");
+      const fullNameInput = document.getElementById("signup-full-name");
+      const mobileInput = document.getElementById("signup-mobile");
+      const emailInput = document.getElementById("signup-email");
+      const passwordInputSignup = document.getElementById("signup-password");
+      const username = usernameInput.value.trim().toLowerCase();
+      const fullName = fullNameInput.value.trim();
+      const phoneNumber = mobileInput.value.trim();
+      const contactEmail = emailInput.value.trim().toLowerCase();
+      const password = passwordInputSignup.value;
+
+      if (!/^[a-z0-9_]{3,24}$/.test(username)) {
+        showSignupMessage("Username must be 3–24 characters and use only letters, numbers, or underscore.");
+        usernameInput.focus();
+        return;
+      }
+      if (fullName.length < 2) {
+        showSignupMessage("Please enter your full name.");
+        fullNameInput.focus();
+        return;
+      }
+      if (!/^[0-9+() -]{8,15}$/.test(phoneNumber) || phoneNumber.replace(/\D/g, "").length < 8) {
+        showSignupMessage("Please enter a valid mobile number.");
+        mobileInput.focus();
+        return;
+      }
+      if (contactEmail && (!emailInput.validity.valid || !contactEmail.includes("@"))) {
+        showSignupMessage("Please enter a valid email address or leave it empty.");
+        emailInput.focus();
+        return;
+      }
+      if (password.length < 6) {
+        showSignupMessage("Password must be at least 6 characters.");
+        passwordInputSignup.focus();
+        return;
+      }
+      if (!firebaseIsReady("signup")) return;
+
+      signupBusy = true;
+      submitting = true;
+      if (signupSubmit) {
+        signupSubmit.disabled = true;
+        signupSubmit.setAttribute("aria-busy", "true");
+      }
+      if (signupSubmitLabel) signupSubmitLabel.textContent = "Creating account…";
+      let createdUser = null;
+      try {
+        await auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+        const internalAuthEmail = username + "@accounts.task-reward-hub.invalid";
+        const credential = await auth.createUserWithEmailAndPassword(internalAuthEmail, password);
+        createdUser = credential.user;
+        await createdUser.updateProfile({ displayName: fullName });
+        const profile = {
+          uid: createdUser.uid,
+          username: username,
+          usernameLower: username,
+          name: fullName,
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          email: contactEmail,
+          role: "member",
+          balance: 0,
+          tasks: 0,
+          referrals: 0,
+          createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection("users").doc(createdUser.uid).set(profile);
+        showSignupMessage("Account created successfully. Opening your dashboard…", "success");
+        window.location.replace("pages/dashboard.html");
+      } catch (error) {
+        console.error("Task Reward Hub sign-up failed:", error);
+        if (createdUser) {
+          try { await createdUser.delete(); } catch (_) {}
+        }
+        showSignupMessage(friendlyAuthError(error));
+      } finally {
+        signupBusy = false;
+        submitting = false;
+        if (signupSubmit) {
+          signupSubmit.disabled = false;
+          signupSubmit.removeAttribute("aria-busy");
+        }
+        if (signupSubmitLabel) signupSubmitLabel.textContent = "Create My Account";
+      }
+    });
+  }
+
   if (forgotPassword) {
     forgotPassword.addEventListener("click", async () => {
       clearMessage();
       const email = document.getElementById("email");
-      const normalizedEmail = email ? email.value.trim() : "";
-
-      if (!normalizedEmail || !email.validity.valid) {
-        showMessage("Enter your email address above first, then choose Forgot password.");
+      const identifier = email ? email.value.trim() : "";
+      if (!identifier || !identifier.includes("@")) {
+        showMessage("Enter the Firebase email address linked to your account first.");
         if (email) email.focus();
         return;
       }
       if (!firebaseIsReady()) return;
-
       forgotPassword.disabled = true;
       try {
-        await auth.sendPasswordResetEmail(normalizedEmail);
+        await auth.sendPasswordResetEmail(identifier);
         showMessage("If an account exists for this email, Firebase has sent a password reset email. Check your inbox and spam folder.", "success");
       } catch (error) {
         showMessage(friendlyAuthError(error));
@@ -203,10 +330,9 @@
       }
     });
   }
-
   if (telegramLogin) {
     telegramLogin.addEventListener("click", () => {
-      showMessage("Telegram sign-in is not connected to a trusted server-side verification flow yet. Please use email and password for now.");
+      showMessage("Telegram sign-in is not connected to a trusted server-side verification flow yet. Please use email or username and password for now.");
     });
   }
 })();
