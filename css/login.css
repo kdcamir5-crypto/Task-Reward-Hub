@@ -13,3 +13,24 @@ button:focus-visible,a:focus-visible{outline:2px solid #9bdfff;outline-offset:4p
 @media(max-width:350px){.brand-copy strong{font-size:8px}.brand-copy small{font-size:5px}.brand-mark{flex-basis:33px;width:33px;height:33px}.theme-option{min-width:48px;padding:0 5px}.wallet-stage{height:195px}.wallet-art{width:155px}.float-chip{transform:scale(.9)}.chip-reward{right:-7%}.chip-secure{left:-7%}.benefit-row strong{font-size:7px}.benefit-row small{font-size:6px}}
 @media(max-height:760px) and (min-width:901px){.login-screen{padding-top:max(14px,calc(var(--safe-top) + 10px));padding-bottom:max(12px,calc(var(--safe-bottom) + 10px))}.top-bar{margin-bottom:17px}.content-grid{gap:38px}.wallet-stage{height:230px}.wallet-art{width:190px}.login-card{padding:23px}.card-heading-icon{margin-top:15px}.login-card h2{font-size:30px}.card-copy{margin-bottom:15px}.login-form{gap:12px}.input-wrap,.input-wrap input{min-height:45px}.telegram-button,.sign-in-button{min-height:46px}.login-footer{margin-top:17px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+/* Sign-up additions; existing login styling remains unchanged. */
+.auth-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;margin:0 0 18px;border:1px solid var(--line);border-radius:13px;background:rgba(8,12,22,.42)}
+.auth-mode-option{min-height:39px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:12px;font-weight:750;cursor:pointer;transition:background .2s,color .2s,box-shadow .2s}
+.auth-mode-option.is-active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#06101e;box-shadow:0 5px 16px rgba(54,124,255,.2)}
+.signup-form{display:grid;gap:13px}
+.signup-form[hidden],.login-form[hidden]{display:none!important}
+.signup-form .field-group{display:grid;gap:7px}
+.signup-form .field-group>label{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11px;font-weight:700}
+.optional-label{font-size:9px;color:var(--subtle);font-weight:600}
+.signup-form .input-wrap{position:relative;display:flex;align-items:center;min-height:47px}
+.signup-form .input-wrap input{width:100%;min-width:0;min-height:45px;padding:0 42px 0 43px;border:1px solid var(--line);border-radius:12px;background:rgba(7,11,20,.55);color:var(--text);outline:none;font-size:12px;transition:border-color .2s,box-shadow .2s}
+.signup-form .input-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(80,185,255,.1)}
+.signup-form .currency-prefix{position:absolute;left:14px;z-index:1;color:var(--blue);font-size:13px;font-weight:800;pointer-events:none}
+.signup-form .password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.signup-form .password-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}
+.signup-form .form-message{margin:0;min-height:0}
+.signup-form .form-message:not(.is-visible){display:none}
+.signup-form .sign-in-button:disabled{opacity:.65;cursor:wait}
+@media(max-width:480px){.auth-mode-switch{margin-bottom:15px}.auth-mode-option{min-height:36px;font-size:11px}.signup-form{gap:11px}.signup-form .input-wrap,.signup-form .input-wrap input{min-height:44px}.signup-form .input-wrap input{font-size:11px}}
