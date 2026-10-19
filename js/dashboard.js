@@ -171,6 +171,7 @@
   }
 
   function showTab(tabName) {
+    document.body.classList.remove("tap-earning-active");
     const valid = ["home", "rank", "bots", "feed", "profile"];
     const tab = valid.includes(tabName) ? tabName : "home";
     document.querySelectorAll("[data-tab]").forEach(button => {
@@ -211,7 +212,9 @@
     const homeLayout = document.querySelector(".home-reference-layout");
     if (homeLayout) homeLayout.hidden = true;
     page.hidden = false;
+    document.body.classList.add("tap-earning-active");
     document.title = "Tap Earning · Task Reward Hub";
+    window.scrollTo({ top: 0, behavior: "auto" });
     page.scrollIntoView({
       block: "start",
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
@@ -227,6 +230,7 @@
   document.querySelectorAll("[data-tap-open]").forEach(button => {
     button.addEventListener("click", openTapEarning);
   });
+  document.getElementById("tap-earning-back")?.addEventListener("click", () => showTab("home"));
   document.querySelectorAll("[data-tap-theme]").forEach(button => {
     button.addEventListener("click", () => {
       const page = document.getElementById("tap-earning-page");
