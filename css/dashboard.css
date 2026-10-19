@@ -659,3 +659,41 @@ body.wallet-page-active .wallet-page:not([hidden]){display:block;width:100%;max-
 @media(min-width:600px){.wallet-page{padding:16px}.wlt-master-card{padding:18px}.wlt-main-amount strong{font-size:38px}.wlt-linked-section,.wlt-bind-section{padding:14px}.wlt-provider{padding:12px 6px}.wlt-provider-logo{width:38px;height:38px}}
 @media(max-width:370px){.wallet-page{padding:10px 7px 14px}.wlt-title-wrap h1{font-size:14px}.wlt-theme-switch button{padding:6px 5px;font-size:6px}.wlt-section-heading h2{font-size:11px}.wlt-no-edit{font-size:6px;padding:5px}.wlt-linked-row{gap:5px;padding:8px 5px}.wlt-linked-logo{flex-basis:29px;width:29px;height:29px}.wlt-linked-status b{font-size:6px}.wlt-provider{padding:8px 2px}.wlt-provider-logo{width:30px;height:30px}}
 @media(prefers-reduced-motion:reduce){.wlt-bind-button,.wlt-withdraw-button{transition:none}}
+
+
+/* Withdrawal payout drawer: anchored to the bottom navigation area; the entire app stays out of focus. */
+.withdrawal-overlay[hidden],.withdrawal-drawer[hidden]{display:none!important}
+.withdrawal-overlay{position:fixed;inset:0;z-index:10000;background:rgba(1,3,10,.76);backdrop-filter:blur(13px) saturate(.45);-webkit-backdrop-filter:blur(13px) saturate(.45);animation:wdOverlayIn .18s ease-out}
+.withdrawal-drawer{--wd-bg:#f8f9fc;--wd-text:#171923;--wd-muted:#666b78;position:fixed;z-index:10001;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,560px);max-height:min(78dvh,590px);overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:10px 18px calc(15px + env(safe-area-inset-bottom));border:1px solid #ffffff9c;border-bottom:0;border-radius:25px 25px 0 0;background:linear-gradient(165deg,#fff,#f0f2f7 90%);color:var(--wd-text);box-shadow:0 -18px 65px #0008,0 -2px 22px #58a6ff18;font-family:inherit;animation:wdDrawerUp .28s cubic-bezier(.2,.85,.25,1)}
+.withdrawal-drawer[data-theme="cyber"]{--wd-bg:#111a2b;--wd-text:#f5f8ff;--wd-muted:#a5b1c7;background:radial-gradient(ellipse at 50% 0,#263a5b,#111a2b 66%);border-color:#9fcaff3b}
+.withdrawal-drawer[data-theme="oled"]{--wd-bg:#050505;--wd-text:#f7f7f7;--wd-muted:#a0a0a0;background:linear-gradient(160deg,#111,#000 70%);border-color:#ffffff28}
+.wd-drag-indicator{width:44px;height:5px;margin:0 auto 13px;border-radius:99px;background:#aab0bc}
+.withdrawal-drawer[data-theme="cyber"] .wd-drag-indicator,.withdrawal-drawer[data-theme="oled"] .wd-drag-indicator{background:#646b78}
+.wd-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wd-heading>div{min-width:0;flex:1}
+.wd-kicker{display:block;margin-bottom:4px;color:#1684df;font-size:8px;font-weight:900;letter-spacing:1.4px}
+.withdrawal-drawer[data-theme="cyber"] .wd-kicker,.withdrawal-drawer[data-theme="oled"] .wd-kicker{color:#7bcaff}
+.wd-heading h2{margin:0;font-size:clamp(17px,4.4vw,21px);font-weight:900;line-height:1.2;letter-spacing:-.5px;color:var(--wd-text)}
+.wd-close{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid #9298a52b;border-radius:50%;background:#9298a51b;color:var(--wd-text);font-size:25px;line-height:1;cursor:pointer}
+.wd-description{margin:8px 0 15px;color:var(--wd-muted);font-size:11px;line-height:1.5}
+#withdrawal-form{display:flex;flex-direction:column;gap:0}
+.wd-label{margin:9px 0 6px;color:var(--wd-text);font-size:10px;font-weight:850}
+.wd-input{width:100%;height:45px;box-sizing:border-box;padding:0 13px;border:1px solid #c6cbd5;border-radius:13px;outline:none;background:#eceef3;color:#242835;font-family:inherit;font-size:13px;font-weight:650}
+.wd-input:focus{border-color:#278cf0;box-shadow:0 0 0 3px #278cf01e}
+.withdrawal-drawer[data-theme="cyber"] .wd-input,.withdrawal-drawer[data-theme="oled"] .wd-input{border-color:#ffffff24;background:#050a13;color:#f6f8ff}
+.withdrawal-drawer[data-theme="oled"] .wd-input{background:#000}
+.wd-input::placeholder{color:#858b98;font-weight:500}
+.wd-select{appearance:auto}
+.wd-select option{background:#101827;color:#fff}
+.wd-balance-note{margin:7px 1px 0;color:var(--wd-muted);font-size:9px;font-weight:750}
+.wd-message{margin:7px 0 0;color:#16824b;font-size:10px;line-height:1.45}
+.withdrawal-drawer[data-theme="cyber"] .wd-message,.withdrawal-drawer[data-theme="oled"] .wd-message{color:#7df0b1}
+.wd-message:empty{display:none}
+.wd-submit{width:100%;min-height:47px;margin-top:13px;padding:12px 14px;border:1px solid #7bf5a5;border-radius:999px;background:linear-gradient(100deg,#16a34a,#18bf65);color:#fff;font-size:12px;font-weight:950;letter-spacing:.05px;box-shadow:0 8px 22px #16a34a3b,inset 0 1px #ffffff48;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+.wd-submit:active{transform:scale(.99)}.wd-submit:disabled{opacity:.65;cursor:wait}
+.wd-footnote{margin:9px 3px 0;color:var(--wd-muted);font-size:8px;line-height:1.45;text-align:center}
+body.withdrawal-drawer-open{overflow:hidden;touch-action:none}
+@keyframes wdOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes wdDrawerUp{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+@media(max-height:650px){.withdrawal-drawer{max-height:86dvh;padding-top:8px}.wd-description{margin:6px 0 9px}.wd-input{height:40px}.wd-submit{min-height:42px;margin-top:9px}}
+@media(prefers-reduced-motion:reduce){.withdrawal-overlay,.withdrawal-drawer{animation:none}.wd-submit{transition:none}}
