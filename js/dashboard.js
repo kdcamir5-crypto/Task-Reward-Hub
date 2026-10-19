@@ -1000,22 +1000,89 @@
       });
     });
   });
+  const MONETAG_WORKER_URL = "https://task-reward-hub-monetag-rewards.kdcamir5.workers.dev";
+  const MONETAG_ZONE_ID = "12051888";
+  let monetagLaunchInProgress = false;
+
+  async function launchRewardedAd(triggerButton) {
+    if (monetagLaunchInProgress) return;
+    if (!auth || !auth.currentUser) {
+      showToast("Please sign in again before watching an ad.");
+      return;
+    }
+    if (typeof window["show_" + MONETAG_ZONE_ID] !== "function") {
+      showToast("The ad provider is still loading. Please try again in a moment.");
+      return;
+    }
+
+    monetagLaunchInProgress = true;
+    const originalText = triggerButton && triggerButton.textContent;
+    if (triggerButton) {
+      triggerButton.disabled = true;
+      triggerButton.setAttribute("aria-busy", "true");
+    }
+    const sponsoredCopy = document.querySelector("#tap-sponsored-card .tap-sponsored-copy em");
+    if (sponsoredCopy) sponsoredCopy.textContent = "Preparing secure rewarded ad…";
+
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+      const sessionResponse = await fetch(MONETAG_WORKER_URL + "/ad-session", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + idToken,
+          "Content-Type": "application/json"
+        }
+      });
+      const sessionData = await sessionResponse.json().catch(() => ({}));
+      if (!sessionResponse.ok || !sessionData.ymid) {
+        throw new Error(sessionData.error || "Could not prepare an ad session. Please try again later.");
+      }
+
+      const showAd = window["show_" + MONETAG_ZONE_ID];
+      const result = await showAd({
+        ymid: sessionData.ymid,
+        requestVar: "daily_reward"
+      });
+
+      if (result && result.reward_event_type === "valued") {
+        showToast("Ad completed. Your reward will appear after the secure server verifies the Monetag postback.");
+        if (sponsoredCopy) sponsoredCopy.textContent = "Ad completed · verifying reward securely";
+      } else {
+        showToast("This ad did not qualify for a reward. No balance was added by the app.");
+        if (sponsoredCopy) sponsoredCopy.textContent = "Watch a qualifying rewarded ad";
+      }
+    } catch (error) {
+      console.error("Monetag rewarded ad launch failed:", error);
+      showToast(error && error.message ? String(error.message) : "Ad could not start. Please try again.");
+      if (sponsoredCopy) sponsoredCopy.textContent = "Tap to watch a rewarded ad";
+    } finally {
+      monetagLaunchInProgress = false;
+      if (triggerButton) {
+        triggerButton.disabled = false;
+        triggerButton.removeAttribute("aria-busy");
+      }
+      if (triggerButton && originalText && triggerButton.id === "tap-main-button") {
+        triggerButton.classList.remove("is-tapped");
+      }
+    }
+  }
+
   document.getElementById("tap-main-button")?.addEventListener("click", event => {
     const button = event.currentTarget;
     button.classList.add("is-tapped");
     window.setTimeout(() => button.classList.remove("is-tapped"), 180);
-    showToast("Tap reward system is not connected yet. No coins or balance were changed.");
+    showToast("Tap-to-earn coins are not connected yet. Use the sponsored ad card for rewarded ads.");
   });
-  document.getElementById("tap-sponsored-card")?.addEventListener("click", () => {
-    showToast("Sponsored video ads are not connected yet. No ad reward was claimed.");
+  document.getElementById("tap-sponsored-card")?.addEventListener("click", event => {
+    launchRewardedAd(event.currentTarget);
   });
   document.querySelectorAll("[data-tap-action]").forEach(button => {
     button.addEventListener("click", () => {
       const action = button.dataset.tapAction;
       if (action === "withdraw") { openWalletPage(); return; }
+      if (action === "ads") { launchRewardedAd(button); return; }
       const messages = {
-        invite: "Referral sharing will be connected in the Tap Earning flow.",
-        ads: "Ad provider integration is not connected yet. No reward was claimed."
+        invite: "Referral sharing will be connected in the Tap Earning flow."
       };
       showToast(messages[action] || "This Tap Earning action is not connected yet.");
     });
