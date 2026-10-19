@@ -422,41 +422,51 @@
       <section class="tab-panel panel profile-page" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
         <div class="profile-section-header">
           <button class="profile-back-button" id="profile-back-home" type="button" aria-label="হোমে ফিরে যান">←</button>
-          <h2 id="profile-panel-title">Profile &amp; Settings</h2>
+          <div class="profile-heading-copy"><p class="profile-kicker">YOUR ACCOUNT</p><h2 id="profile-panel-title">Profile &amp; Settings</h2></div>
         </div>
 
         <article class="profile-identity-card">
-          <div class="profile-identity-avatar" id="profile-identity-avatar"><span id="profile-avatar">U</span><img id="profile-photo" alt="Profile picture" hidden></div>
+          <div class="profile-identity-avatar" id="profile-identity-avatar">
+            <span id="profile-avatar">U</span><img id="profile-photo" alt="Profile picture" hidden>
+            <label class="profile-camera-edit" for="profile-photo-input" title="Change profile picture" aria-label="Change profile picture">📷</label>
+            <input id="profile-photo-input" type="file" accept="image/*" hidden>
+          </div>
           <div class="profile-identity-copy">
             <strong id="profile-name">Loading profile…</strong>
             <p id="profile-email">—</p>
-            <span class="profile-level-line">ID: <b id="profile-member-id">—</b> <i>•</i> Level 1 (Starter Novice)</span>
+            <div class="profile-status-badges"><span id="profile-role-badge">🛡 USER</span><span class="is-active-badge">✓ ACTIVE</span><span class="is-level-badge">🛡 LEVEL 1: STARTER NOVICE</span></div>
           </div>
+          <div class="profile-referral-code"><small>MY REFERRAL CODE</small><strong id="profile-referral-code">—</strong><button type="button" id="profile-copy-referral">▣ Copy</button><span id="profile-referral-reward">+ ৳0.00 / ref</span></div>
         </article>
 
-        <article class="profile-telegram-card">
-          <div class="profile-telegram-top">
-            <div class="profile-telegram-title"><span class="profile-telegram-logo">➤</span><strong>Telegram Username <b id="profile-telegram-username">@KDCARIYAN</b></strong></div>
-            <div class="profile-telegram-badges"><span class="profile-verified-badge">🔒 Verified</span><button class="profile-open-badge" id="profile-telegram-open" type="button">⚙️ Open ↗</button><span class="profile-locked-badge">🛡️ Locked</span></div>
-          </div>
-          <p class="profile-telegram-policy"><span>ⓘ</span> নিরাপত্তার জন্য আপনার Telegram পরিচয় যাচাই করা থাকতে হবে। কোনো পাসওয়ার্ড বা OTP অন্য কারও সঙ্গে শেয়ার করবেন না।</p>
-        </article>
+        <form id="profile-information-form" class="profile-form-card" novalidate>
+          <div class="profile-form-heading"><span>👤</span><div><h3>Personal Information</h3><p>Keep your account details up to date</p></div></div>
+          <label class="profile-field"><span>Full Name <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">♙</span><input id="profile-full-name-input" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required></span></label>
+          <label class="profile-field"><span>Email Address <small>(Read-Only)</small></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-email-input" name="email" type="email" readonly aria-readonly="true"></span></label>
+          <label class="profile-field"><span>Phone Number</span><span class="profile-input-wrap"><span aria-hidden="true">☎</span><input id="profile-phone-input" name="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="Enter phone number"></span></label>
+          <label class="profile-field"><span>Telegram Account <small>(@username / Link)</small></span><span class="profile-input-wrap"><span class="profile-telegram-field-icon" aria-hidden="true">➤</span><input id="profile-telegram-input" name="telegramUsername" type="text" autocomplete="off" maxlength="120" placeholder="@yourusername or Telegram link"></span></label>
+          <p id="profile-save-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <button class="profile-save-button" id="profile-save-button" type="submit">💾 Save Profile Changes</button>
+        </form>
 
-        <article class="profile-vip-banner">
-          <div class="profile-vip-icon">➤</div>
-          <div class="profile-vip-copy"><strong>Official Telegram VIP Community</strong><span>Official updates, notices &amp; community support</span></div>
-          <span class="profile-official-badge">OFFICIAL</span>
-          <button id="profile-vip-join" type="button" class="profile-vip-join">Join ↗</button>
-        </article>
+        <form id="profile-password-form" class="profile-form-card profile-password-card" novalidate>
+          <div class="profile-form-heading"><span>🔑</span><div><h3>Change Password</h3><p>Use a strong password to protect your account</p></div></div>
+          <label class="profile-field"><span>Current Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🛡</span><input id="profile-current-password" type="password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-current-password" aria-label="Show current password">◉</button></span></label>
+          <label class="profile-field"><span>New Password <small>(Min. 6 chars)</small> <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-new-password" type="password" autocomplete="new-password" minlength="6" placeholder="Min. 6 characters" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-new-password" aria-label="Show new password">◉</button></span></label>
+          <label class="profile-field"><span>Confirm New Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">✓</span><input id="profile-confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter new password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-confirm-password" aria-label="Show confirm password">◉</button></span></label>
+          <p id="profile-password-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <button class="profile-password-button" id="profile-password-button" type="submit">🔒 Update Password</button>
+        </form>
 
-        <div class="profile-settings-list" aria-label="Profile settings">
-          <button class="profile-menu-card" type="button" data-profile-action="account"><span class="profile-menu-icon account">♙</span><span class="profile-menu-copy"><strong>Account Details &amp; Password</strong><small>আপনার অ্যাকাউন্টের তথ্য ও নিরাপত্তা</small></span><span class="profile-menu-arrow">›</span></button>
-          <button class="profile-menu-card" type="button" data-profile-action="referrals"><span class="profile-menu-icon referrals">♧</span><span class="profile-menu-copy"><strong>My Referral Team</strong><small>আপনার রেফারেল ও টিমের তথ্য</small></span><span class="profile-menu-arrow">›</span></button>
-          <button class="profile-menu-card" type="button" data-profile-action="wallet"><span class="profile-menu-icon wallet">▣</span><span class="profile-menu-copy"><strong>Wallet &amp; Withdrawal</strong><small>ব্যালেন্স ও পেমেন্ট অপশন</small></span><span class="profile-menu-arrow">›</span></button>
-          <button class="profile-menu-card" type="button" data-profile-action="ledger"><span class="profile-menu-icon ledger">▤</span><span class="profile-menu-copy"><strong>Collection History Ledger</strong><small>আপনার লেনদেনের হিস্ট্রি</small></span><span class="profile-menu-arrow">›</span></button>
-          <button class="profile-menu-card" type="button" data-profile-action="support"><span class="profile-menu-icon support">☏</span><span class="profile-menu-copy"><strong>Help &amp; Customer Support</strong><small>সাহায্য ও সাপোর্ট টিম</small></span><span class="profile-menu-arrow">›</span></button>
-          <button class="profile-menu-card profile-signout-card" id="profile-sign-out" type="button"><span class="profile-menu-icon signout">↪</span><span class="profile-menu-copy"><strong>Sign Out</strong><small>নিরাপদে আপনার অ্যাকাউন্ট থেকে বের হন</small></span><span class="profile-menu-arrow">›</span></button>
-        </div>
+        <section class="profile-shortcuts-card" aria-labelledby="profile-shortcuts-title">
+          <div class="profile-form-heading"><span>🧭</span><div><h3 id="profile-shortcuts-title">Quick Shortcuts</h3><p>Jump to your account services</p></div></div>
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-dashboard"><span class="profile-shortcut-icon shortcut-dashboard">🌐</span><span><strong>Collector Dashboard</strong><small>Return to your home dashboard</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-deposit"><span class="profile-shortcut-icon shortcut-deposit">＋</span><span><strong>Deposit New Income</strong><small>Deposit interface is not available yet</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-ledger"><span class="profile-shortcut-icon shortcut-ledger">▤</span><span><strong>Collection Ledger History</strong><small>Review your available transaction records</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row profile-shortcut-signout" id="profile-sign-out"><span class="profile-shortcut-icon shortcut-signout">↪</span><span><strong>Sign Out Account</strong><small>Safely sign out of this account</small></span><b>›</b></button>
+        </section>
+
+        <aside class="profile-security-notice"><span>🛡️</span><div><strong>Account Security Notice</strong><p>Never share your password, PIN, or one-time verification codes. Your email address is read-only here. Password changes are handled securely by Firebase Authentication.</p></div></aside>
       </section>
 
 
@@ -532,7 +542,7 @@
     <nav class="bottom-nav" aria-label="Main navigation">
       <button class="nav-item is-active" type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
       <button class="nav-item" type="button" data-tab="rank"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span>Rank</span></button>
-      <button class="nav-item nav-bot" type="button" data-tab="bots"><span class="nav-bot-icon"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M8 16h8"/></svg></span><span>AI Bots</span></button>
+      <button class="nav-item nav-bot" id="nav-bots-tab" type="button" data-tab="bots"><span class="nav-bot-icon"><svg id="nav-bots-icon" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M8 16h8"/></svg></span><span id="nav-bots-label">AI Bots</span></button>
       <button class="nav-item" type="button" data-tab="feed"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 3zM8 9h8M8 13h5"/></svg><span>Feed</span></button>
       <button class="nav-item" type="button" data-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button>
     </nav>
