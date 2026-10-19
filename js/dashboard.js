@@ -393,7 +393,6 @@
     if (overlay) overlay.hidden = true;
     if (drawer) drawer.hidden = true;
     document.body.classList.remove("withdrawal-drawer-open");
-    withdrawalSubmitting = false;
   }
 
   document.getElementById("wallet-withdraw-button")?.addEventListener("click", openWithdrawalDrawer);
@@ -434,8 +433,8 @@
     if (submit) { submit.disabled = true; submit.textContent = "Submitting request…"; }
     if (message) message.textContent = "";
     try {
-      const pending = await db.collection("withdrawals").where("uid", "==", walletUser.uid).where("status", "==", "pending").limit(1).get();
-      if (!pending.empty) {
+      const pending = await db.collection("withdrawals").where("uid", "==", walletUser.uid).get();
+      if (pending.docs.some(doc => doc.data().status === "pending")) {
         if (message) message.textContent = "আপনার একটি withdrawal request ইতিমধ্যে pending আছে। Admin review শেষ হলে আবার request করতে পারবেন।";
         return;
       }
