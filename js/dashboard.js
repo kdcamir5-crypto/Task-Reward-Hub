@@ -249,6 +249,11 @@
   }
   function openWalletPage() {
     syncProfileNavigation("home");
+    document.body.classList.remove("deposit-page-active");
+    const depositPage = document.getElementById("deposit-page");
+    if (depositPage) depositPage.hidden = true;
+    if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
+    depositSettingsUnsubscribe = null;
     const page = document.getElementById("wallet-page");
     if (!page) { showToast("Wallet interface could not be opened."); return; }
     const activeTab = document.querySelector(".bottom-nav [data-tab].is-active");
@@ -291,7 +296,7 @@
     const copy = document.getElementById("deposit-copy-number");
     if (copy) copy.disabled = !ready;
     const submit = document.getElementById("deposit-submit");
-    if (submit) submit.disabled = !ready || depositSubmitting;
+    if (submit) submit.disabled = !ready || depositSubmitting || !walletUser || !walletProfileAvailable;
   }
   function loadDepositSettings() {
     if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
@@ -437,7 +442,7 @@
       showToast("Deposit request could not be submitted.");
     } finally {
       depositSubmitting = false;
-      if (submit) { submit.textContent = "Submit Deposit Request →"; submit.disabled = !depositSettingsReady(); }
+      if (submit) { submit.textContent = "Submit Deposit Request →"; submit.disabled = !depositSettingsReady() || !walletUser || !walletProfileAvailable; }
     }
   });
 
@@ -975,6 +980,11 @@
   let supportReturnTab = "home";
   function openSupportPage() {
     syncProfileNavigation("home");
+    document.body.classList.remove("deposit-page-active");
+    const depositPage = document.getElementById("deposit-page");
+    if (depositPage) depositPage.hidden = true;
+    if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
+    depositSettingsUnsubscribe = null;
     const page = document.getElementById("support-page");
     if (!page) { showToast("Support interface could not be opened."); return; }
     const activeTab = document.querySelector(".bottom-nav [data-tab].is-active");
@@ -1367,6 +1377,7 @@
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
       renderDepositBalance();
+      renderDepositSettings(depositSettings);
       renderReferralPage();
     }, error => {
       console.error("Task Reward Hub profile listener failed:", error);
