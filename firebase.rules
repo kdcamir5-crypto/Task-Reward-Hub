@@ -68,7 +68,8 @@ service cloud.firestore {
         && request.resource.data.referralCode == request.resource.data.collectorId
         && getAfter(/databases/$(database)/documents/collectorIds/$(request.resource.data.collectorId)).data.uid == request.auth.uid;
       allow update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram', 'profileAvatar'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['profileAvatar']) || request.resource.data.profileAvatar in ['👨🏻‍💻', '👨🏽‍🚀', '🧑🏻‍🎤', '👩🏻‍💻', '👩🏽‍🚀', '👩🏻‍🎨', '🧑🏾‍🚀', '🦸🏻‍♂️']);
       // Daily Tap-to-Earn progress. Only the signed-in user can increment their
       // own count, one coin per write, up to 2,000 per Bangladesh-day key.
       allow update: if signedIn() && request.auth.uid == uid
