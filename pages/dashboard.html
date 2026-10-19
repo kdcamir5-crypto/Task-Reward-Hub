@@ -85,7 +85,7 @@
         <section class="reference-section">
           <div class="reference-section-title"><h2>🔹 Explore Services</h2></div>
           <div class="explore-grid">
-            <button type="button" class="explore-card" data-go="feed"><span>⚙️</span><strong>Spin Wheel</strong><small>Spin & Win</small></button>
+            <button type="button" class="explore-card" id="spin-wheel-open"><span>⚙️</span><strong>Spin Wheel</strong><small>Spin & Win</small></button>
             <button type="button" class="explore-card" id="tap-earning-open" data-tap-open><span>☝️</span><strong>Tap Earning</strong><small>Tap • Ad • USD</small></button>
             <button type="button" class="explore-card" data-go="bots"><span>🤖</span><em>PRO</em><strong>AI Bot Shop</strong><small>160% Yield</small></button>
           </div>
@@ -376,6 +376,37 @@
           <button class="profile-menu-card" type="button" data-profile-action="support"><span class="profile-menu-icon support">☏</span><span class="profile-menu-copy"><strong>Help &amp; Customer Support</strong><small>সাহায্য ও সাপোর্ট টিম</small></span><span class="profile-menu-arrow">›</span></button>
           <button class="profile-menu-card profile-signout-card" id="profile-sign-out" type="button"><span class="profile-menu-icon signout">↪</span><span class="profile-menu-copy"><strong>Sign Out</strong><small>নিরাপদে আপনার অ্যাকাউন্ট থেকে বের হন</small></span><span class="profile-menu-arrow">›</span></button>
         </div>
+      </section>
+
+
+      <section class="spin-wheel-page" id="spin-wheel-page" data-theme="cyber" aria-labelledby="spin-page-title" hidden>
+        <div class="spin-page-topline">
+          <button type="button" class="spin-back-button" id="spin-wheel-back" aria-label="Back to Home">←</button>
+          <div class="spin-page-heading"><span class="spin-kicker">✦ DAILY REWARDS</span><h1 id="spin-page-title">Lucky <span>Spin</span></h1><p>ঘুরান চাকা, উপভোগ করুন প্রতিদিনের স্পিন</p></div>
+          <div class="spin-theme-switch" role="group" aria-label="Spin Wheel theme"><button type="button" data-spin-theme="cyber" class="is-active" aria-pressed="true">Dark</button><button type="button" data-spin-theme="oled" aria-pressed="false">OLED</button></div>
+        </div>
+        <section class="spin-wheel-card">
+          <div class="spin-card-heading"><div><span class="spin-wheel-icon">⚙</span><span><strong>স্ট্যান্ডার্ড ফ্রি স্পিন</strong><small>Daily Free Spin</small></span></div><span class="spin-count-badge">⚡ <b id="spin-count">2</b> Spins</span></div>
+          <div class="spin-wheel-stage">
+            <div class="spin-pointer" aria-hidden="true"></div>
+            <div class="spin-wheel" id="spin-wheel-disc" role="img" aria-label="Eight-segment lucky spin wheel">
+              <span class="spin-prize spin-prize-1">৳১০</span><span class="spin-prize spin-prize-2">$0.20</span>
+              <span class="spin-prize spin-prize-3">৳৩০০</span><span class="spin-prize spin-prize-4">৳0.50</span>
+              <span class="spin-prize spin-prize-5">৳৫০</span><span class="spin-prize spin-prize-6">$1</span>
+              <span class="spin-prize spin-prize-7">৳২০</span><span class="spin-prize spin-prize-8">$0.10</span>
+              <span class="spin-wheel-center">SPIN<br><small>LUCKY</small></span>
+            </div>
+          </div>
+          <div class="spin-controls"><button type="button" id="spin-now-button" class="spin-now-button"><span>▶</span> SPIN &amp; WIN NOW</button><button type="button" id="spin-sound-button" class="spin-sound-button" aria-label="Toggle spin sound" aria-pressed="false">🔊</button></div>
+          <p class="spin-reward-note">🎁 প্রতিদিন বিনামূল্যে ২টি ফ্রি স্পিন দেওয়া হয় <span>•</span> Reward preview</p>
+          <p class="spin-result-message" id="spin-result-message" role="status" aria-live="polite">স্পিন শুরু করতে উপরের বাটনে চাপ দিন।</p>
+        </section>
+        <div class="spin-balance-grid">
+          <article class="spin-balance-card spin-balance-bdt"><div><span class="spin-wallet-symbol">৳</span><span>টাকা ওয়ালেট</span></div><strong>৳ <b id="spin-bdt-balance">0.00</b></strong><small>আপনার বর্তমান BDT ব্যালেন্স</small></article>
+          <article class="spin-balance-card spin-balance-usd"><div><span class="spin-wallet-symbol">$</span><span>ডলার ব্যালেন্স</span></div><strong>$ <b id="spin-usd-balance">0.00</b></strong><small>USD wallet সংযুক্ত নয়</small></article>
+        </div>
+        <section class="spin-history-card"><div class="spin-history-heading"><h2>⏳ সাম্প্রতিক স্পিন হিস্ট্রি</h2><span>LOCAL HISTORY</span></div><div id="spin-history-list" class="spin-history-list"><p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p></div></section>
+        <p class="spin-disclaimer">নোট: এই স্পিন UI-তে দেখানো পুরস্কার প্রিভিউ। এটি এখনো আসল ওয়ালেটে টাকা যোগ করে না।</p>
       </section>
 
     </main>
