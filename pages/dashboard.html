@@ -86,7 +86,7 @@
           <div class="reference-section-title"><h2>🔹 Explore Services</h2></div>
           <div class="explore-grid">
             <button type="button" class="explore-card" data-go="feed"><span>⚙️</span><strong>Spin Wheel</strong><small>Spin & Win</small></button>
-            <button type="button" class="explore-card" data-go="feed"><span>☝️</span><strong>Tap Earning</strong><small>Tap • Ad • USD</small></button>
+            <button type="button" class="explore-card" id="tap-earning-open" data-tap-open><span>☝️</span><strong>Tap Earning</strong><small>Tap • Ad • USD</small></button>
             <button type="button" class="explore-card" data-go="bots"><span>🤖</span><em>PRO</em><strong>AI Bot Shop</strong><small>160% Yield</small></button>
           </div>
         </section>
@@ -101,6 +101,60 @@
         <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
         <section class="commission-card"><div><h2>Refer & Earn Commission</h2><p>Earn referral commission for every verified collector you onboard</p><button type="button" data-go="rank">View Program →</button></div><span>🎁</span></section>
         <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-go="feed">View Ledger</button></div><p class="activity-empty">Your recent account activity will appear here when available.</p></section>
+      </section>
+
+      <section class="tap-earning-page" id="tap-earning-page" data-theme="cyber" aria-labelledby="tap-page-title" hidden>
+        <div class="tap-page-topline">
+          <div><span class="tap-kicker"><i></i> TAP REWARDS STUDIO</span><h1 id="tap-page-title">Tap to <span>Earn</span></h1><p>Every tap starts a new possibility.</p></div>
+          <div class="tap-theme-switch" role="group" aria-label="Tap Earning theme">
+            <button type="button" data-tap-theme="cyber" class="is-active" aria-pressed="true">Cyber</button>
+            <button type="button" data-tap-theme="oled" aria-pressed="false">OLED</button>
+          </div>
+        </div>
+
+        <section class="tap-member-card" aria-label="Tap Earning member">
+          <div class="tap-member-avatar" id="tap-user-avatar">K<span>✓</span></div>
+          <div class="tap-member-copy"><strong id="tap-user-name">KDCARIYAN</strong><span class="tap-member-badge">♛ VERIFIED MEMBER</span><small>Level 1 · Starter Novice</small></div>
+          <span class="tap-member-level">LVL 01</span>
+        </section>
+
+        <div class="tap-balance-grid">
+          <article class="tap-balance-card tap-bdt-card"><div><span>BDT BALANCE</span><i>৳</i></div><strong>৳<b id="tap-bdt-balance">0.00</b></strong><small>Available wallet balance</small><span class="tap-card-glow"></span></article>
+          <article class="tap-balance-card tap-usd-card"><div><span>USD EQUIV.</span><i>$</i></div><strong>$<b id="tap-usd-balance">0.00</b></strong><small>USD value not yet calculated</small><span class="tap-card-glow"></span></article>
+        </div>
+
+        <button type="button" class="tap-sponsored-card" id="tap-sponsored-card">
+          <span class="tap-sponsored-play" aria-hidden="true">▶</span>
+          <span class="tap-sponsored-copy"><small>SPONSORED VIDEO</small><strong>Your next reward starts here</strong><em>Ad integration will appear here</em></span>
+          <span class="tap-sponsored-tag">SPONSORED</span>
+        </button>
+
+        <div class="tap-metrics-grid">
+          <article class="tap-metric-card"><span class="tap-metric-icon tap-coin-icon">✦</span><div><small>YOUR COINS</small><strong id="tap-coin-value">0</strong><em>Tap rewards</em></div></article>
+          <article class="tap-metric-card"><span class="tap-metric-icon tap-ref-icon">♧</span><div><small>YOUR REFERRALS</small><strong id="tap-referrals-value">0</strong><em>Community growth</em></div></article>
+        </div>
+
+        <section class="tap-action-stage" aria-label="Tap to earn action">
+          <div class="tap-stage-orbit tap-orbit-one"></div><div class="tap-stage-orbit tap-orbit-two"></div>
+          <div class="tap-floating-coin tap-floating-coin-a">৳</div><div class="tap-floating-coin tap-floating-coin-b">✦</div><div class="tap-floating-coin tap-floating-coin-c">৳</div>
+          <button type="button" class="tap-main-button" id="tap-main-button" aria-label="Tap to earn">
+            <span class="tap-main-rings"></span><span class="tap-main-hand">☝</span><strong>TAP TO</strong><b>EARN</b><small>TOUCH TO START</small>
+          </button>
+          <p class="tap-action-caption"><span></span> YOUR EARNING JOURNEY STARTS HERE <span></span></p>
+        </section>
+
+        <section class="tap-progress-card" aria-label="Coin milestone">
+          <div class="tap-progress-heading"><span><small>YOUR NEXT MILESTONE</small><strong>Reach 2,000 Coins</strong></span><b id="tap-progress-label">0 / 2,000</b></div>
+          <div class="tap-progress-track"><span id="tap-progress-fill"></span></div>
+          <p>Keep going and build your progress one step at a time.</p>
+        </section>
+
+        <div class="tap-shortcuts-grid">
+          <button type="button" class="tap-shortcut-card" data-tap-action="invite"><span class="tap-shortcut-icon tap-invite-icon">♧</span><strong>Invite Friends</strong><small>Grow your network</small><i>↗</i></button>
+          <button type="button" class="tap-shortcut-card" data-tap-action="ads"><span class="tap-shortcut-icon tap-ads-icon">▶</span><strong>Watch Ads</strong><small>Sponsored content</small><i>↗</i></button>
+          <button type="button" class="tap-shortcut-card" data-tap-action="withdraw"><span class="tap-shortcut-icon tap-withdraw-icon">৳</span><strong>Withdraw</strong><small>Manage payouts</small><i>↗</i></button>
+        </div>
+        <p class="tap-feature-note"><span>ⓘ</span> Tap rewards and sponsored ads will only credit coins after their verified reward system is connected.</p>
       </section>
 
       <section class="tab-panel panel is-active" id="panel-home" data-panel="home" aria-labelledby="home-panel-title">
