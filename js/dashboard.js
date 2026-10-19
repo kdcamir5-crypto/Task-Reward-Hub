@@ -269,6 +269,13 @@
     showTab(walletReturnTab);
   }
   document.addEventListener("click", event => {
+    const target = event.target instanceof Element ? event.target.closest("[data-withdrawal-open]") : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openWithdrawalDrawer();
+  }, true);
+  document.addEventListener("click", event => {
     const target = event.target instanceof Element ? event.target.closest("[data-wallet-open]") : null;
     if (!target) return;
     event.preventDefault();
