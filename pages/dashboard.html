@@ -64,7 +64,7 @@
     <main>
       <section class="home-reference-layout" aria-label="Home dashboard">
         <section class="stats-grid reference-stats" aria-label="Account overview">
-          <article class="stat-card panel"><span class="stat-icon icon-ref">♟</span><span class="stat-label">TOTAL REFERRALS</span><strong id="referrals-value">0</strong><small>0 Users</small><a href="#referrals" data-go="rank">Invite & Earn ›</a></article>
+          <article class="stat-card panel"><span class="stat-icon icon-ref">♟</span><span class="stat-label">TOTAL REFERRALS</span><strong id="referrals-value">0</strong><small>0 Users</small><a href="#referrals" data-referral-open>Invite & Earn ›</a></article>
           <article class="stat-card panel"><span class="stat-icon icon-task">●</span><span class="stat-label">COMPLETED</span><strong id="tasks-value">0</strong><small>0 Verified</small><a href="#tasks" data-go="feed">Quality Work ›</a></article>
           <article class="stat-card panel"><span class="stat-icon icon-gold">♛</span><span class="stat-label">ACTIVE TIER</span><strong class="tier-value">Starter Novice</strong><small> </small><a href="#rank" data-go="rank">Upgrade ›</a></article>
           <article class="stat-card panel"><span class="stat-icon icon-ref">◷</span><span class="stat-label">PENDING REFERRALS</span><strong>0</strong><small>0 Pending</small><a href="#progress" data-go="rank">In Progress ›</a></article>
@@ -72,7 +72,7 @@
         <section class="reference-section">
           <div class="reference-section-title"><h2>⚡ Quick Access</h2><button type="button" data-go="feed">All Services →</button></div>
           <div class="quick-grid reference-quick-grid">
-            <button class="reference-service" type="button" data-go="rank"><span>🤝</span><strong>Referrals</strong><small>Invite Friends</small></button>
+            <button class="reference-service" type="button" data-referral-open><span>🤝</span><strong>Referrals</strong><small>Invite Friends</small></button>
             <button class="reference-service" type="button" data-go="profile"><span>🏦</span><strong>Withdraw</strong><small>Get Your Money</small></button>
             <button class="reference-service" type="button" data-go="feed"><span>🗓️</span><strong>History</strong><small>Transactions</small></button>
             <button class="reference-service" type="button" data-go="feed"><span>🎫</span><strong>Claim Code</strong><small>Get Bonus</small></button>
@@ -95,14 +95,21 @@
           <div class="sleeping-bot">🤖<span>💤</span></div>
           <strong>0 Bots • Offline</strong>
           <p>১টি ভেরিফাইড রেফারেল = ১টি ফ্রি বট আনলক। আপনার AI বট চালু করতে সদস্য রেফার করুন।</p>
-          <button type="button" data-go="rank">♟ Refer Member to Wake Up AI Bot</button>
+          <button type="button" data-referral-open>♟ Refer Member to Wake Up AI Bot</button>
         </section>
-        <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" data-go="rank">Copy Link</button></section>
+        <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" data-referral-open>Copy Link</button></section>
         <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
-        <section class="commission-card"><div><h2>Refer & Earn Commission</h2><p>Earn referral commission for every verified collector you onboard</p><button type="button" data-go="rank">View Program →</button></div><span>🎁</span></section>
+        <section class="commission-card"><div><h2>Refer & Earn Commission</h2><p>Earn referral commission for every verified collector you onboard</p><button type="button" data-referral-open>View Program →</button></div><span>🎁</span></section>
         <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-go="feed">View Ledger</button></div><p class="activity-empty">Your recent account activity will appear here when available.</p></section>
       </section>
 
+      <section id="referral-page" class="referral-page" data-theme="cyber" hidden>
+      <div class="rf-head"><button id="referral-back" type="button" aria-label="Back">←</button><div><small>COMMUNITY REWARDS</small><h1>Referred Members <span>(রেফারেল তালিকা)</span></h1></div><b>👥 <span id="referral-member-count">0</span> জন</b></div>
+      <a class="rf-community" href="https://t.me/Taskrewardhub_bot" target="_blank" rel="noopener noreferrer"><strong>➤</strong><span><small>OFFICIAL TELEGRAM</small><b>Official Telegram VIP Community</b></span><em>Join Telegram ↗</em></a>
+      <section class="rf-invite"><div class="rf-invite-head"><div><small>YOUR INVITE CODE</small><strong><span id="referral-code-value">Loading…</span> <button id="referral-copy-code" type="button">▢</button></strong></div><div class="rf-earned"><small>Total Earned</small><b>৳ <span id="referral-earned-value">0.00</span></b></div></div><small class="rf-label">YOUR PERSONAL INVITE LINK</small><div class="rf-link"><span id="referral-link-value">Loading…</span><button id="referral-copy-link" type="button">Copy</button></div><div class="rf-level"><b>✦　Level 1: Starter Novice</b><span>+ ৳0.00 / ref bounty</span></div></section>
+      <section class="rf-members"><h2>👥 Referred Member Profiles</h2><p>আপনার রেফারেল থেকে আসা সদস্যদের অবস্থা এখানে দেখুন।</p><label class="rf-search">⌕ <input id="referral-search" type="search" placeholder="Search by name, ID or code..."></label><div class="rf-filters"><button class="is-active" data-referral-filter="all" type="button">All (<span id="referral-all-count">0</span>)</button><button data-referral-filter="verified" type="button">Verified (<span id="referral-verified-count">0</span>)</button><button data-referral-filter="quarantine" type="button">Quarantine (<span id="referral-quarantine-count">0</span>)</button></div><div class="rf-empty" id="referral-empty-state"><div>♧</div><b id="referral-empty-title">কোনো রেফারেল পাওয়া যায়নি</b><p id="referral-empty-copy">আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।</p><button id="referral-empty-copy-link" type="button">🔗 ইনভাইট লিংক কপি করুন</button></div><div id="referral-member-list" hidden></div><small class="rf-note">Verified member records and rewards appear when referral data is connected.</small></section>
+      <div class="rf-themes"><span>Display theme</span><button class="is-active" data-referral-theme="cyber" type="button">Cyber Dark</button><button data-referral-theme="oled" type="button">Pure OLED</button></div>
+      </section>
       <section class="tap-earning-page" id="tap-earning-page" data-theme="cyber" aria-labelledby="tap-page-title" hidden>
         <div class="tap-page-topline">
           <button type="button" class="tap-back-button" id="tap-earning-back" aria-label="Back to Home">←</button>
