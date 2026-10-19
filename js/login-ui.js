@@ -92,6 +92,37 @@
     delete signupMessage.dataset.kind;
     signupMessage.setAttribute("role", "status");
   }
+
+  function generateCollectorId() {
+    return String(Math.floor(10000000 + Math.random() * 90000000));
+  }
+
+  async function saveNewUserWithUniqueCollectorId(uid, profile) {
+    let lastError = null;
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const collectorId = generateCollectorId();
+      const batch = db.batch();
+      batch.set(db.collection("collectorIds").doc(collectorId), {
+        uid: uid,
+        collectorId: collectorId,
+        createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
+      });
+      batch.set(db.collection("users").doc(uid), {
+        ...profile,
+        collectorId: collectorId,
+        referralCode: collectorId
+      });
+      try {
+        await batch.commit();
+        return collectorId;
+      } catch (error) {
+        lastError = error;
+        if (error && error.code === "permission-denied") throw error;
+        if (error && error.code !== "already-exists") throw error;
+      }
+    }
+    throw lastError || new Error("Could not allocate a unique Collector ID.");
+  }
   function setSubmitting(value) {
     submitting = value;
     if (submitButton) {
@@ -287,7 +318,7 @@
           createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
         };
-        await db.collection("users").doc(createdUser.uid).set(profile);
+        await saveNewUserWithUniqueCollectorId(createdUser.uid, profile);
         showSignupMessage("Account created successfully. Opening your dashboard…", "success");
         window.location.replace("pages/dashboard.html");
       } catch (error) {
