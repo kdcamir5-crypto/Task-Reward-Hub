@@ -8,6 +8,8 @@
   let toastHandle = null;
   let profileUnsubscribe = null;
   let miningUnsubscribe = null;
+  let leaderboardUnsubscribe = null;
+  let leaderboardRows = [];
   const collectorIdMigrationTasks = new Map();
 
   function generateCollectorId() {
@@ -1294,11 +1296,70 @@
     const empty = document.getElementById("rank-empty");
     if (empty) empty.hidden = visible !== 0;
   }
+  function renderLeaderboard() {
+    const sorted = leaderboardRows.slice().sort((a,b) => (safeNumber(b.botCount)||0) - (safeNumber(a.botCount)||0) || String(a.displayName||"").localeCompare(String(b.displayName||"")));
+    const currentUid = currentReferralUser && currentReferralUser.uid;
+    const myIndex = sorted.findIndex(item => item.uid === currentUid);
+    setText("rank-label", myIndex >= 0 ? "#" + (myIndex + 1) : "—");
+    const podium = document.querySelector(".rank-podium");
+    if (podium) {
+      const podiumOrder = [{index:1,cls:"podium-silver",position:2},{index:0,cls:"podium-gold",position:1},{index:2,cls:"podium-bronze",position:3}];
+      const top = podiumOrder.map(slot => {
+        const item = sorted[slot.index];
+        if (!item) return '<article class="podium-card '+slot.cls+'"><span class="podium-crown">♛</span><div class="podium-avatar">—</div><span class="podium-position">#'+slot.position+'</span><h3>Waiting for members</h3><span class="podium-bots">♟ 0 Bots</span></article>';
+        const name = String(item.displayName || "Member");
+        return '<article class="podium-card '+slot.cls+'"><span class="podium-crown">♛</span><div class="podium-avatar">'+escapeHtml(initials(name))+'</div><span class="podium-position">#'+slot.position+'</span><h3>'+escapeHtml(name)+(slot.position===1?' 👑':'')+'</h3><span class="podium-bots">♟ '+(safeNumber(item.botCount)||0)+' Bots</span></article>';
+      }).join("");
+      podium.innerHTML = top;
+    }
+    const list = document.getElementById("rank-list");
+    if (list) {
+      const shown = sorted.slice(0,50);
+      if (currentUid && !shown.some(item => item.uid === currentUid) && myIndex >= 50) shown.push(sorted[myIndex]);
+      list.innerHTML = shown.map(item => {
+        const rank = sorted.findIndex(row => row.uid === item.uid) + 1;
+        const name = String(item.displayName || "Member");
+        const id = String(item.collectorId || item.uid || "");
+        const cls = rank===1?"rank-gold":rank===2?"rank-silver":rank===3?"rank-bronze":"";
+        return '<article class="rank-list-row" data-name="'+escapeHtml(name.toLowerCase())+'" data-id="'+escapeHtml(id.toLowerCase())+'"><span class="rank-number '+cls+'">#'+rank+'</span><span class="rank-row-avatar">'+escapeHtml(initials(name))+'</span><strong class="rank-member-name">'+escapeHtml(name)+(item.uid===currentUid?' <span>(You)</span>':'')+'</strong><span class="rank-metric">♟ <b>'+(safeNumber(item.botCount)||0)+' Bots</b></span></article>';
+      }).join("") + '<p class="rank-empty-state" id="rank-empty" hidden>No matching members found.</p>';
+    }
+    setText("rank-data-note", sorted.length ? "Live leaderboard · "+sorted.length+" registered member"+(sorted.length===1?"":"s")+" · updates automatically" : "No leaderboard members yet. Each existing account needs to sign in once to publish its rank profile.");
+    filterRankRows();
+  }
+  function startLeaderboardListener() {
+    if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+    leaderboardUnsubscribe = db.collection("publicLeaderboard").onSnapshot(snapshot => {
+      leaderboardRows = snapshot.docs.map(doc => ({uid:doc.id,...(doc.data()||{})}));
+      renderLeaderboard();
+    }, error => {
+      console.error("Live leaderboard listener failed:", error);
+      setText("rank-data-note", "Leaderboard could not load. Please check the published Firestore rules.");
+    });
+  }
+  async function syncPublicLeaderboard(user, profile) {
+    if (!user || !profile || !db) return;
+    const collectorId = String(profile.collectorId || profile.collector_id || profile.referralCode || "");
+    if (!/^\\d{8}$/.test(collectorId)) return;
+    const name = String(profile.name || profile.fullName || user.displayName || (user.email ? user.email.split("@")[0] : "Member")).trim().slice(0,80) || "Member";
+    const bots = Array.isArray(profile.unlockedBots) ? profile.unlockedBots.length : 0;
+    try {
+      await db.collection("publicLeaderboard").doc(user.uid).set({
+        uid:user.uid,
+        displayName:name,
+        collectorId:collectorId,
+        botCount:bots,
+        updatedAt:window.firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+    } catch (error) {
+      console.error("Public leaderboard profile sync failed:", error);
+    }
+  }
   rankSearch?.addEventListener("input", filterRankRows);
   rankRefresh?.addEventListener("click", () => {
     if (rankSearch) rankSearch.value = "";
     filterRankRows();
-    showToast("Leaderboard view refreshed.");
+    showToast("Leaderboard updates automatically from Firebase.");
   });
 
 
@@ -1383,6 +1444,8 @@
     walletUser = user;
     if (profileUnsubscribe) profileUnsubscribe();
     if (miningUnsubscribe) miningUnsubscribe();
+    if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+    startLeaderboardListener();
 
     setText("welcome-subtitle", "Loading your account…");
     setText("dashboard-message", "Loading your Firebase profile…");
@@ -1425,6 +1488,7 @@
       }
       walletProfile = currentReferralProfile;
       walletProfileAvailable = true;
+      syncPublicLeaderboard(user, currentReferralProfile);
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
       renderDepositBalance();
