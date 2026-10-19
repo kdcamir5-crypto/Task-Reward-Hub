@@ -1355,6 +1355,38 @@
       console.error("Public leaderboard profile sync failed:", error);
     }
   }
+  async function backfillLeaderboardForAdmin(profile) {
+    if (!profile || profile.role !== "admin" || !db) return;
+    try {
+      const snapshot = await db.collection("users").get();
+      let batch = db.batch();
+      let writes = 0;
+      const commitBatch = async () => {
+        if (writes) await batch.commit();
+        batch = db.batch();
+        writes = 0;
+      };
+      for (const userDoc of snapshot.docs) {
+        const data = userDoc.data() || {};
+        const collectorId = String(data.collectorId || data.collector_id || data.referralCode || "");
+        if (!/^\d{8}$/.test(collectorId)) continue;
+        const name = String(data.name || data.fullName || "Member").trim().slice(0,80) || "Member";
+        const bots = Array.isArray(data.unlockedBots) ? data.unlockedBots.length : 0;
+        batch.set(db.collection("publicLeaderboard").doc(userDoc.id), {
+          uid:userDoc.id,
+          displayName:name,
+          collectorId:collectorId,
+          botCount:bots,
+          updatedAt:window.firebase.firestore.FieldValue.serverTimestamp()
+        }, {merge:true});
+        writes++;
+        if (writes >= 400) await commitBatch();
+      }
+      await commitBatch();
+    } catch (error) {
+      console.error("Admin leaderboard backfill failed:", error);
+    }
+  }
   rankSearch?.addEventListener("input", filterRankRows);
   rankRefresh?.addEventListener("click", () => {
     if (rankSearch) rankSearch.value = "";
@@ -1489,6 +1521,7 @@
       walletProfile = currentReferralProfile;
       walletProfileAvailable = true;
       syncPublicLeaderboard(user, currentReferralProfile);
+      backfillLeaderboardForAdmin(currentReferralProfile);
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
       renderDepositBalance();
