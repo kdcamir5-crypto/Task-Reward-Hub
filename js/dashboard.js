@@ -174,7 +174,7 @@
     const backButton = document.getElementById("bot-shop-back");
     if (backButton) backButton.onclick = closeBotShop;
     document.querySelectorAll("[data-shop-bot]").forEach(button => {
-      button.addEventListener("click", () => showToast("এই বটের ক্রয় ও পেমেন্ট যাচাই সংযোগ এখনো চালু করা হয়নি। কোনো টাকা কাটা হয়নি।"));
+      button.addEventListener("click", () => window.HubBotCheckout.open(button.dataset.shopBot));
     });
     const referralButton = document.getElementById("fleet-referral-button");
     if (referralButton) referralButton.onclick = openReferralPage
@@ -785,7 +785,7 @@
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
   function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
-  function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value","0.00");const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
+  function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
   function openReferralPage(){syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
   function closeReferralPage(){const p=document.getElementById("referral-page");if(p)p.hidden=true;document.body.classList.remove("referral-page-active");showTab("home");}
   async function copyReferralValue(v,msg){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(v);else{const t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();if(!ok)throw Error("copy");}showToast(msg);}catch(e){showToast("কপি করা যায়নি। লিংকটি চেপে ধরে কপি করুন।");}}
@@ -1774,6 +1774,7 @@
   }
 
   function loadUserProfile(user) {
+    window.HubBotCheckout.init(db, user);
     currentReferralUser=user;
     walletUser = user;
     if (profileUnsubscribe) profileUnsubscribe();
@@ -1821,6 +1822,7 @@
         });
       }
       walletProfile = currentReferralProfile;
+      window.HubBotCheckout.updateProfile(walletProfile);
       walletProfileAvailable = true;
       syncPublicLeaderboard(user, currentReferralProfile);
       backfillLeaderboardForAdmin(currentReferralProfile);

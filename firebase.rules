@@ -7,6 +7,86 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function botPrice(id) {
+      return id == 'pulse' ? 50 : id == 'quantum' ? 100 : id == 'neural' ? 200 : id == 'cyber' ? 300 : id == 'apex' ? 500 : 0;
+    }
+    function botTarget(id) { return botPrice(id) * 1.6; }
+    function userBefore(uid) { return get(/databases/$(database)/documents/users/$(uid)).data; }
+    function userAfter(uid) { return getAfter(/databases/$(database)/documents/users/$(uid)).data; }
+    function freshBotOrder(id) {
+      return !exists(/databases/$(database)/documents/botPurchaseRequests/$(id))
+        || get(/databases/$(database)/documents/botPurchaseRequests/$(id)).data.status == 'rejected';
+    }
+    function savedReferrer(profile) {
+      return profile.get('purchaseReferrerUid', '') != '' ? profile.purchaseReferrerUid
+        : profile.get('referredByUid', '') != '' ? profile.referredByUid : profile.get('referrerUid', '');
+    }
+    function validPurchaseReferrer(data) {
+      return data.referrerUid is string && data.referrerCode is string && data.referrerName is string
+        && (savedReferrer(userBefore(data.uid)) == '' || savedReferrer(userBefore(data.uid)) == data.referrerUid)
+        && (data.referrerUid == '' ? data.referrerCode == '' && data.referrerName == ''
+          : data.referrerUid != data.uid
+            && get(/databases/$(database)/documents/publicLeaderboard/$(data.referrerUid)).data.collectorId == data.referrerCode
+            && get(/databases/$(database)/documents/publicLeaderboard/$(data.referrerUid)).data.displayName == data.referrerName);
+    }
+    function walletBotOrder(id, data) {
+      let before = userBefore(data.uid);
+      let after = userAfter(data.uid);
+      return data.paymentMethod == 'wallet' && data.status == 'approved'
+        && data.senderNumber == '' && data.trxId == '' && data.receivingNumber == ''
+        && data.reviewedBy == request.auth.uid && data.reviewedAt == request.time
+        && before.balance is number && before.balance >= data.amount
+        && after.balance == before.balance - data.amount
+        && !(data.botId in before.get('unlockedBots', []))
+        && after.unlockedBots == before.get('unlockedBots', []).concat([data.botId])
+        && after.lastBotPurchaseId == id
+        && after.purchaseReferrerUid == data.referrerUid && after.purchaseReferrerCode == data.referrerCode
+        && getAfter(/databases/$(database)/documents/users/$(data.uid)/botMining/$(data.botId)).data.purchaseId == id
+        && (data.referrerUid == '' || (
+          userAfter(data.referrerUid).balance == userBefore(data.referrerUid).balance + data.amount / 20.0
+          && userAfter(data.referrerUid).lastReferralRewardId == id));
+    }
+    function validBotOrder(id, data) {
+      return data.keys().hasAll(['uid','userName','email','botId','botName','amount','paymentMethod','senderNumber','trxId','receivingNumber','status','createdAt','referrerUid','referrerCode','referrerName'])
+        && data.keys().hasOnly(['uid','userName','email','botId','botName','amount','paymentMethod','senderNumber','trxId','receivingNumber','status','createdAt','referrerUid','referrerCode','referrerName','reviewedBy','reviewedAt'])
+        && data.uid == request.auth.uid && id == data.uid + '_' + data.botId
+        && botPrice(data.botId) > 0 && data.amount is int && data.amount == botPrice(data.botId)
+        && data.userName is string && data.userName.size() <= 200 && data.email is string && data.botName is string
+        && data.createdAt == request.time && validPurchaseReferrer(data)
+        && (data.paymentMethod == 'wallet' ? walletBotOrder(id, data)
+          : data.paymentMethod == 'bKash' && data.status == 'pending'
+            && !data.keys().hasAny(['reviewedBy','reviewedAt'])
+            && data.senderNumber.matches('^01[3-9][0-9]{8}$') && data.trxId.matches('^[A-Z0-9]{5,100}$')
+            && get(/databases/$(database)/documents/appSettings/paymentSettings).data.active == true
+            && data.receivingNumber == get(/databases/$(database)/documents/appSettings/paymentSettings).data.bkashNumber
+            && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(data.trxId)).data.source == 'bot'
+            && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(data.trxId)).data.depositId == id
+            && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(data.trxId)).data.uid == request.auth.uid
+            && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(data.trxId)).data.createdAt == request.time);
+    }
+    function ownWalletBotUpdate(uid) {
+      let id = request.resource.data.lastBotPurchaseId;
+      let order = getAfter(/databases/$(database)/documents/botPurchaseRequests/$(id)).data;
+      return freshBotOrder(id) && order.createdAt == request.time && order.uid == uid
+        && order.paymentMethod == 'wallet' && order.status == 'approved'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','unlockedBots','lastBotPurchaseId','purchaseReferrerUid','purchaseReferrerCode','updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && walletBotOrder(id, order);
+    }
+    function referralCredit(uid) {
+      let id = request.resource.data.lastReferralRewardId;
+      let order = getAfter(/databases/$(database)/documents/botPurchaseRequests/$(id)).data;
+      return order.uid == request.auth.uid && order.referrerUid == uid && uid != request.auth.uid
+        && freshBotOrder(id) && order.createdAt == request.time && order.status == 'approved' && order.paymentMethod == 'wallet'
+        && order.amount == botPrice(order.botId) && botPrice(order.botId) > 0
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','referralEarnings','lastReferralRewardId','updatedAt'])
+        && resource.data.balance is number && request.resource.data.balance == resource.data.balance + order.amount / 20.0
+        && request.resource.data.referralEarnings == resource.data.get('referralEarnings', 0) + order.amount / 20.0
+        && request.resource.data.updatedAt == request.time
+        && userAfter(order.uid).lastBotPurchaseId == id
+        && userAfter(order.uid).balance == userBefore(order.uid).balance - order.amount;
+    }
+
     // Public-to-signed-in payment configuration. The future Admin Panel should
     // edit appSettings/paymentSettings instead of hardcoding payment numbers.
     match /appSettings/{settingId} {
@@ -60,6 +140,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode'])
         && request.resource.data.role == 'user'
         && request.resource.data.balance == 0
         && request.resource.data.tasks == 0
@@ -117,10 +198,24 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.botId in request.resource.data.unlockedBots
         && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == false
         && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.expiresAtMs > request.time.toMillis();
+      allow update: if signedIn() && request.auth.uid == uid && ownWalletBotUpdate(uid);
+      allow update: if signedIn() && request.auth.uid != uid && referralCredit(uid);
       allow update: if isAdmin();
       match /botMining/{botId} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-        allow write: if false;
+        allow create: if isAdmin() || (signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['botId','botName','durationDays','targetReward','earnedReward','status','startedAt','purchaseId'])
+          && request.resource.data.botId == botId && botPrice(botId) > 0
+          && request.resource.data.durationDays == 30 && request.resource.data.targetReward == botTarget(botId)
+          && request.resource.data.earnedReward == 0 && request.resource.data.status == 'running'
+          && request.resource.data.startedAt == request.time
+          && request.resource.data.purchaseId == uid + '_' + botId
+          && freshBotOrder(request.resource.data.purchaseId)
+          && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.purchaseId)).data.paymentMethod == 'wallet'
+          && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.purchaseId)).data.status == 'approved'
+          && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.purchaseId)).data.createdAt == request.time
+          && userAfter(uid).lastBotPurchaseId == request.resource.data.purchaseId);
+        allow update, delete: if false;
       }
     }
 
@@ -192,7 +287,9 @@ service cloud.firestore {
         && request.resource.data.status == 'pending'
         && request.resource.data.createdAt == request.time
         && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.uid == request.auth.uid
-        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.depositId == depositId;
+        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.depositId == depositId
+        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/usedDepositTransactions/$(request.resource.data.trxId)).data.get('source', 'deposit') == 'deposit';
       allow update: if isAdmin()
         && resource.data.status == 'pending'
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt', 'rejectionReason'])
@@ -207,52 +304,38 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Reserve each bKash Transaction ID atomically with its deposit request.
-    // Marker documents cannot be edited or deleted, preventing re-use of a new TRX ID.
+    // One immutable TRX reservation shared by wallet deposits and direct bot payments.
     match /usedDepositTransactions/{trxId} {
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['uid', 'depositId', 'trxId', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['uid','depositId','trxId','createdAt','source'])
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.depositId is string
-        && request.resource.data.trxId == trxId
-        && trxId.matches('^[A-Za-z0-9]{5,100}$')
-        && request.resource.data.createdAt == request.time
-        && getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.uid == request.auth.uid
-        && getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.trxId == trxId;
+        && request.resource.data.depositId is string && request.resource.data.trxId == trxId
+        && trxId.matches('^[A-Z0-9]{5,100}$') && request.resource.data.createdAt == request.time
+        && (request.resource.data.get('source', 'deposit') == 'deposit'
+          ? getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.uid == request.auth.uid
+            && getAfter(/databases/$(database)/documents/walletDeposits/$(request.resource.data.depositId)).data.trxId == trxId
+          : request.resource.data.source == 'bot'
+            && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.depositId)).data.uid == request.auth.uid
+            && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.depositId)).data.trxId == trxId
+            && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.depositId)).data.createdAt == request.time
+            && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.depositId)).data.status == 'pending');
       allow update, delete: if false;
     }
 
-    // Bot purchases: requests remain pending until admin approves/rejects.
     match /botPurchaseRequests/{requestId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'botId', 'botName', 'amount', 'paymentMethod', 'senderNumber', 'trxId', 'status', 'createdAt'])
-        && request.resource.data.botId in ['pulse', 'quantum', 'neural', 'cyber', 'apex']
-        && request.resource.data.amount is int
-        && request.resource.data.amount == (
-          request.resource.data.botId == 'pulse' ? 50 :
-          request.resource.data.botId == 'quantum' ? 100 :
-          request.resource.data.botId == 'neural' ? 200 :
-          request.resource.data.botId == 'cyber' ? 300 : 500
-        )
-        && request.resource.data.paymentMethod in ['wallet', 'bKash', 'Nagad']
-        && (request.resource.data.paymentMethod == 'wallet'
-          ? request.resource.data.senderNumber == '' && request.resource.data.trxId == ''
-          : request.resource.data.senderNumber is string
-            && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
-            && request.resource.data.trxId is string
-            && request.resource.data.trxId.size() >= 5
-            && request.resource.data.trxId.size() <= 100)
-        && request.resource.data.status == 'pending'
-        && request.resource.data.createdAt == request.time;
-      allow update: if isAdmin()
-        && resource.data.status == 'pending'
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
-        && request.resource.data.status in ['approved', 'rejected']
-        && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
+      // Deterministic IDs allow a buyer to read an absent order before an atomic purchase.
+      allow read: if signedIn() && (isAdmin() || resource.data.uid == request.auth.uid
+        || requestId in [request.auth.uid + '_pulse',request.auth.uid + '_quantum',request.auth.uid + '_neural',request.auth.uid + '_cyber',request.auth.uid + '_apex']);
+      allow create: if signedIn() && validBotOrder(requestId, request.resource.data);
+      allow update: if (signedIn() && resource.data.uid == request.auth.uid && resource.data.status == 'rejected'
+        && request.resource.data.botId == resource.data.botId && validBotOrder(requestId, request.resource.data))
+        || (isAdmin() && resource.data.status == 'pending'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','reviewedBy','reviewedAt','rejectionReason'])
+          && request.resource.data.status in ['approved','rejected']
+          && request.resource.data.reviewedBy == request.auth.uid && request.resource.data.reviewedAt == request.time
+          && (request.resource.data.status == 'approved' || (request.resource.data.rejectionReason is string
+            && request.resource.data.rejectionReason.size() >= 3 && request.resource.data.rejectionReason.size() <= 300)));
       allow delete: if false;
     }
 

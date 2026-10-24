@@ -252,9 +252,9 @@ Prior project work also configured a Cloudflare Worker and D1 for Monetag postba
 - Required Worker environment/secret names reported: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`; keep secret values outside GitHub README and public files.
 - Do not assume this external Worker source is inside this repository; the exact Worker source/config must be backed up separately from Cloudflare if a complete infrastructure restore is required.
 
-## 11. Firebase Security Rules — exact source snapshot
+## 11. Firebase Security Rules — deployment source
 
-The following is copied from the current repository file `firestore.rules`. Treat `firestore.rules` itself as canonical if this embedded copy ever differs. Update both intentionally if documenting a future rules change.
+The complete current rules are in [`firebase.rules`](firebase.rules). Publish that entire file in Firebase Console → Firestore Database → Rules. GitHub Pages deployments do not publish Firestore rules. The historical snapshot below predates the current purchase workflow; do not deploy it.
 
 ```javascript
 rules_version = '2';
@@ -469,3 +469,18 @@ Before changing a file:
 ---
 
 **Prepared from the current repository snapshot and previously recorded project decisions.** Some details describe previously tested behavior or owner requirements; they are not a guarantee that every current UI element has been independently browser-tested. Keep this file updated as implementation evolves.
+
+
+
+## 2026-10-24 — Bot checkout and payment review
+
+- Bot Shop uses the five package IDs/prices/returns in section 6: pulse 50/80, quantum 100/160, neural 200/320, cyber 300/480, apex 500/800. Other than Pulse's requested 14.8 MH/s display, unverified hashrates are not invented.
+- “সক্রিয় করুন” opens a scoped checkout with actual Firestore wallet balance, package calculations, referral verification and Wallet/bKash payment choices. Existing shared header and navigation are retained.
+- Wallet purchases atomically deduct the exact price, append the bot ID, create its zero-earned 30-day mining record and credit a verified referrer 5%. They never credit the buyer with the target return upfront.
+- Direct bKash uses `appSettings/paymentSettings`, records the receiving number and reserves the TRX across both deposits and bot purchases. Requests stay pending until an admin verifies the actual payment and approves in Task-Reward-Hub-Admin → Bot Purchases. Approval unlocks the bot and credits a referrer once; it does not also credit the buyer wallet.
+- Admin → Deposits can approve/reject ordinary deposits. An approval credits the wallet once; a rejection requires a reason.
+- Order ID is `uid_botId`, matching the existing one-unlock-per-package array. Rejected orders can be resubmitted with a fresh unused TRX. Existing unlocked packages/mining records are never overwritten by checkout.
+- Referrer UID/Collector ID is retained after a purchase and cannot be switched by the buyer. Existing `purchaseReferrerUid`, `referredByUid` or `referrerUid` records are respected. This signup version does not record a referrer; when no referral link is stored, checkout lets the buyer enter and verify a real public Collector ID. Missing referral data is never replaced with demo data. Only the minimal public leaderboard record is used for lookup.
+- Dollar bonuses remain a USD display from the package reference. No BDT conversion or immediate dollar wallet credit is invented. Mining reward settlement still depends on the existing trusted mining worker; checkout does not mint mining returns in the browser.
+- **Required deployment:** publish the current [`firebase.rules`](firebase.rules) to Firebase project `reward-hub-bd`. Old rules intentionally reject instant wallet purchases. No live Firestore data is migrated or deleted.
+- Tests: `npm install` then `npm run test:purchases` (Node 20+, Java 17+). The suite uses an isolated `demo-trh-purchase` emulator project and covers 20 purchase/security cases; it never uses live account balances.
