@@ -1003,6 +1003,10 @@
   // Tap coins are a daily, non-cash counter used only to unlock rewarded ads.
   const TAP_DAILY_TARGET = 2000;
   let tapCoinWriteInProgress = false;
+  let tapPendingCount = 0;
+  let tapQueueRunning = false;
+  let tapPointerIds = new Set();
+  let tapFeedbackTimer = null;
 
   function bangladeshDateKey(date = new Date()) {
     return new Intl.DateTimeFormat("en-CA", {
@@ -1023,10 +1027,11 @@
 
   function renderTapDailyProgress(profile = currentReferralProfile) {
     const progress = getTapDailyProgress(profile);
-    setText("tap-coin-value", String(progress.count));
-    setText("tap-progress-label", progress.count.toLocaleString("en-US") + " / " + TAP_DAILY_TARGET.toLocaleString("en-US"));
+    const visibleCount = Math.min(TAP_DAILY_TARGET, progress.count + tapPendingCount);
+    setText("tap-coin-value", String(visibleCount));
+    setText("tap-progress-label", visibleCount.toLocaleString("en-US") + " / " + TAP_DAILY_TARGET.toLocaleString("en-US"));
     const fill = document.getElementById("tap-progress-fill");
-    if (fill) fill.style.width = (progress.count / TAP_DAILY_TARGET * 100) + "%";
+    if (fill) fill.style.width = (visibleCount / TAP_DAILY_TARGET * 100) + "%";
 
     const adButtons = [
       document.getElementById("tap-sponsored-card"),
@@ -1042,7 +1047,7 @@
     if (sponsoredCopy && !monetagLaunchInProgress) {
       sponsoredCopy.textContent = progress.unlocked
         ? "Daily goal complete · ads unlocked"
-        : "Locked · tap " + (TAP_DAILY_TARGET - progress.count).toLocaleString("en-US") + " more coins to unlock ads";
+        : "Locked · tap " + (TAP_DAILY_TARGET - visibleCount).toLocaleString("en-US") + " more coins to unlock ads";
     }
     const sponsoredTag = document.querySelector("#tap-sponsored-card .tap-sponsored-tag");
     if (sponsoredTag) sponsoredTag.textContent = progress.unlocked ? "UNLOCKED" : "LOCKED";
@@ -1052,63 +1057,101 @@
       : "Tap once to earn 1 coin. Complete 2,000 coins today to unlock ads. Coins have no cash value and reset daily.";
     const tapButton = document.getElementById("tap-main-button");
     if (tapButton) {
-      tapButton.disabled = progress.count >= TAP_DAILY_TARGET || tapCoinWriteInProgress;
+      tapButton.disabled = progress.count >= TAP_DAILY_TARGET;
       tapButton.setAttribute("aria-label", progress.count >= TAP_DAILY_TARGET ? "Daily tap goal complete" : "Tap to earn one coin");
       const small = tapButton.querySelector("small");
-      if (small) small.textContent = progress.count >= TAP_DAILY_TARGET ? "DAILY GOAL COMPLETE" : (tapCoinWriteInProgress ? "SAVING COIN…" : "TOUCH TO EARN +1 COIN");
+      if (small) small.textContent = progress.count >= TAP_DAILY_TARGET
+        ? "DAILY GOAL COMPLETE"
+        : (tapQueueRunning || tapPendingCount ? "SAVING " + tapPendingCount.toLocaleString("en-US") + " TAP(S)…" : "TOUCH TO EARN +1 COIN");
     }
   }
 
-  async function recordTapCoin() {
-    if (tapCoinWriteInProgress) return;
+  function showTapFeedback(button, event) {
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    const x = event && Number.isFinite(event.clientX) ? event.clientX - rect.left : rect.width / 2;
+    const y = event && Number.isFinite(event.clientY) ? event.clientY - rect.top : rect.height / 2;
+    button.style.setProperty("--tap-x", Math.max(0, Math.min(rect.width, x)) + "px");
+    button.style.setProperty("--tap-y", Math.max(0, Math.min(rect.height, y)) + "px");
+    button.classList.remove("is-tapped");
+    void button.offsetWidth;
+    button.classList.add("is-tapped");
+    if (tapFeedbackTimer) window.clearTimeout(tapFeedbackTimer);
+    tapFeedbackTimer = window.setTimeout(() => button.classList.remove("is-tapped"), 130);
+  }
+
+  function queueTapCoin() {
     const user = auth && auth.currentUser;
     if (!user || !db) {
       showToast("Please sign in before collecting tap coins.");
       return;
     }
-    const localProgress = getTapDailyProgress();
-    if (localProgress.count >= TAP_DAILY_TARGET) {
-      showToast("Today's 2,000 coins are complete. Ads are unlocked until the daily reset.");
+    const progress = getTapDailyProgress();
+    const remaining = Math.max(0, TAP_DAILY_TARGET - progress.count - tapPendingCount);
+    if (remaining <= 0) {
       renderTapDailyProgress();
       return;
     }
-
-    tapCoinWriteInProgress = true;
+    tapPendingCount += 1;
     renderTapDailyProgress();
-    const userRef = db.collection("users").doc(user.uid);
+    if (!tapQueueRunning) void flushTapCoinQueue(user.uid);
+  }
+
+  async function flushTapCoinQueue(uid) {
+    if (tapQueueRunning) return;
+    tapQueueRunning = true;
+    tapCoinWriteInProgress = true;
+    const userRef = db.collection("users").doc(uid);
+    let savedThisRun = 0;
     try {
-      const result = await db.runTransaction(async transaction => {
-        const snapshot = await transaction.get(userRef);
-        if (!snapshot.exists) throw new Error("Your Firebase profile could not be found.");
-        const profile = snapshot.data() || {};
-        const today = bangladeshDateKey();
-        const oldCount = profile.tapCoinsDate === today ? Number(profile.tapCoinsCount) || 0 : 0;
-        const count = Math.max(0, Math.min(TAP_DAILY_TARGET, Math.floor(oldCount)));
-        if (count >= TAP_DAILY_TARGET) {
-          return { count: TAP_DAILY_TARGET, unlocked: true, alreadyComplete: true, today };
+      while (tapPendingCount > 0) {
+        if (!auth || !auth.currentUser || auth.currentUser.uid !== uid) {
+          tapPendingCount = 0;
+          break;
         }
-        const nextCount = count + 1;
-        transaction.update(userRef, {
-          tapCoinsDate: today,
-          tapCoinsCount: nextCount,
-          tapAdsUnlockedDate: nextCount >= TAP_DAILY_TARGET ? today : null,
-          tapCoinsUpdatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+        const result = await db.runTransaction(async transaction => {
+          const snapshot = await transaction.get(userRef);
+          if (!snapshot.exists) throw new Error("Your Firebase profile could not be found.");
+          const profile = snapshot.data() || {};
+          const today = bangladeshDateKey();
+          const oldCount = profile.tapCoinsDate === today ? Number(profile.tapCoinsCount) || 0 : 0;
+          const count = Math.max(0, Math.min(TAP_DAILY_TARGET, Math.floor(oldCount)));
+          if (count >= TAP_DAILY_TARGET) return { count: TAP_DAILY_TARGET, alreadyComplete: true };
+          const nextCount = count + 1;
+          transaction.update(userRef, {
+            tapCoinsDate: today,
+            tapCoinsCount: nextCount,
+            tapAdsUnlockedDate: nextCount >= TAP_DAILY_TARGET ? today : null,
+            tapCoinsUpdatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+          });
+          return { count: nextCount, alreadyComplete: false };
         });
-        return { count: nextCount, unlocked: nextCount >= TAP_DAILY_TARGET, alreadyComplete: false, today };
-      });
-      if (result.alreadyComplete) {
-        showToast("Today's 2,000 coins are complete. Ads are unlocked!");
-      } else if (result.unlocked) {
+        if (tapPendingCount > 0) tapPendingCount -= 1;
+        if (result.alreadyComplete) {
+          tapPendingCount = 0;
+          break;
+        }
+        savedThisRun += 1;
+        if (currentReferralProfile && auth.currentUser && auth.currentUser.uid === uid) {
+          currentReferralProfile.tapCoinsDate = bangladeshDateKey();
+          currentReferralProfile.tapCoinsCount = result.count;
+          currentReferralProfile.tapAdsUnlockedDate = result.count >= TAP_DAILY_TARGET ? currentReferralProfile.tapCoinsDate : null;
+        }
+        renderTapDailyProgress();
+      }
+      if (savedThisRun > 0 && getTapDailyProgress().count >= TAP_DAILY_TARGET) {
         showToast("2,000 coins completed! Rewarded ads are now unlocked for today.");
-      } else {
-        showToast("+1 tap coin · " + result.count.toLocaleString("en-US") + " / 2,000");
       }
     } catch (error) {
       console.error("Tap coin save failed:", error);
-      showToast("Tap coin could not be saved. Please check your connection and Firebase rules.");
+      showToast("Some taps could not be saved. Please check your connection and tap again.");
     } finally {
+      tapQueueRunning = false;
       tapCoinWriteInProgress = false;
       renderTapDailyProgress();
+      if (tapPendingCount > 0 && auth && auth.currentUser && auth.currentUser.uid === uid) {
+        window.setTimeout(() => { if (!tapQueueRunning) void flushTapCoinQueue(uid); }, 300);
+      }
     }
   }
 
@@ -1187,12 +1230,26 @@
     }
   }
 
-  document.getElementById("tap-main-button")?.addEventListener("click", event => {
-    const button = event.currentTarget;
-    button.classList.add("is-tapped");
-    window.setTimeout(() => button.classList.remove("is-tapped"), 180);
-    recordTapCoin();
-  });
+  const tapMainButton = document.getElementById("tap-main-button");
+  if (tapMainButton) {
+    tapMainButton.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (tapPointerIds.has(event.pointerId)) return;
+      tapPointerIds.add(event.pointerId);
+      showTapFeedback(tapMainButton, event);
+      queueTapCoin();
+      if (event.pointerType !== "mouse") event.preventDefault();
+    }, { passive: false });
+    const releaseTapPointer = event => tapPointerIds.delete(event.pointerId);
+    tapMainButton.addEventListener("pointerup", releaseTapPointer);
+    tapMainButton.addEventListener("pointercancel", releaseTapPointer);
+    tapMainButton.addEventListener("lostpointercapture", releaseTapPointer);
+    tapMainButton.addEventListener("click", event => {
+      // Pointerdown handles mouse, pen and every individual touch; this only blocks
+      // synthetic click activation from double-counting the same physical tap.
+      event.preventDefault();
+    });
+  }
   document.getElementById("tap-sponsored-card")?.addEventListener("click", event => {
     launchRewardedAd(event.currentTarget);
   });
