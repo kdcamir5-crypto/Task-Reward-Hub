@@ -826,3 +826,44 @@ body.deposit-page-active .deposit-page:not([hidden]){display:block;width:100%;ma
 #panel-profile .profile-avatar-save{width:100%;padding:10px 12px;border:0;border-radius:11px;background:linear-gradient(100deg,#1267d9,#2398f5);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
 #panel-profile .profile-avatar-save:disabled{opacity:.6;cursor:wait}
 #user-avatar{display:grid;place-items:center;font-size:24px}
+
+
+/* Fast multi-touch Tap-to-Earn interaction: scoped only to the coin button. */
+#tap-main-button{
+  -webkit-appearance:none;
+  appearance:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  outline:none;
+  isolation:isolate;
+  transform:translateZ(0);
+  will-change:transform,filter;
+}
+#tap-main-button:focus,
+#tap-main-button:focus-visible{outline:none}
+#tap-main-button:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:var(--tap-x,50%);
+  top:var(--tap-y,50%);
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0,rgba(255,248,193,.5) 28%,rgba(255,226,119,0) 72%);
+  transform:translate(-50%,-50%) scale(.2);
+}
+#tap-main-button.is-tapped:after{animation:tapCoinPulse .24s ease-out}
+#tap-main-button>*{z-index:1;pointer-events:none}
+@keyframes tapCoinPulse{
+  0%{opacity:.9;transform:translate(-50%,-50%) scale(.2)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(11)}
+}
+@media (prefers-reduced-motion:reduce){
+  #tap-main-button,#tap-main-button:after{animation:none!important;transition:none!important}
+}
