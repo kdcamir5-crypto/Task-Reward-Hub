@@ -1,0 +1,31 @@
+name: Secure Auto Mining
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '3-59/5 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/auto-mining.yml
+      - scripts/auto-mining.js
+permissions:
+  contents: read
+concurrency:
+  group: secure-auto-mining
+  cancel-in-progress: false
+jobs:
+  mine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Install Firebase Admin SDK
+        run: npm install --prefix "$RUNNER_TEMP/mining-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
+      - name: Process secure mining rewards
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_PATH: ${{ runner.temp }}/mining-worker/node_modules
+        run: node scripts/auto-mining.js

@@ -142,57 +142,53 @@ Keep bot IDs exactly as listed; they are referenced by Firestore rules and the m
 
 ## 7. Automated mining (critical backend behavior)
 
-Workflow file: `.github/workflows/auto-mining.yml`  
-Worker file: `scripts/auto-mining.js`
+Workflow: [Secure Auto Mining](.github/workflows/auto-mining.yml). Worker: [`scripts/auto-mining.js`](scripts/auto-mining.js).
 
-- Workflow name: Secure Auto Mining.
-- Runs on a schedule every five minutes (cron `3-59/5 * * * *`) and supports manual `workflow_dispatch`.
-- Uses Ubuntu latest, Node.js 20, installs `firebase-admin`, then runs `node scripts/auto-mining.js`.
-- Requires GitHub Actions secret `FIREBASE_SERVICE_ACCOUNT` containing the Firebase service-account JSON. Never print or store its value in README.
-- Worker uses Firebase Admin SDK server-side and a Firestore transaction for each bot record.
-- For each user, it checks `unlockedBots`; supported IDs are pulse, quantum, neural, cyber, apex.
-- Creates a missing mining record for each eligible unlocked bot with 30-day duration, zero earned reward, target reward and running status.
-- Mining reward accrues linearly from `startedAt` toward the configured target over 30 days. Credits only the delta to the user's `balance`, rounds calculations to two decimal places (paisa), and marks completed when target/duration is reached.
-- Invalid start time marks the mining record error with `INVALID_START_TIME`.
-- Logs a diagnostic summary (counts only) and should not expose private user data or credentials.
-- Owner previously confirmed auto-mining triggers and balance credits work. Do not replace this worker with client-side reward calculations; preserve server-side transactional crediting and test idempotency.
+- The workflow runs on matching code pushes, manual Run workflow, and a five-minute schedule (`3-59/5 * * * *`). GitHub may delay scheduled runs; this is settlement in intervals, not a continuously running server.
+- Node.js 24 on Ubuntu 24.04 with checkout/setup-node v5 and Firebase Admin SDK 13.6.0. Uses the existing `FIREBASE_SERVICE_ACCOUNT` Actions secret for project `reward-hub-bd`; no credentials belong in source or logs.
+- Only existing supported `unlockedBots` IDs are eligible: pulse, quantum, neural, cyber, apex. Package targets are 80/160/320/480/800 BDT over 30 days, as specified in section 6.
+- A missing eligible record starts at the worker's current time with zero earned; missing history is never used to invent backpay. Existing valid records retain their original `startedAt`, duration and saved earnings.
+- For a running record, compute elapsed accrual in integer paisa, rounded to two decimal places and capped at its configured target. Subtract already credited `earnedReward`. Atomically increment the actual user `balance` by only the positive difference and update the mining record in one Firestore transaction.
+- Downtime is caught up from the preserved start time, up to the 30-day target. Repeated/concurrent runs cannot credit twice, and corrected clocks cannot reduce earnings. Completed/stopped/paused/pending/error records are not restarted or paid again.
+- A record reaching its target is marked completed. Invalid start times become `error` with `INVALID_START_TIME` without wallet credit. Mismatched targets/durations, malformed progress/balances and unsupported legacy data are skipped and counted for review; balances/progress are never reset to silence an error. Legacy record IDs are retained; duplicate records for the same package are skipped for review instead of starting or paying a second miner.
+- The existing UI listens to the committed profile and mining documents. BDT mining credits go into Main Balance; USD balances and other profile fields are preserved. No browser-generated income is credited.
+- Workflow output `MINING_SUMMARY` includes aggregate profile/bot counts, records created/credited/completed, credited paisa and invalid/error counts. It never logs account IDs, private records or credentials.
+- `npm run test:mining` runs 18 isolated Firestore emulator integration tests in project `demo-trh-mining`, including all packages, catch-up, retries, concurrent workers, completion, missing records and invalid data.
+- No new Firestore rules are needed for this worker: Firebase Admin SDK performs the trusted transaction server-side. Keep the currently deployed client rules restricted.
 
-Current workflow contents (reference copy):
+Current workflow:
 
 ```yaml
 name: Secure Auto Mining
-
 on:
-  schedule:
-    - cron: "3-59/5 * * * *"
   workflow_dispatch:
-
+  schedule:
+    - cron: '3-59/5 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/auto-mining.yml
+      - scripts/auto-mining.js
 permissions:
   contents: read
-
 concurrency:
   group: secure-auto-mining
   cancel-in-progress: false
-
 jobs:
   mine:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "20"
-
+          node-version: '24'
       - name: Install Firebase Admin SDK
-        run: npm install --no-save firebase-admin
-
+        run: npm install --prefix "$RUNNER_TEMP/mining-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
       - name: Process secure mining rewards
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_PATH: ${{ runner.temp }}/mining-worker/node_modules
         run: node scripts/auto-mining.js
 ```
 
