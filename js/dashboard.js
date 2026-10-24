@@ -275,7 +275,7 @@
   function renderWalletPage() {
     const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
     setText("wallet-main-balance", walletMoney(balance));
-    setText("wallet-usd-equivalent", "≈ $— USD · Conversion unavailable");
+    setText("wallet-usd-equivalent", walletProfileAvailable ? "$" + formatMoney(walletProfile.usdBalance === undefined ? 0 : walletProfile.usdBalance) + " USD Wallet" : "USD balance loading…");
     const saved = walletRecords;
     const badge = document.getElementById("wallet-count-badge");
     if (badge) badge.textContent = Math.min(saved.length, 5) + "/5 Used";
@@ -815,97 +815,107 @@
     showTab("home");
   }
 
-  const spinRewards = [
-    { label: "৳১০", color: "#ff625f" },
-    { label: "$0.20", color: "#ff9b37" },
-    { label: "৳৩০০", color: "#15b98b" },
-    { label: "৳0.50", color: "#3479ff" },
-    { label: "৳৫০", color: "#cf4bd9" },
-    { label: "$1", color: "#f3c72f" },
-    { label: "৳২০", color: "#20b9d1" },
-    { label: "$0.10", color: "#a05cf5" }
-  ];
-  const spinStorageKey = "trh_lucky_spin_v1";
-  let spinInProgress = false;
-  let spinRotation = 0;
+  const spinRewards = window.HubSpin.rewards;
+  let spinInProgress = false, spinRotation = 0, spinTickets = [], spinHistory = [];
+  let spinTicketsReady = false, spinLoadError = '', spinDay = null;
+  let spinTicketsUnsubscribe = null, spinHistoryUnsubscribe = null;
 
-  function readSpinState() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(spinStorageKey) || "{}");
-      const today = new Date().toLocaleDateString("en-CA");
-      return raw.date === today ? { date: today, used: Number(raw.used) || 0, history: Array.isArray(raw.history) ? raw.history : [] } : { date: today, used: 0, history: [] };
-    } catch (_) {
-      return { date: new Date().toLocaleDateString("en-CA"), used: 0, history: [] };
-    }
-  }
-
-  function saveSpinState(state) {
-    try { localStorage.setItem(spinStorageKey, JSON.stringify(state)); } catch (_) {}
+  function subscribeSpinRewards(user) {
+    if (spinTicketsUnsubscribe) spinTicketsUnsubscribe();
+    if (spinHistoryUnsubscribe) spinHistoryUnsubscribe();
+    spinDay = window.HubSpin.dayKey();
+    spinTicketsReady = false; spinLoadError = ''; spinTickets = []; spinHistory = [];
+    updateSpinCount();
+    const tickets = db.collection('users').doc(user.uid).collection('spinTickets');
+    spinTicketsUnsubscribe = tickets.where('day', '==', spinDay).onSnapshot(snapshot => {
+      spinTickets = snapshot.docs.map(doc => ({id:doc.id, ...doc.data()})).sort((a,b) => a.slot-b.slot);
+      spinTicketsReady = true; spinLoadError = ''; updateSpinCount();
+    }, error => {
+      spinTicketsReady = false;
+      spinLoadError = 'Spin লোড করা যায়নি। সংযোগ পরীক্ষা করুন অথবা support-এ যোগাযোগ করুন।';
+      console.error('Spin ticket listener failed:', error.code); updateSpinCount();
+    });
+    spinHistoryUnsubscribe = tickets.orderBy('claimedAt', 'desc').limit(8).onSnapshot(snapshot => {
+      spinHistory = snapshot.docs.map(doc => ({id:doc.id,...doc.data()})).filter(item => item.claimed === true);
+      renderSpinHistory();
+    }, error => {
+      console.error('Spin history listener failed:', error.code);
+      const list = document.getElementById('spin-history-list');
+      if (list) list.textContent = 'স্পিন হিস্ট্রি লোড করা যায়নি।';
+    });
   }
 
   function updateSpinCount() {
-    const state = readSpinState();
-    const remaining = Math.max(0, 2 - state.used);
-    const count = document.getElementById("spin-count");
-    const button = document.getElementById("spin-now-button");
-    if (count) count.textContent = String(remaining);
+    const remaining = spinTickets.filter(ticket => ticket.claimed === false).length;
+    const count = document.getElementById('spin-count'), button = document.getElementById('spin-now-button');
+    if (count) count.textContent = spinTicketsReady ? String(remaining) : '—';
     if (button) {
-      button.disabled = remaining <= 0 || spinInProgress;
-      button.innerHTML = remaining <= 0 ? "✓ TODAY'S SPINS USED" : '<span>▶</span> SPIN &amp; WIN NOW';
+      button.disabled = !spinTicketsReady || remaining === 0 || spinInProgress || !walletProfileAvailable;
+      button.innerHTML = spinInProgress ? 'স্পিন চলছে…' : !spinTicketsReady ? 'SPINS LOADING…' : remaining > 0 ? '<span>▶</span> SPIN &amp; WIN NOW' : spinTickets.length >= 2 ? "✓ TODAY'S SPINS USED" : 'SPINS PREPARING…';
+    }
+    if (!spinInProgress) {
+      const result = document.getElementById('spin-result-message');
+      if (result && spinLoadError) result.textContent = spinLoadError;
+      else if (result && spinTicketsReady && spinTickets.length === 0) result.textContent = 'আজকের ফ্রি Spin প্রস্তুত হচ্ছে। কিছুক্ষণ পর আবার দেখুন।';
+      else if (result && result.textContent.includes('প্রস্তুত হচ্ছে')) result.textContent = 'স্পিন শুরু করতে উপরের বাটনে চাপ দিন।';
     }
   }
 
   function updateSpinWalletDisplay() {
-    const bdt = document.getElementById("spin-bdt-balance");
-    const usd = document.getElementById("spin-usd-balance");
-    const current = document.getElementById("balance-value");
-    if (bdt && current) bdt.textContent = current.textContent.trim() === "—" ? "0.00" : current.textContent.trim();
-    if (usd) usd.textContent = "0.00";
+    setText('spin-bdt-balance', walletProfileAvailable ? formatMoney(walletProfile.balance) : '—');
+    setText('spin-usd-balance', walletProfileAvailable ? formatMoney(walletProfile.usdBalance === undefined ? 0 : walletProfile.usdBalance) : '—');
   }
 
   function renderSpinHistory() {
-    const list = document.getElementById("spin-history-list");
+    const list = document.getElementById('spin-history-list');
     if (!list) return;
-    const history = readSpinState().history;
-    if (!history.length) {
+    if (!spinHistory.length) {
       list.innerHTML = '<p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p>';
       return;
     }
-    list.innerHTML = history.slice(0, 8).map(item => '<article class="spin-history-row"><span class="spin-history-gem">✦</span><span><strong>' + escapeHtml(item.reward) + ' · Reward preview</strong><small>' + escapeHtml(item.time) + '</small></span><span class="spin-history-tag">PREVIEW</span></article>').join("");
+    list.innerHTML = spinHistory.map(item => {
+      const prize = spinRewards[item.rewardIndex];
+      const time = item.claimedAt && item.claimedAt.toDate ? item.claimedAt.toDate().toLocaleString('bn-BD', {timeZone:'Asia/Dhaka', dateStyle:'short', timeStyle:'short'}) : 'জমা হয়েছে';
+      return '<article class="spin-history-row"><span class="spin-history-gem">✦</span><span><strong>' + escapeHtml(prize ? prize.label : item.currency + ' ' + (item.amountMinor / 100).toFixed(2)) + ' · ' + (item.currency === 'USD' ? 'ডলার ওয়ালেটে জমা' : 'Main Balance-এ জমা') + '</strong><small>' + escapeHtml(time) + '</small></span><span class="spin-history-tag">CREDITED</span></article>';
+    }).join('');
   }
 
-  function runSpinWheel() {
-    if (spinInProgress) return;
-    const state = readSpinState();
-    if (state.used >= 2) { showToast("আজকের দুটি ফ্রি স্পিন শেষ। আগামীকাল আবার চেষ্টা করুন।"); updateSpinCount(); return; }
-    const disc = document.getElementById("spin-wheel-disc");
-    const button = document.getElementById("spin-now-button");
-    const result = document.getElementById("spin-result-message");
-    if (!disc || !button) return;
-    spinInProgress = true;
-    button.disabled = true;
-    if (result) result.textContent = "চাকা ঘুরছে… শুভকামনা!";
-    const selected = Math.floor(Math.random() * spinRewards.length);
-    const segmentAngle = 360 / spinRewards.length;
-    const target = 360 * 5 + (360 - (selected * segmentAngle + segmentAngle / 2));
-    spinRotation += target;
-    disc.style.transform = "rotate(" + spinRotation + "deg)";
-    const finish = () => {
-      const current = readSpinState();
-      current.used = Math.min(2, current.used + 1);
-      const now = new Date();
-      current.history.unshift({ reward: spinRewards[selected].label, time: now.toLocaleString([], { dateStyle: "short", timeStyle: "short" }) });
-      current.history = current.history.slice(0, 8);
-      saveSpinState(current);
-      spinInProgress = false;
-      if (result) result.textContent = "আপনার স্পিন ফলাফল: " + spinRewards[selected].label + " — এটি প্রিভিউ, আসল ব্যালেন্সে যোগ হয়নি।";
-      updateSpinCount();
-      renderSpinHistory();
-      updateSpinWalletDisplay();
-    };
-    disc.addEventListener("transitionend", finish, { once: true });
-    window.setTimeout(() => { if (spinInProgress) finish(); }, 5600);
+  async function runSpinWheel() {
+    if (spinInProgress || !walletUser || !db || !walletProfileAvailable) return;
+    if (spinDay !== window.HubSpin.dayKey()) { subscribeSpinRewards(walletUser); return; }
+    const ticket = spinTickets.find(item => item.claimed === false);
+    if (!ticket) { updateSpinCount(); return; }
+    const disc = document.getElementById('spin-wheel-disc'), result = document.getElementById('spin-result-message');
+    if (!disc) return;
+    spinInProgress = true; updateSpinCount();
+    if (result) result.textContent = 'আপনার স্পিন যাচাই হচ্ছে…';
+    try {
+      const outcome = await window.HubSpin.claim(db, window.firebase.firestore.FieldValue, walletUser, ticket.id);
+      const selected = outcome.rewardIndex, finalAngle = (360-selected*45)%360;
+      // Align the selected label with the pointer on every consecutive spin.
+      const delta = (finalAngle-(spinRotation%360)+360)%360;
+      spinRotation += 360*5+delta;
+      let finished = false;
+      const finish = () => {
+        if (finished) return; finished = true;
+        disc.removeEventListener('transitionend', onTransition);
+        spinInProgress = false;
+        if (result) result.textContent = (outcome.alreadyClaimed ? 'এই Spin-এর পুরস্কার আগেই জমা হয়েছে: ' : 'অভিনন্দন! ') + spinRewards[selected].label + (outcome.currency === 'USD' ? ' — ডলার ওয়ালেটে জমা হয়েছে।' : ' — Main Balance-এ জমা হয়েছে।');
+        updateSpinCount(); updateSpinWalletDisplay();
+      };
+      const onTransition = event => { if (event.target === disc && event.propertyName === 'transform') finish(); };
+      disc.addEventListener('transitionend', onTransition);
+      if (result) result.textContent = 'চাকা ঘুরছে… শুভকামনা!';
+      disc.style.transform = 'rotate('+spinRotation+'deg)';
+      window.setTimeout(finish, 5600);
+    } catch (error) {
+      spinInProgress = false; updateSpinCount();
+      if (result) result.textContent = error.code === 'permission-denied' ? 'Spin জমা করা যায়নি। Support-এ যোগাযোগ করুন; আবার চাপ দিয়ে চেষ্টা করলেও একই পুরস্কার দুবার জমা হবে না।' : error.message || 'সংযোগ বিচ্ছিন্ন হয়েছে। আবার চেষ্টা করুন।';
+    }
   }
+  window.setInterval(() => {
+    if (walletUser && db && spinDay !== window.HubSpin.dayKey() && !spinInProgress) subscribeSpinRewards(walletUser);
+  }, 60000);
 
   document.querySelectorAll("[data-referral-card]").forEach(card=>{
     card.addEventListener("click",event=>{event.preventDefault();openReferralPage();});
@@ -1697,7 +1707,7 @@
     walletProfile = profile || {};
     renderWalletPage();
     renderTapDailyProgress(profile);
-    setText("tap-usd-balance", "0.00");
+    setText("tap-usd-balance", formatMoney(profile.usdBalance === undefined ? 0 : profile.usdBalance));
     setText("tap-referrals-value", referrals === null ? "0" : String(referrals));
     setText("feed-user-name", String(displayName).toUpperCase());
     setText("feed-user-avatar", initials(displayName));
@@ -1777,6 +1787,7 @@
     window.HubBotCheckout.init(db, user);
     currentReferralUser=user;
     walletUser = user;
+    subscribeSpinRewards(user);
     if (profileUnsubscribe) profileUnsubscribe();
     if (miningUnsubscribe) miningUnsubscribe();
     if (leaderboardUnsubscribe) leaderboardUnsubscribe();
@@ -1829,6 +1840,8 @@
       renderProfile(user, currentReferralProfile);
       renderWalletPage();
       renderDepositBalance();
+      updateSpinWalletDisplay();
+      updateSpinCount();
       renderDepositSettings(depositSettings);
       renderReferralPage();
     }, error => {

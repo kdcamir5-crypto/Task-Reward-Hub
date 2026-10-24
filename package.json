@@ -2,11 +2,13 @@
   "name": "task-reward-hub",
   "private": true,
   "scripts": {
-    "test:purchases": "firebase emulators:exec --only firestore --project demo-trh-purchase \"node tests/purchases.cjs\""
+    "test:purchases": "firebase emulators:exec --only firestore --project demo-trh-purchase \"node tests/purchases.cjs\"",
+    "test:spin": "firebase emulators:exec --only firestore --project demo-trh-spin \"node tests/spin.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
     "firebase": "13.1.0",
-    "firebase-tools": "14.27.0"
+    "firebase-tools": "14.27.0",
+    "firebase-admin": "13.6.0"
   }
 }

@@ -87,6 +87,32 @@ service cloud.firestore {
         && userAfter(order.uid).balance == userBefore(order.uid).balance - order.amount;
     }
 
+    function spinMinor(index) {
+      return index == 0 ? 1000 : index == 1 ? 20 : index == 2 ? 30000 : index == 3 ? 50
+        : index == 4 ? 5000 : index == 5 ? 100 : index == 6 ? 2000 : index == 7 ? 10 : 0;
+    }
+    function spinCurrency(index) { return index in [1,5,7] ? 'USD' : 'BDT'; }
+    function spinClaim(uid, id) {
+      let before = get(/databases/$(database)/documents/users/$(uid)/spinTickets/$(id)).data;
+      let after = getAfter(/databases/$(database)/documents/users/$(uid)/spinTickets/$(id)).data;
+      let profile = userBefore(uid);
+      let updated = userAfter(uid);
+      return before.uid == uid && before.claimed == false && before.slot in [1,2]
+        && id == string(before.day) + '_' + string(before.slot)
+        && before.day == (request.time.toMillis() + 21600000) / 86400000
+        && before.rewardIndex is int && before.rewardIndex >= 0 && before.rewardIndex < 8
+        && before.amountMinor == spinMinor(before.rewardIndex) && before.currency == spinCurrency(before.rewardIndex)
+        && after.claimed == true && after.claimedAt == request.time
+        && after.diff(before).affectedKeys().hasOnly(['claimed','claimedAt'])
+        && updated.lastSpinTicketId == id && updated.updatedAt == request.time
+        && (before.currency == 'BDT'
+          ? updated.diff(profile).affectedKeys().hasOnly(['balance','lastSpinTicketId','updatedAt'])
+            && profile.balance is number && profile.balance >= 0 && updated.balance == profile.balance + before.amountMinor / 100.0
+          : updated.diff(profile).affectedKeys().hasOnly(['usdBalance','lastSpinTicketId','updatedAt'])
+            && profile.get('usdBalance', 0) is number && profile.get('usdBalance', 0) >= 0
+            && updated.usdBalance == profile.get('usdBalance', 0) + before.amountMinor / 100.0);
+    }
+
     // Public-to-signed-in payment configuration. The future Admin Panel should
     // edit appSettings/paymentSettings instead of hardcoding payment numbers.
     match /appSettings/{settingId} {
@@ -198,9 +224,26 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.botId in request.resource.data.unlockedBots
         && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == false
         && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.expiresAtMs > request.time.toMillis();
-      allow update: if signedIn() && request.auth.uid == uid && ownWalletBotUpdate(uid);
-      allow update: if signedIn() && request.auth.uid != uid && referralCredit(uid);
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasAny(['unlockedBots']) && ownWalletBotUpdate(uid);
+      allow update: if signedIn() && request.auth.uid != uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasAny(['referralEarnings']) && referralCredit(uid);
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.lastSpinTicketId is string && spinClaim(uid, request.resource.data.lastSpinTicketId);
       allow update: if isAdmin();
+      match /spinTickets/{ticketId} {
+        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+        // Only the trusted Admin SDK worker prepares the two daily outcomes.
+        allow create, delete: if false;
+        allow update: if signedIn() && request.auth.uid == uid
+          && resource.data.claimed == false && request.resource.data.claimed == true
+          && request.resource.data.claimedAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimed','claimedAt'])
+          && userAfter(uid).lastSpinTicketId == ticketId && userAfter(uid).updatedAt == request.time
+          && (resource.data.currency == 'BDT'
+            ? userAfter(uid).balance == userBefore(uid).balance + resource.data.amountMinor / 100.0
+            : userAfter(uid).usdBalance == userBefore(uid).get('usdBalance', 0) + resource.data.amountMinor / 100.0);
+      }
       match /botMining/{botId} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
         allow create: if isAdmin() || (signedIn() && request.auth.uid == uid

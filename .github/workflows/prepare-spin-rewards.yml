@@ -1,0 +1,32 @@
+name: Prepare secure spin rewards
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/prepare-spin-rewards.yml
+      - scripts/prepare-spin-rewards.cjs
+      - js/spin-core.js
+permissions:
+  contents: read
+concurrency:
+  group: prepare-secure-spin-rewards
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install trusted worker dependency
+        run: npm install --prefix "$RUNNER_TEMP/spin-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
+      - name: Prepare two daily spins per account
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_PATH: ${{ runner.temp }}/spin-worker/node_modules
+        run: node scripts/prepare-spin-rewards.cjs

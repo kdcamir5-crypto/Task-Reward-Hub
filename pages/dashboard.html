@@ -250,7 +250,7 @@
 
         <div class="tap-balance-grid">
           <article class="tap-balance-card tap-bdt-card" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances"><div><span>BDT BALANCE</span><i>৳</i></div><strong>৳<b id="tap-bdt-balance">0.00</b></strong><small>Available wallet balance</small><span class="tap-card-glow"></span></article>
-          <article class="tap-balance-card tap-usd-card"><div><span>USD EQUIV.</span><i>$</i></div><strong>$<b id="tap-usd-balance">0.00</b></strong><small>USD value not yet calculated</small><span class="tap-card-glow"></span></article>
+          <article class="tap-balance-card tap-usd-card"><div><span>USD BALANCE</span><i>$</i></div><strong>$<b id="tap-usd-balance">0.00</b></strong><small>আপনার বর্তমান USD ওয়ালেট</small><span class="tap-card-glow"></span></article>
         </div>
 
         <button type="button" class="tap-sponsored-card" id="tap-sponsored-card">
@@ -491,7 +491,7 @@
           <div class="spin-theme-switch" role="group" aria-label="Spin Wheel theme"><button type="button" data-spin-theme="cyber" class="is-active" aria-pressed="true">Dark</button><button type="button" data-spin-theme="oled" aria-pressed="false">OLED</button></div>
         </div>
         <section class="spin-wheel-card">
-          <div class="spin-card-heading"><div><span class="spin-wheel-icon">⚙</span><span><strong>স্ট্যান্ডার্ড ফ্রি স্পিন</strong><small>Daily Free Spin</small></span></div><span class="spin-count-badge">⚡ <b id="spin-count">2</b> Spins</span></div>
+          <div class="spin-card-heading"><div><span class="spin-wheel-icon">⚙</span><span><strong>স্ট্যান্ডার্ড ফ্রি স্পিন</strong><small>Daily Free Spin</small></span></div><span class="spin-count-badge">⚡ <b id="spin-count">—</b> Spins</span></div>
           <div class="spin-wheel-stage">
             <div class="spin-pointer" aria-hidden="true"></div>
             <div class="spin-wheel" id="spin-wheel-disc" role="img" aria-label="Eight-segment lucky spin wheel">
@@ -503,15 +503,15 @@
             </div>
           </div>
           <div class="spin-controls"><button type="button" id="spin-now-button" class="spin-now-button"><span>▶</span> SPIN &amp; WIN NOW</button><button type="button" id="spin-sound-button" class="spin-sound-button" aria-label="Toggle spin sound" aria-pressed="false">🔊</button></div>
-          <p class="spin-reward-note">🎁 প্রতিদিন বিনামূল্যে ২টি ফ্রি স্পিন দেওয়া হয় <span>•</span> Reward preview</p>
+          <p class="spin-reward-note">🎁 প্রতিদিন বিনামূল্যে ২টি ফ্রি স্পিন দেওয়া হয় <span>•</span> জিতলে সরাসরি ওয়ালেটে জমা</p>
           <p class="spin-result-message" id="spin-result-message" role="status" aria-live="polite">স্পিন শুরু করতে উপরের বাটনে চাপ দিন।</p>
         </section>
         <div class="spin-balance-grid">
-          <article class="spin-balance-card spin-balance-bdt" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances"><div><span class="spin-wallet-symbol">৳</span><span>টাকা ওয়ালেট</span></div><strong>৳ <b id="spin-bdt-balance">0.00</b></strong><small>আপনার বর্তমান BDT ব্যালেন্স</small></article>
-          <article class="spin-balance-card spin-balance-usd"><div><span class="spin-wallet-symbol">$</span><span>ডলার ব্যালেন্স</span></div><strong>$ <b id="spin-usd-balance">0.00</b></strong><small>USD wallet সংযুক্ত নয়</small></article>
+          <article class="spin-balance-card spin-balance-bdt" data-wallet-open role="button" tabindex="0" aria-label="Open Wallet and Balances"><div><span class="spin-wallet-symbol">৳</span><span>টাকা ওয়ালেট</span></div><strong>৳ <b id="spin-bdt-balance">—</b></strong><small>আপনার বর্তমান BDT ব্যালেন্স</small></article>
+          <article class="spin-balance-card spin-balance-usd"><div><span class="spin-wallet-symbol">$</span><span>ডলার ব্যালেন্স</span></div><strong>$ <b id="spin-usd-balance">—</b></strong><small>আপনার বর্তমান USD ব্যালেন্স</small></article>
         </div>
-        <section class="spin-history-card"><div class="spin-history-heading"><h2>⏳ সাম্প্রতিক স্পিন হিস্ট্রি</h2><span>LOCAL HISTORY</span></div><div id="spin-history-list" class="spin-history-list"><p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p></div></section>
-        <p class="spin-disclaimer">নোট: এই স্পিন UI-তে দেখানো পুরস্কার প্রিভিউ। এটি এখনো আসল ওয়ালেটে টাকা যোগ করে না।</p>
+        <section class="spin-history-card"><div class="spin-history-heading"><h2>⏳ সাম্প্রতিক স্পিন হিস্ট্রি</h2><span>REWARD HISTORY</span></div><div id="spin-history-list" class="spin-history-list"><p class="spin-history-empty">এখনো কোনো স্পিন খেলা হয়নি। উপরের বাটনে চাপ দিয়ে স্পিন শুরু করুন!</p></div></section>
+        <p class="spin-disclaimer">টাকা জিতলে Main Balance-এ এবং ডলার জিতলে USD Wallet-এ জমা হয়। দৈনিক ২টি ফ্রি Spin বাংলাদেশ সময় রাত ১২টায় রিসেট হয়।</p>
       </section>
 
     </main>
@@ -564,6 +564,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="../js/bot-purchase-core.js?v=20261024"></script>
   <script src="../js/bot-checkout.js?v=20261024"></script>
-  <script src="../js/dashboard.js?v=20261024"></script>
+  <script src="../js/spin-core.js?v=20261024-spin1"></script>
+  <script src="../js/dashboard.js?v=20261024-spin1"></script>
 </body>
 </html>
