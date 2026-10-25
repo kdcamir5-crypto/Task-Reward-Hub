@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#080f20">
   <title>Home · Task Reward Hub</title>
   <link rel="stylesheet" href="../css/dashboard.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="../css/notifications.css?v=20261025-notifs1">
   <link rel="stylesheet" href="../css/community.css?v=20261025-feed1">
   <link rel="stylesheet" href="../css/support-links.css?v=20261025-support1">
+  <style>#telegram-link-password-wrap[hidden]{display:none!important}</style>
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -446,6 +448,14 @@
           <button class="profile-save-button" id="profile-save-button" type="submit">💾 Save Profile Changes</button>
         </form>
 
+        <section class="profile-form-card" id="telegram-login-link-card" aria-labelledby="telegram-login-link-title">
+          <div class="profile-form-heading"><span>➤</span><div><h3 id="telegram-login-link-title">Telegram Login</h3><p>Telegram Mini App থেকে এই account-এর সাথে Telegram যুক্ত করুন।</p></div></div>
+          <p id="telegram-login-linked-id" class="profile-form-message"></p>
+          <label class="profile-field" id="telegram-link-password-wrap" hidden><span>বর্তমান password দিয়ে একবার নিশ্চিত করুন</span><span class="profile-input-wrap"><input id="telegram-link-password" type="password" autocomplete="current-password" placeholder="Current password"></span></label>
+          <button class="profile-save-button" id="telegram-login-link" type="button">➤ Telegram Login যুক্ত করুন</button>
+          <p id="telegram-login-link-message" class="profile-form-message" role="status" aria-live="polite"></p>
+        </section>
+
         <form id="profile-password-form" class="profile-form-card profile-password-card" novalidate>
           <div class="profile-form-heading"><span>🔑</span><div><h3>Change Password</h3><p>Use a strong password to protect your account</p></div></div>
           <label class="profile-field"><span>Current Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🛡</span><input id="profile-current-password" type="password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-current-password" aria-label="Show current password">◉</button></span></label>
@@ -558,7 +568,9 @@
   <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
   <script src="../js/community-core.js?v=20261025-feed1"></script>
   <script src="../js/community.js?v=20261025-feed1"></script>
-  <script src="../js/dashboard.js?v=20261025-support1"></script>
+  <script src="../js/telegram-auth-config.js?v=20261025-tg1"></script>
+  <script src="../js/telegram-login.js?v=20261025-tg1"></script>
+  <script src="../js/dashboard.js?v=20261025-tg1"></script>
 </body>
 </html>
 

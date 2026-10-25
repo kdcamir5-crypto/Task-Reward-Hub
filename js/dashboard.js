@@ -1437,6 +1437,15 @@
   }
   document.getElementById("sign-out")?.addEventListener("click", signOut);
   document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+  let linkingTelegramLogin = false;
+  document.getElementById('telegram-login-link')?.addEventListener('click', async () => {
+    if(linkingTelegramLogin)return;const button=document.getElementById('telegram-login-link'),password=document.getElementById('telegram-link-password'),message=document.getElementById('telegram-login-link-message');
+    if(!auth?.currentUser||!window.HubTelegramLogin){message.textContent='Account অথবা login module লোড হয়নি।';return;}
+    const uid=auth.currentUser.uid;linkingTelegramLogin=true;button.disabled=true;message.textContent='Telegram ও account যাচাই হচ্ছে…';
+    try{await window.HubTelegramLogin.link(auth,password.value);if(auth.currentUser?.uid!==uid)return;message.textContent='Telegram Login যুক্ত হয়েছে। আগের balance ও bot একই account-এ থাকবে।';document.getElementById('telegram-link-password-wrap').hidden=true;}
+    catch(error){if(auth.currentUser?.uid!==uid)return;if(error.code==='RECENT_LOGIN_REQUIRED'){document.getElementById('telegram-link-password-wrap').hidden=false;password.focus();}message.textContent=error.code?.startsWith('auth/')?'Password যাচাই হয়নি। সঠিক password দিয়ে আবার চেষ্টা করুন।':error.message;}
+    finally{password.value='';linkingTelegramLogin=false;button.disabled=false;}
+  });
   let pendingProfilePhotoData = null;
   function setProfileFormMessage(id, message, type) {
     const node = document.getElementById(id);
@@ -1832,6 +1841,7 @@
     setInputValueUnlessFocused("profile-phone-input", profile.phoneNumber || profile.phone_number || profile.phone || "");
     setInputValueUnlessFocused("profile-telegram-input", telegramName);
     setText("profile-referral-code", referralCodeFor(user, profile));
+    setText('telegram-login-linked-id', profile.telegramUserId ? 'যাচাইকৃত Telegram ID: ' + profile.telegramUserId : 'আগের account-এ Telegram Login যুক্ত করতে নিচের button ব্যবহার করুন।');
     setText("profile-role-badge", profile.role === "admin" ? "🛡 ADMIN" : "🛡 USER");
     setText("profile-referral-reward", "+ ৳0.00 / ref");
     const profilePhoto = document.getElementById("profile-photo");

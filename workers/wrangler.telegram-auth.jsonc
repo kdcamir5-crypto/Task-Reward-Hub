@@ -1,0 +1,6 @@
+{
+  "name": "task-reward-hub-telegram-auth",
+  "main": "telegram-auth.mjs",
+  "compatibility_date": "2026-10-25",
+  "workers_dev": true
+}

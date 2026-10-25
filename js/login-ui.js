@@ -385,8 +385,15 @@
     });
   }
   if (telegramLogin) {
-    telegramLogin.addEventListener("click", () => {
-      showMessage("Telegram sign-in is not connected to a trusted server-side verification flow yet. Please use email or username and password for now.");
+    telegramLogin.addEventListener('click', async () => {
+      if(submitting||signupBusy||!firebaseIsReady())return;
+      clearMessage();setSubmitting(true);telegramLogin.disabled=true;
+      try{
+        if(!window.HubTelegramLogin)throw new Error('Telegram Login module লোড হয়নি। App আবার খুলুন।');
+        await window.HubTelegramLogin.signIn(auth);
+        window.location.replace('pages/dashboard.html');
+      }catch(error){showMessage(error.message||'Telegram Login হয়নি। Email/username login ব্যবহার করুন।');}
+      finally{setSubmitting(false);telegramLogin.disabled=false;}
     });
   }
 })();
