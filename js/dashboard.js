@@ -1701,7 +1701,40 @@
   });
 
 
+
+  // Display levels follow the existing five package prices; no rewards are granted here.
+  function membershipView(profile, records) {
+    const packages = [
+      {id:"pulse",name:"AI Pulse Bot v2"}, {id:"quantum",name:"Quantum Core Pro"},
+      {id:"neural",name:"Neural Matrix Bot"}, {id:"cyber",name:"Cyber Forge Titan"},
+      {id:"apex",name:"Apex Sentinel AI"}
+    ];
+    const owned = new Set(Array.isArray(profile.unlockedBots) ? profile.unlockedBots : []);
+    records.forEach(record => { if (record.source === "referral" && record.awardId) owned.add(record.botId); });
+    const level = packages.reduce((n,p,i) => owned.has(p.id) ? i+1 : n, 0);
+    const active = packages.filter(p => records.some(r => r.botId === p.id && owned.has(p.id) && botStatus(r) === "running")).pop();
+    return { verified:profile.referralStatus === "verified", level,
+      name:level ? packages[level-1].name : "Starter Novice",
+      active:active ? active.name : "কোনো active bot নেই" };
+  }
+
+  function renderMembership() {
+    const view = membershipView(currentReferralProfile || {}, currentMiningRecords);
+    const verification = view.verified ? "✓ Verified Member" : "○ Verification Pending";
+    const level = "Level " + view.level + ": " + view.name;
+    document.querySelectorAll(".verified-badge, .tap-member-badge").forEach(el => {
+      el.textContent = verification;
+      el.title = "Referral signup, প্রথম bot purchase ও Telegram channel verification সফল হলে Verified।";
+      el.classList.toggle("is-verified", view.verified);
+    });
+    document.querySelectorAll(".level-badge, .is-level-badge, .rf-level b, .tap-member-copy small").forEach(el => { el.textContent = level; });
+    document.querySelectorAll(".tier-value").forEach(el => { el.textContent = view.active; });
+    document.querySelectorAll(".tap-member-level").forEach(el => { el.textContent = "LVL " + String(view.level).padStart(2,"0"); });
+    document.querySelectorAll(".is-active-badge").forEach(el => { el.textContent = view.verified ? "✓ VERIFIED" : "○ PENDING"; });
+  }
+
   function renderProfile(user, profile) {
+    renderMembership();
     const name = firstName(user, profile);
     const balance = safeNumber(profile.balance);
     const tasks = countTasks(profile.tasks);
@@ -1864,6 +1897,7 @@
     // its saved earnedReward total; it never credits the wallet from the browser.
     miningUnsubscribe = userRef.collection("botMining").onSnapshot(snapshot => {
       currentMiningRecords = snapshot.docs.map(doc => Object.assign({ id:doc.id }, doc.data() || {}));
+      renderMembership();
       const total = currentMiningRecords.reduce((sum, record) => {
         const earned = safeNumber(record.earnedReward);
         return sum + (earned === null ? 0 : earned);

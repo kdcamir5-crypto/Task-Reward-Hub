@@ -522,3 +522,9 @@ The worker uses Telegram getMe/getWebhookInfo/getUpdates/getChatMember. It refus
 Tests: `npm run test:referrals` covers 13 new emulator/security cases; the existing purchase suite additionally checks USD bonuses. Purchase/mining/spin suites remain regression checks. Both repositories mirror `bot-purchase-core.js` and must be updated together.
 
 Outstanding from the broader demo audit: full in-app Support chat/calls, Community Feed publishing, voucher/redeem creation and claiming, complete withdraw settlement, notifications/verification badges, Telegram authentication and profile-save rule mismatches still require their own implementation. This checkpoint does not claim those features are complete.
+
+### Live membership displays
+- Header, Home Active Tier, Tap, Referral and Profile badges now share the same live profile/mining data.
+- Verified Member requires the trusted worker's `referralStatus: verified` (all three referral verification conditions). Firebase login or owning a bot alone does not verify membership. Unverified accounts display Verification Pending.
+- Display Level 0 = Starter Novice with no owned package; Levels 1–5 follow the highest owned package: Pulse, Quantum, Neural, Cyber, Apex. Referral-awarded mining instances are included; level is a display only and does not change rewards. Completed owned bots still count toward level.
+- Active Tier uses the highest owned package with a running mining record; otherwise it shows no active bot. Bot ownership without a running record does not claim active mining.
