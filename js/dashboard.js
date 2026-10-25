@@ -1355,7 +1355,9 @@
   function openSupportPage() {
     closeNotificationsView();
     syncProfileNavigation("home");
-    document.body.classList.remove("deposit-page-active");
+    document.body.classList.remove("deposit-page-active", "wallet-page-active");
+    const walletPage = document.getElementById("wallet-page");
+    if (walletPage) walletPage.hidden = true;
     const depositPage = document.getElementById("deposit-page");
     if (depositPage) depositPage.hidden = true;
     if (depositSettingsUnsubscribe) depositSettingsUnsubscribe();
@@ -1379,8 +1381,6 @@
     document.body.classList.add("support-page-active");
     document.title = "Admin Support · Task Reward Hub";
     if (supportToggle) supportToggle.setAttribute("aria-expanded", "true");
-    const busy = document.getElementById("support-busy-toast");
-    if (busy) busy.hidden = true;
     window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }
   function closeSupportPage() {
@@ -1397,30 +1397,6 @@
   document.getElementById("home-support-shortcut")?.addEventListener("click", openSupportPage);
   document.getElementById("support-back")?.addEventListener("click", closeSupportPage);
   document.getElementById("support-close")?.addEventListener("click", closeSupportPage);
-  document.querySelectorAll("[data-support-theme]").forEach(button => {
-    button.addEventListener("click", () => {
-      const page = document.getElementById("support-page");
-      if (!page) return;
-      const theme = button.dataset.supportTheme === "oled" ? "oled" : "cyber";
-      page.dataset.theme = theme;
-      document.querySelectorAll("[data-support-theme]").forEach(option => {
-        const active = option.dataset.supportTheme === theme;
-        option.classList.toggle("is-active", active);
-        option.setAttribute("aria-pressed", String(active));
-      });
-    });
-  });
-  document.getElementById("support-call-button")?.addEventListener("click", () => {
-    const banner = document.getElementById("support-busy-toast");
-    if (banner) {
-      banner.hidden = false;
-      banner.classList.remove("is-visible");
-      requestAnimationFrame(() => banner.classList.add("is-visible"));
-    }
-  });
-  document.querySelectorAll("[data-support-demo]").forEach(button => {
-    button.addEventListener("click", () => showToast("Demo only — মেসেজ, ফাইল বা ভয়েস পাঠানো হবে না। যোগাযোগের জন্য WhatsApp বা Telegram ব্যবহার করুন।"));
-  });
   let claimingRewardCode = false;
   document.getElementById('home-claim-form')?.addEventListener('submit', async event => {
     event.preventDefault();if(claimingRewardCode)return;

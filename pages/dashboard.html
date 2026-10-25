@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../css/activity.css?v=20261025-activity1">
   <link rel="stylesheet" href="../css/notifications.css?v=20261025-notifs1">
   <link rel="stylesheet" href="../css/community.css?v=20261025-feed1">
+  <link rel="stylesheet" href="../css/support-links.css?v=20261025-support1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -79,7 +80,7 @@
             <button class="reference-service" type="button" data-code-claim-open><span>🎫</span><strong>Claim Code</strong><small>Get Bonus</small></button>
             <button class="reference-service" type="button" data-wallet-open><span>💳</span><strong>My Wallet</strong><small>Balance & Coins</small></button>
             <button class="reference-service" type="button" data-money-history-open><span>💵</span><strong>Payouts</strong><small>Payment Proof</small></button>
-            <button class="reference-service" type="button" id="home-support-shortcut"><span>🎧</span><strong>Support</strong><small>24/7 Help</small></button>
+            <button class="reference-service" type="button" id="home-support-shortcut"><span>🎧</span><strong>Support</strong><small>যোগাযোগ করুন</small></button>
             <button class="reference-service" type="button" data-notifications-open><span>🔔</span><strong>Alerts</strong><small>Notifications</small></button>
           </div>
         </section>
@@ -205,44 +206,16 @@
       <section class="rf-members"><h2>👥 Referred Member Profiles</h2><p>আপনার রেফারেল থেকে আসা সদস্যদের অবস্থা এখানে দেখুন।</p><label class="rf-search">⌕ <input id="referral-search" type="search" placeholder="Search by name, ID or code..."></label><div class="rf-filters"><button class="is-active" data-referral-filter="all" type="button">All (<span id="referral-all-count">0</span>)</button><button data-referral-filter="verified" type="button">Verified (<span id="referral-verified-count">0</span>)</button><button data-referral-filter="quarantine" type="button">Pending (<span id="referral-quarantine-count">0</span>)</button></div><div class="rf-empty" id="referral-empty-state"><div>♧</div><b id="referral-empty-title">কোনো রেফারেল পাওয়া যায়নি</b><p id="referral-empty-copy">আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।</p><button id="referral-empty-copy-link" type="button">🔗 ইনভাইট লিংক কপি করুন</button></div><div id="referral-member-list" hidden></div><small class="rf-note">Referral signup + প্রথম বট ক্রয় + @freelancing_incom-এ join—তিনটি পূরণ হলে Verified হবে।</small></section>
       <div class="rf-themes"><span>Display theme</span><button class="is-active" data-referral-theme="cyber" type="button">Cyber Dark</button><button data-referral-theme="oled" type="button">Pure OLED</button></div>
       </section>
-      <section id="support-page" class="support-page" data-theme="cyber" aria-labelledby="support-page-title" hidden>
-        <div class="sp-topline">
-          <button id="support-back" class="sp-back" type="button" aria-label="Back">←</button>
-          <div class="sp-kicker">CUSTOMER CARE DESK</div>
-          <div class="sp-theme-switch" role="group" aria-label="Support display theme">
-            <button type="button" data-support-theme="cyber" class="is-active" aria-pressed="true">Cyber Dark</button>
-            <button type="button" data-support-theme="oled" aria-pressed="false">Pure OLED</button>
-          </div>
+      <section id="support-page" class="support-page support-links-page" data-theme="cyber" aria-labelledby="support-page-title" hidden>
+        <div class="sc-top"><button id="support-back" class="sc-back" type="button" aria-label="Back">←</button><span>CUSTOMER SUPPORT</span><button id="support-close" class="sc-close" type="button" aria-label="Close support page">×</button></div>
+        <div class="sc-hero"><span class="sc-headset" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="12" width="4" height="7" rx="2"/><rect x="17" y="12" width="4" height="7" rx="2"/><path d="M19 19a3 3 0 0 1-3 3h-3"/></svg></span><p>TASK REWARD HUB</p><h1 id="support-page-title">আপনার পাশে সাপোর্ট টিম</h1><span>ব্যালেন্স, বট, ডিপোজিট বা উইথড্র সংক্রান্ত সাহায্যের জন্য সরাসরি যোগাযোগ করুন।</span></div>
+        <div class="sc-contacts" aria-label="Support contact options">
+          <a class="sc-contact sc-whatsapp" href="https://wa.me/qr/JW6QP24HJU6MO1" target="_blank" rel="noopener noreferrer"><span class="sc-contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5a8.5 8.5 0 0 1-12.7 7.4L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path d="m8.5 7.5-1 1.2c.2 3.3 2.4 5.5 5.7 5.8l1.3-1-2-1.4-.8.6a6 6 0 0 1-2.6-2.6l.7-.8Z"/></svg></span><span class="sc-contact-copy"><small>সরাসরি মেসেজ করুন</small><strong>WhatsApp</strong><span>WhatsApp-এ সাপোর্টের সাথে কথা বলুন</span></span><span class="sc-arrow" aria-hidden="true">↗</span></a>
+          <a class="sc-contact sc-telegram" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer"><span class="sc-contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21 3-4 18-6-6-4 3 1-6-5-2Z"/><path d="m8 12 9-6-6 9"/></svg></span><span class="sc-contact-copy"><small>সরাসরি মেসেজ করুন</small><strong>Telegram</strong><span>@Kdcariyan1 · Telegram সাপোর্ট</span></span><span class="sc-arrow" aria-hidden="true">↗</span></a>
         </div>
-        <section class="sp-live-card" aria-label="Admin support team">
-          <div class="sp-agent-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="12" width="4" height="6" rx="2"/><rect x="17" y="12" width="4" height="6" rx="2"/><path d="M19 18a4 4 0 0 1-4 3h-2"/></svg><i></i></div>
-          <div class="sp-agent-copy"><h1 id="support-page-title">অ্যাডমিন সাপোর্ট টিম <span class="sp-verified" aria-label="Verified">✓</span></h1><p><i></i> অনলাইন • 24/7 লাইভ সহায়তা</p></div>
-          <a class="sp-phone-action" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer" aria-label="Contact support on Telegram">☎</a>
-          <button id="support-close" class="sp-close" type="button" aria-label="Close support page">×</button>
-        </section>
-        <div class="sp-contact-grid" aria-label="Contact shortcuts">
-          <a class="sp-contact sp-whatsapp" href="https://wa.me/qr/JW6QP24HJU6MO1" target="_blank" rel="noopener noreferrer"><span>●</span> WhatsApp <b>↗</b></a>
-          <a class="sp-contact sp-telegram" href="https://t.me/Kdcariyan1" target="_blank" rel="noopener noreferrer"><span>➤</span> Telegram <b>↗</b></a>
-          <button class="sp-contact sp-call" id="support-call-button" type="button"><span>☎</span> Call Helpline</button>
-        </div>
-        <div class="sp-busy-toast" id="support-busy-toast" role="status" aria-live="polite" hidden>🚨 Status: Busy now, please message via Telegram/WhatsApp</div>
-        <section class="sp-welcome-card">
-          <span class="sp-welcome-icon" aria-hidden="true">🎧</span>
-          <p>স্বাগতম! ইনকাম কালেকশন প্রো সাপোর্ট ডেস্কে। আপনার যেকোনো প্রশ্ন, উইথড্রল সমস্যা বা সহায়তার জন্য মেসেজ পাঠান। ছবি, ভিডিও অথবা ফাইল সংযুক্ত করতে নিচের ক্লিপ বাটনে চাপুন।</p>
-        </section>
-        <section class="sp-chat-canvas" aria-label="Demo chat preview">
-          <div class="sp-demo-label"><span></span> CHAT PREVIEW · DEMO ONLY</div>
-          <div class="sp-demo-message"><span class="sp-demo-avatar">🎧</span><div><b>অ্যাডমিন সাপোর্ট টিম</b><p>আপনার সুবিধার জন্য এই চ্যাট ইন্টারফেসের প্রিভিউ দেখানো হচ্ছে। যোগাযোগ করতে WhatsApp বা Telegram ব্যবহার করুন।</p><small>Demo message · Not sent</small></div></div>
-          <div class="sp-demo-hint">এটি একটি ডেমো ইন্টারফেস। এখানে লেখা বা সংযুক্ত কিছুই পাঠানো হবে না।</div>
-        </section>
-        <div class="sp-composer" aria-label="Demo message composer">
-          <button class="sp-tool-button sp-clip" type="button" data-support-demo aria-label="Attachment demo">📎</button>
-          <button class="sp-tool-button sp-mic" type="button" data-support-demo aria-label="Microphone demo">🎙</button>
-          <input id="support-demo-input" type="text" placeholder="একটি মেসেজ লিখুন..." aria-label="Demo message input" autocomplete="off">
-          <button class="sp-send" type="button" data-support-demo aria-label="Demo send button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
-        </div>
-        <p class="sp-demo-footnote">Demo UI only · Messages, files and voice notes are not sent</p>
+        <div class="sc-note"><span aria-hidden="true">✦</span><p>একটি মাধ্যম বেছে নিন। মেসেজে আপনার Collector ID ও সমস্যার বিবরণ দিলে সহায়তা করতে সুবিধা হবে।</p></div>
       </section>
+
       <section class="tap-earning-page" id="tap-earning-page" data-theme="cyber" aria-labelledby="tap-page-title" hidden>
         <div class="tap-page-topline">
           <button type="button" class="tap-back-button" id="tap-earning-back" aria-label="Back to Home">←</button>
@@ -585,7 +558,7 @@
   <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
   <script src="../js/community-core.js?v=20261025-feed1"></script>
   <script src="../js/community.js?v=20261025-feed1"></script>
-  <script src="../js/dashboard.js?v=20261025-feed1"></script>
+  <script src="../js/dashboard.js?v=20261025-support1"></script>
 </body>
 </html>
 

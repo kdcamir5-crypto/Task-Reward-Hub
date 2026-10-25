@@ -1,0 +1,28 @@
+/* Support contact content only; shared header and navigation remain unchanged. */
+body.support-page-active .support-links-page:not([hidden]){gap:0;min-height:0;margin-bottom:calc(100px + env(safe-area-inset-bottom,0px));padding:16px 13px 20px;background:radial-gradient(ellipse at 50% 0,#1e5da744,transparent 54%),linear-gradient(160deg,#13243b,#0a1425);border:1px solid #548bce3d;border-radius:21px;box-sizing:border-box;overflow:hidden}
+.support-links-page .sc-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.support-links-page .sc-top>span{font-size:9px;font-weight:800;letter-spacing:1.8px;color:#8fafd4}
+.support-links-page .sc-back,.support-links-page .sc-close{display:grid;place-items:center;width:32px;height:32px;border:1px solid #ffffff22;border-radius:10px;background:#ffffff08;color:#ddecff;cursor:pointer;font-size:20px}
+.support-links-page .sc-hero{display:flex;align-items:center;flex-direction:column;text-align:center;padding:25px 10px 26px}
+.support-links-page .sc-headset{display:grid;place-items:center;width:66px;height:66px;border-radius:22px;border:1px solid #77b5ff4d;background:linear-gradient(145deg,#245999,#142944);box-shadow:0 9px 28px #07142466,inset 0 1px #b8d9ff25;color:#b6dbff}
+.support-links-page .sc-headset svg{width:33px;height:33px}
+.support-links-page .sc-hero>p{margin:17px 0 7px;font-size:9px;letter-spacing:2px;font-weight:800;color:#8cbdf2}
+.support-links-page .sc-hero h1{font-size:21px;line-height:1.5;color:#f1f7ff;margin:0 0 9px}
+.support-links-page .sc-hero>span:last-child{max-width:320px;font-size:11px;line-height:1.9;color:#a2b6d0}
+.support-links-page .sc-contacts{display:grid;gap:12px}
+.support-links-page .sc-contact{display:flex;align-items:center;gap:12px;padding:17px 13px;border:1px solid #ffffff20;border-radius:17px;text-decoration:none;transition:background .15s,border-color .15s}
+.support-links-page .sc-whatsapp{background:linear-gradient(110deg,#163b35,#142b2d);border-color:#49cf9e45;color:#73e9b9}
+.support-links-page .sc-telegram{background:linear-gradient(110deg,#173754,#16263e);border-color:#4ca9ed49;color:#87d2ff}
+.support-links-page .sc-contact:hover{border-color:currentColor}
+.support-links-page .sc-contact-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border:1px solid #ffffff20;border-radius:14px;background:#ffffff08}
+.support-links-page .sc-contact-icon svg{width:26px;height:26px}
+.support-links-page .sc-contact-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px;overflow-wrap:anywhere}
+.support-links-page .sc-contact-copy small{font-size:9px;color:#b0c6cb}
+.support-links-page .sc-contact-copy strong{font-size:18px;font-weight:800;letter-spacing:.1px;color:#f1fbff}
+.support-links-page .sc-contact-copy>span{font-size:10px;line-height:1.6;color:#a3b8ca}
+.support-links-page .sc-arrow{flex:0 0 20px;font-size:22px}
+.support-links-page .sc-note{display:flex;gap:9px;align-items:flex-start;margin-top:18px;padding:12px 11px;border:1px solid #9fc4ff19;border-radius:13px;background:#ffffff04;color:#87a8cf}
+.support-links-page .sc-note>span{margin-top:2px;color:#a6c9ff}
+.support-links-page .sc-note p{margin:0;font-size:10px;line-height:1.9}
+@media(max-width:350px){body.support-page-active .support-links-page:not([hidden]){padding:13px 10px 16px}.support-links-page .sc-hero{padding:20px 5px}.support-links-page .sc-hero h1{font-size:18px}.support-links-page .sc-contact{gap:9px;padding:15px 10px}.support-links-page .sc-contact-copy strong{font-size:16px}.support-links-page .sc-contact-icon{flex-basis:38px;width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){.support-links-page .sc-contact{transition:none}}
