@@ -204,6 +204,7 @@
   }
 
   function openBotShop() {
+    closeNotificationsView();
     const fleet = document.getElementById("panel-bots");
     const shop = document.getElementById("bot-shop-page");
     if (!fleet || !shop) {
@@ -226,6 +227,7 @@
   }
 
   function showTab(tabName) {
+    closeNotificationsView();
     document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active", "deposit-page-active");
     const supportPage = document.getElementById("support-page");
     if (supportPage) supportPage.hidden = true;
@@ -303,6 +305,7 @@
     }).join("");
   }
   function openWalletPage() {
+    closeNotificationsView();
     syncProfileNavigation("home");
     document.body.classList.remove("deposit-page-active");
     const depositPage = document.getElementById("deposit-page");
@@ -373,6 +376,7 @@
     setText("deposit-current-balance", walletProfileAvailable ? formatMoney(walletProfile && walletProfile.balance) : "—");
   }
   function openDepositPage() {
+    closeNotificationsView();
     if (!walletUser || !db) {
       showToast("Please sign in before submitting a deposit request.");
       return;
@@ -646,6 +650,9 @@
   let moneyHistoryRows = [];
   let ledgerRows = [];
   let activityController = null;
+  let notificationsController = null;
+  let notificationsState = {events:[],unread:0,ready:false,loading:true,readError:false,sourceErrors:[]};
+  let notificationFilter = "all";
   let activityState = {rows:[],errors:[],loading:true,fromCache:false};
   function historyStatusKey(status) {
     const s=String(status||"").toLowerCase();
@@ -727,12 +734,54 @@
     if(activityController)activityController.stop();
     ledgerRows=[];activityState={rows:[],errors:[],loading:true,fromCache:false};renderRecentActivity();renderFullLedger();
     if(!window.HubActivity||!user||!db){activityState.loading=false;activityState.errors=['activity'];renderRecentActivity();renderFullLedger();return;}
-    activityController=window.HubActivity.create(db,user.uid,state=>{activityState=state;ledgerRows=state.rows;renderRecentActivity();renderFullLedger();});
+    activityController=window.HubActivity.create(db,user.uid,state=>{activityState=state;ledgerRows=state.rows;notificationsController?.setActivity(state);renderRecentActivity();renderFullLedger();});
   }
   function loadFullLedger(){
     if(!activityController&&walletUser)startAccountActivity(walletUser);
     renderFullLedger();
   }
+  function closeNotificationsView() {
+    const page=document.getElementById('notifications-page');if(page)page.hidden=true;
+    document.body.classList.remove('notifications-page-active');
+  }
+  function openNotificationsPage() {
+    showTab('home');
+    const page=document.getElementById('notifications-page');if(!page)return;
+    document.querySelectorAll('[data-panel]').forEach(el=>{el.hidden=true;el.classList.remove('is-active');});
+    const home=document.querySelector('.home-reference-layout');if(home)home.hidden=true;
+    const tap=document.getElementById('tap-earning-page');if(tap)tap.hidden=true;
+    page.hidden=false;document.body.classList.add('notifications-page-active');document.title='Notifications · Task Reward Hub';
+    renderNotifications();
+  }
+  function renderNotifications() {
+    const state=notificationsState,badge=document.getElementById('notification-unread-count'),button=document.querySelector('.notification-button');
+    const uncertain=state.readError||state.sourceErrors.length>0;
+    if(badge){badge.hidden=!uncertain&&(!state.ready||state.loading||state.unread===0);badge.textContent=uncertain?'!':state.unread>99?'99+':String(state.unread);}
+    if(button)button.setAttribute('aria-label',uncertain?'Notifications: কিছু তথ্য লোড হয়নি':!state.ready||state.loading?'Notifications লোড হচ্ছে':'Notifications: '+state.unread+' unread');
+    const list=document.getElementById('notifications-list');if(!list)return;
+    const rows=state.events.filter(row=>notificationFilter!=='unread'||!row.read);
+    list.innerHTML=rows.length?rows.map(row=>'<button type="button" class="nf-item '+(row.read?'is-read':'is-unread')+'" data-notification-read="'+escapeHtml(row.id)+'" '+(row.read||state.saving||!state.ready?'disabled':'')+'><span class="nf-icon" aria-hidden="true">'+escapeHtml(row.icon||'🔔')+'</span><span class="nf-copy"><strong>'+escapeHtml(row.title)+'</strong><span>'+escapeHtml(row.detail)+'</span><small>'+escapeHtml(activityDate(row))+'</small><small>'+escapeHtml(row.read?'পড়া হয়েছে':'Unread • পড়া হয়েছে চিহ্নিত করতে চাপুন')+'</small></span><span class="nf-amount">'+escapeHtml(window.HubActivity.amountText(row))+'</span></button>').join(''):'<p class="nf-empty">'+(!state.ready||state.loading?'Notification লোড হচ্ছে…':uncertain?'কিছু তথ্য লোড করা যায়নি। Refresh করুন।':notificationFilter==='unread'?'কোনো unread notification নেই।':'এখনো কোনো সংরক্ষিত account update নেই।')+'</p>';
+    const all=document.getElementById('notifications-mark-all');if(all)all.disabled=!state.ready||state.loading||uncertain||state.saving||state.unread===0;
+    setText('notifications-source-status',state.readError?'Read status পাওয়া যায়নি। নতুন Firestore rules publish করে Refresh করুন।':state.sourceErrors.length?'কিছু account update লোড হয়নি। সংখ্যা এখন সম্পূর্ণ নয়; Refresh করুন।':!state.ready||state.loading?'Notification ও read status লোড হচ্ছে…':state.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':state.unread+'টি unread • account updates সরাসরি আসবে');
+  }
+  function startNotifications(user) {
+    notificationsController?.stop();notificationsController=null;
+    notificationsState={events:[],unread:0,ready:false,loading:true,readError:false,sourceErrors:[]};renderNotifications();
+    if(!window.HubNotifications){notificationsState.readError=true;renderNotifications();return;}
+    notificationsController=window.HubNotifications.create(db,window.firebase.firestore.FieldValue,user.uid,state=>{notificationsState=state;renderNotifications();});
+  }
+  async function markNotifications(id) {
+    if(!notificationsController)return;
+    setText('notifications-action-status','সেভ হচ্ছে…');
+    try{if(id)await notificationsController.markRead(id);else await notificationsController.markAll();setText('notifications-action-status','পড়া হয়েছে—Firebase-এ সেভ হয়েছে।');}
+    catch(error){setText('notifications-action-status',error.code==='permission-denied'?'সেভ হয়নি। নতুন Firestore rules Publish করে আবার চেষ্টা করুন।':'সেভ হয়নি। Connection পরীক্ষা করে আবার চেষ্টা করুন।');}
+  }
+  document.querySelectorAll('[data-notifications-open]').forEach(button=>button.addEventListener('click',openNotificationsPage));
+  document.getElementById('notifications-back')?.addEventListener('click',()=>showTab('home'));
+  document.querySelectorAll('[data-notification-filter]').forEach(button=>button.addEventListener('click',()=>{notificationFilter=button.dataset.notificationFilter;document.querySelectorAll('[data-notification-filter]').forEach(el=>el.classList.toggle('is-active',el===button));renderNotifications();}));
+  document.getElementById('notifications-list')?.addEventListener('click',event=>{const button=event.target.closest('[data-notification-read]');if(button&&!button.disabled)markNotifications(button.dataset.notificationRead);});
+  document.getElementById('notifications-mark-all')?.addEventListener('click',()=>markNotifications());
+  document.getElementById('notifications-refresh')?.addEventListener('click',()=>{setText('notifications-action-status','');notificationsController?.retry();if(walletUser){startAccountActivity(walletUser);activityController?.updateProfile(currentReferralProfile);activityController?.updateMining(currentMiningRecords);}});
   document.querySelectorAll('[data-ledger-open]').forEach(button=>button.addEventListener('click',openFullLedgerDrawer));
   document.querySelectorAll('[data-ledger-status]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-ledger-status]').forEach(el=>el.classList.toggle('is-active',el===button));renderFullLedger();}));
   document.querySelector('[data-ledger-refresh]')?.addEventListener('click',()=>{if(!walletUser)return;startAccountActivity(walletUser);activityController?.updateProfile(currentReferralProfile);activityController?.updateMining(currentMiningRecords);});
@@ -808,10 +857,11 @@
   window.addEventListener("hub-referrals-updated", event=>{referralMembers=event.detail;renderReferralPage();});
   function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
   function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status==='quarantine'?'pending':m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
-  function openReferralPage(){syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
+  function openReferralPage(){closeNotificationsView();syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
   function closeReferralPage(){const p=document.getElementById("referral-page");if(p)p.hidden=true;document.body.classList.remove("referral-page-active");showTab("home");}
   async function copyReferralValue(v,msg){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(v);else{const t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();if(!ok)throw Error("copy");}showToast(msg);}catch(e){showToast("কপি করা যায়নি। লিংকটি চেপে ধরে কপি করুন।");}}
   function openSpinWheel() {
+    closeNotificationsView();
     syncProfileNavigation("home");
     const page = document.getElementById("spin-wheel-page");
     if (!page) { showToast("Lucky Spin interface could not be opened."); return; }
@@ -975,6 +1025,7 @@
   });
 
   function openTapEarning() {
+    closeNotificationsView();
     const page = document.getElementById("tap-earning-page");
     if (!page) {
       showToast("Tap Earning interface could not be opened.");
@@ -1302,6 +1353,7 @@
   const supportToggle = document.getElementById("support-toggle");
   let supportReturnTab = "home";
   function openSupportPage() {
+    closeNotificationsView();
     syncProfileNavigation("home");
     document.body.classList.remove("deposit-page-active");
     const depositPage = document.getElementById("deposit-page");
@@ -1387,6 +1439,7 @@
     try {
       await auth.signOut();
       activityController?.stop();
+      notificationsController?.stop();
       window.location.replace("../index.html");
     } catch (error) {
       console.error("Task Reward Hub sign-out failed:", error);
@@ -1842,6 +1895,7 @@
     window.HubBotCheckout.init(db, user);
     currentReferralUser=user;
     walletUser = user;
+    startNotifications(user);
     startAccountActivity(user);
     window.HubReferrals.init(db,user);
     subscribeSpinRewards(user);
@@ -1946,6 +2000,7 @@
     auth.onAuthStateChanged(user => {
       if (!user) {
         activityController?.stop();
+        notificationsController?.stop();
         window.location.replace("../index.html");
         return;
       }

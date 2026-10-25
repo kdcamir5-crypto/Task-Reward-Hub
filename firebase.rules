@@ -290,6 +290,18 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['activeWithdrawalId'])
         && reservedWithdrawal(uid, request.resource.data.activeWithdrawalId);
       allow update: if isAdmin();
+      // Read state is private to its owner and cannot grant notifications, roles or money.
+      match /notificationReads/{eventId} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && eventId.size() <= 1400
+          && request.resource.data.keys().hasAll(['eventId','read','readAt'])
+          && request.resource.data.keys().hasOnly(['eventId','read','readAt'])
+          && request.resource.data.eventId == eventId
+          && request.resource.data.read == true
+          && request.resource.data.readAt == request.time;
+        allow delete: if false;
+      }
       match /spinTickets/{ticketId} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
         // Only the trusted Admin SDK worker prepares the two daily outcomes.
