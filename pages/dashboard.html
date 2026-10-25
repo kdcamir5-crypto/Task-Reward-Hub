@@ -12,6 +12,7 @@
   <script src="../js/firebase-config.js"></script>
   <script src='//libtl.com/sdk.js' data-zone='12051888' data-sdk='show_12051888'></script>
   <link rel="stylesheet" href="../css/bot-checkout.css?v=20261024">
+  <link rel="stylesheet" href="../css/referrals.css?v=20261025">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -191,7 +192,7 @@
       <div class="rf-head"><button id="referral-back" type="button" aria-label="Back">←</button><div><small>COMMUNITY REWARDS</small><h1>Referred Members <span>(রেফারেল তালিকা)</span></h1></div><b>👥 <span id="referral-member-count">0</span> জন</b></div>
       <a class="rf-community" href="https://t.me/Taskrewardhub_bot" target="_blank" rel="noopener noreferrer"><strong>➤</strong><span><small>OFFICIAL TELEGRAM</small><b>Official Telegram VIP Community</b></span><em>Join Telegram ↗</em></a>
       <section class="rf-invite"><div class="rf-invite-head"><div><small>YOUR INVITE CODE</small><strong><span id="referral-code-value">Loading…</span> <button id="referral-copy-code" type="button">▢</button></strong></div><div class="rf-earned"><small>Total Earned</small><b>৳ <span id="referral-earned-value">0.00</span></b></div></div><small class="rf-label">YOUR PERSONAL INVITE LINK</small><div class="rf-link"><span id="referral-link-value">Loading…</span><button id="referral-copy-link" type="button">Copy</button></div><div class="rf-level"><b>✦　Level 1: Starter Novice</b><span>+ ৳0.00 / ref bounty</span></div></section>
-      <section class="rf-members"><h2>👥 Referred Member Profiles</h2><p>আপনার রেফারেল থেকে আসা সদস্যদের অবস্থা এখানে দেখুন।</p><label class="rf-search">⌕ <input id="referral-search" type="search" placeholder="Search by name, ID or code..."></label><div class="rf-filters"><button class="is-active" data-referral-filter="all" type="button">All (<span id="referral-all-count">0</span>)</button><button data-referral-filter="verified" type="button">Verified (<span id="referral-verified-count">0</span>)</button><button data-referral-filter="quarantine" type="button">Quarantine (<span id="referral-quarantine-count">0</span>)</button></div><div class="rf-empty" id="referral-empty-state"><div>♧</div><b id="referral-empty-title">কোনো রেফারেল পাওয়া যায়নি</b><p id="referral-empty-copy">আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।</p><button id="referral-empty-copy-link" type="button">🔗 ইনভাইট লিংক কপি করুন</button></div><div id="referral-member-list" hidden></div><small class="rf-note">Verified member records and rewards appear when referral data is connected.</small></section>
+      <section class="rf-members"><h2>👥 Referred Member Profiles</h2><p>আপনার রেফারেল থেকে আসা সদস্যদের অবস্থা এখানে দেখুন।</p><label class="rf-search">⌕ <input id="referral-search" type="search" placeholder="Search by name, ID or code..."></label><div class="rf-filters"><button class="is-active" data-referral-filter="all" type="button">All (<span id="referral-all-count">0</span>)</button><button data-referral-filter="verified" type="button">Verified (<span id="referral-verified-count">0</span>)</button><button data-referral-filter="quarantine" type="button">Pending (<span id="referral-quarantine-count">0</span>)</button></div><div class="rf-empty" id="referral-empty-state"><div>♧</div><b id="referral-empty-title">কোনো রেফারেল পাওয়া যায়নি</b><p id="referral-empty-copy">আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।</p><button id="referral-empty-copy-link" type="button">🔗 ইনভাইট লিংক কপি করুন</button></div><div id="referral-member-list" hidden></div><small class="rf-note">Referral signup + প্রথম বট ক্রয় + @freelancing_incom-এ join—তিনটি পূরণ হলে Verified হবে।</small></section>
       <div class="rf-themes"><span>Display theme</span><button class="is-active" data-referral-theme="cyber" type="button">Cyber Dark</button><button data-referral-theme="oled" type="button">Pure OLED</button></div>
       </section>
       <section id="support-page" class="support-page" data-theme="cyber" aria-labelledby="support-page-title" hidden>
@@ -562,9 +563,11 @@
     </nav>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="../js/bot-purchase-core.js?v=20261024"></script>
-  <script src="../js/bot-checkout.js?v=20261024"></script>
+  <script src="../js/bot-purchase-core.js?v=20261025-ref1"></script>
+  <script src="../js/bot-checkout.js?v=20261025-ref1"></script>
   <script src="../js/spin-core.js?v=20261024-spin1"></script>
-  <script src="../js/dashboard.js?v=20261024-spin1"></script>
+  <script src="../js/referrals.js?v=20261025"></script>
+  <script src="../js/dashboard.js?v=20261025-ref1"></script>
 </body>
 </html>
+

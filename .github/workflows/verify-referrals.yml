@@ -1,0 +1,31 @@
+name: Verify referrals and award bots
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '1-59/5 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-referrals.yml
+      - scripts/verify-referrals.cjs
+permissions:
+  contents: read
+concurrency:
+  group: verify-referrals
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install --prefix "$RUNNER_TEMP/ref-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
+      - name: Check membership and grant one-time referral bots
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          TELEGRAM_VERIFICATION_BOT_TOKEN: ${{ secrets.TELEGRAM_VERIFICATION_BOT_TOKEN }}
+          NODE_PATH: ${{ runner.temp }}/ref-worker/node_modules
+        run: node scripts/verify-referrals.cjs

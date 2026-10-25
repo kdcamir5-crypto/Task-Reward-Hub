@@ -35,12 +35,12 @@ async function purchase(db,F,user,id,method,chosen,payment){
   if(orderSnap.exists&&orderSnap.data().status!=='rejected')fail(orderSnap.data().status==='pending'?'এই বটের পেমেন্ট Admin review-তে আছে।':'এই বট ইতোমধ্যে কেনা হয়েছে।');
   const ref=referral(profile,chosen,user.uid);
   if(ref.referrerUid){const publicSnap=await tx.get(db.collection('publicLeaderboard').doc(ref.referrerUid));if(!publicSnap.exists||publicSnap.data().collectorId!==ref.referrerCode)fail('রেফারার ID যাচাই করা যায়নি।');ref.referrerName=publicSnap.data().displayName;}
-  const order={uid:user.uid,userName:String(profile.name||user.displayName||user.email||'Member'),email:user.email||'',botId:id,botName:pkg.name,amount:pkg.price,paymentMethod:method,senderNumber:'',trxId:'',receivingNumber:'',status:method==='wallet'?'approved':'pending',createdAt:F.serverTimestamp(),...ref};
+  const order={uid:user.uid,userName:String(profile.name||user.displayName||user.email||'Member'),email:user.email||'',botId:id,botName:pkg.name,amount:pkg.price,paymentMethod:method,senderNumber:'',trxId:'',receivingNumber:'',status:method==='wallet'?'approved':'pending',usdBonus:pkg.bonus,usdBonusCredited:method==='wallet',createdAt:F.serverTimestamp(),...ref};
   if(method==='wallet'){
-   const balance=amount(profile);if(balance<pkg.price)fail('ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেট রিচার্জ করুন।');
+   const balance=amount(profile);if(profile.usdBalance!==undefined&&(typeof profile.usdBalance!=='number'||!Number.isFinite(profile.usdBalance)||profile.usdBalance<0))fail('USD wallet যাচাই করা যায়নি।');if(balance<pkg.price)fail('ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেট রিচার্জ করুন।');
    order.reviewedBy=user.uid;order.reviewedAt=F.serverTimestamp();
    tx.set(orderRef,order);
-   tx.update(userRef,{balance:F.increment(-pkg.price),unlockedBots:[...(profile.unlockedBots||[]),id],lastBotPurchaseId:orderId,purchaseReferrerUid:ref.referrerUid,purchaseReferrerCode:ref.referrerCode,updatedAt:F.serverTimestamp()});
+   tx.update(userRef,{balance:F.increment(-pkg.price),usdBalance:F.increment(pkg.bonus),unlockedBots:[...(profile.unlockedBots||[]),id],lastBotPurchaseId:orderId,purchaseReferrerUid:ref.referrerUid,purchaseReferrerCode:ref.referrerCode,updatedAt:F.serverTimestamp()});
    tx.set(mineRef,miningData(pkg,orderId,F));
    creditReferral(tx,db,order,orderId,F);
   }else{
@@ -71,6 +71,7 @@ async function review(db,F,admin,kind,id,approve,reason){
    if(record.type!=='bKash'||!Number.isInteger(record.amount)||record.amount<100||record.amount>50000)fail('Invalid deposit amount or method.');
    tx.update(userRef,{balance:F.increment(record.amount),updatedAt:F.serverTimestamp()});
   }else{
+   if(profile.usdBalance!==undefined&&(typeof profile.usdBalance!=='number'||!Number.isFinite(profile.usdBalance)||profile.usdBalance<0))fail('Invalid USD wallet balance.');
    const pkg=packages[record.botId];if(!pkg||record.amount!==pkg.price||record.paymentMethod!=='bKash')fail('Invalid bot package, price or payment method.');
    const mineRef=userRef.collection('botMining').doc(pkg.id),mine=await tx.get(mineRef);
    if(owned(profile,pkg.id)||mine.exists)fail('This bot is already unlocked. Reject this duplicate payment request and contact the user.');
@@ -82,7 +83,8 @@ async function review(db,F,admin,kind,id,approve,reason){
     amount(refSnap.data());
    }
    // Direct payment unlocks the bot; it does not also credit the buyer wallet.
-   tx.update(userRef,{unlockedBots:[...(profile.unlockedBots||[]),pkg.id],lastBotPurchaseId:id,purchaseReferrerUid:record.referrerUid||'',purchaseReferrerCode:record.referrerCode||'',updatedAt:F.serverTimestamp()});
+   tx.update(userRef,{usdBalance:F.increment(pkg.bonus),unlockedBots:[...(profile.unlockedBots||[]),pkg.id],lastBotPurchaseId:id,purchaseReferrerUid:record.referrerUid||'',purchaseReferrerCode:record.referrerCode||'',updatedAt:F.serverTimestamp()});
+   reviewData.usdBonus=pkg.bonus;reviewData.usdBonusCredited=true;
    tx.set(mineRef,miningData(pkg,id,F));creditReferral(tx,db,record,id,F);
   }
   tx.update(recordRef,reviewData);
@@ -90,3 +92,4 @@ async function review(db,F,admin,kind,id,approve,reason){
 }
 root.HubBotPurchase={packages,owned,boundReferrer,purchase,review};
 })(typeof window==='undefined'?globalThis:window);
+

@@ -495,3 +495,30 @@ Before changing a file:
 - The same Firestore listeners update balances/history across devices. History shows only committed ticket receipts. Animation points to the backend-selected segment and completion is guarded against duplicate transition/timer callbacks.
 - Deployment: publish the complete current `firebase.rules` in Firebase Console. Check GitHub Actions → Prepare secure spin rewards → prepare for successful provisioning. If the existing service-account secret is absent, configure it in repository Settings → Secrets and variables → Actions, then use Run workflow. No billing-dependent Cloud Function is required.
 - Tests: `npm run test:spin` covers 13 integration cases in the isolated `demo-trh-spin` emulator project, including trusted-worker idempotency/new accounts. `npm run test:purchases` retains the 20 bot/deposit regression checks.
+
+
+
+## 2026-10-25 — Automatic verified referrals and purchased-bot USD bonuses
+
+Requirements implemented in this checkpoint:
+- A referral starts only when a NEW account signs up through the referrer's link. The signup batch binds the actual public Collector ID/UID and creates `referrals/{inviteeUid}` as pending. Existing accounts are not silently reassigned or retroactively counted.
+- Verification requires ALL THREE: attributed signup, a first successfully purchased bot (wallet purchase or approved bKash), and a verified Telegram identity that is a member of **@freelancing_incom**. No manual admin referral approval is used. A referral link click or client-side join button is not proof.
+- Each verified person awards ONE independently mining bot. Ordinals 1–20: Pulse (50); 21–40: Quantum (100); 41–60: Neural (200); 61–80: Cyber (300); 81–100: Apex (500). Ordinals 101–120 start again at Pulse; the cycle repeats every 100, not every 20 referrals.
+- `referralAwards/{inviteeUid}` is the immutable one-time award ledger. Award creation, the verified counter, referral bot count and new mining instance are one Firestore transaction. Retry and concurrent workers cannot duplicate the award. These are zero-cost referral rewards, not purchase requests or wallet cash credits.
+- Referral bots use distinct `users/{referrerUid}/botMining/referral_{inviteeUid}` records with source and ledger references. They do not consume the one-owned-package purchase slot in `unlockedBots`; twenty Pulse instances can mine independently. Mining validates each referral award ledger. Rank counts purchased bots plus server-maintained `referralBotsCount`.
+- New purchases atomically add their package USD bonus to `usdBalance` once: 0.10/0.20/0.40/0.60/1.00 for the five packages. Direct bKash credits only on approval. The receipt stores `usdBonus` and `usdBonusCredited`. A pending request, rejection, retry or free referral award does not credit USD. Previously approved old purchases are not silently backfilled.
+- Referral page shows real pending/verified members and the invitee's three verification conditions. Main header/navigation markup is retained. Home mining status reflects saved mining records; rank no longer resets itself to an obsolete placeholder.
+
+### Telegram verification deployment
+
+1. Use a dedicated verification bot from BotFather and add it as an administrator of **@freelancing_incom**.
+2. Store that bot's token ONLY in repository Actions Secret **TELEGRAM_VERIFICATION_BOT_TOKEN**. Keep the existing **FIREBASE_SERVICE_ACCOUNT** secret for project `reward-hub-bd`. Never paste either secret into public files or chat.
+3. Publish the full current `firebase.rules` from this repository in Firebase Console → Firestore Database → Rules. Refresh the user app and admin panel after publishing.
+4. Run Actions → **Verify referrals and award bots**. The workflow also runs on worker-code pushes and at `1-59/5 * * * *`. GitHub schedules may be delayed. A missing Telegram secret reports SETUP_REQUIRED and awards nothing; external membership has not been live-tested until configured.
+5. Users tap “Telegram account যাচাই করুন”, press Start in that verification bot, then return to the app. A private random expiring challenge links the Telegram account to the signed-in Firebase UID; user-entered usernames/IDs and unverified Telegram initData are never accepted as identity proof. One Telegram identity cannot verify multiple Firebase accounts.
+
+The worker uses Telegram getMe/getWebhookInfo/getUpdates/getChatMember. It refuses a bot with an existing webhook, never deletes a webhook and sends no Telegram messages. Use a separate verification bot instead of interfering with an existing bot's webhook/poller. Telegram identities and poll state are private server data. Link challenges are private to their owner and expire in fifteen minutes. Client rules prohibit writing verification flags, identity ownership, award ledgers and referral bot counters.
+
+Tests: `npm run test:referrals` covers 13 new emulator/security cases; the existing purchase suite additionally checks USD bonuses. Purchase/mining/spin suites remain regression checks. Both repositories mirror `bot-purchase-core.js` and must be updated together.
+
+Outstanding from the broader demo audit: full in-app Support chat/calls, Community Feed publishing, voucher/redeem creation and claiming, complete withdraw settlement, notifications/verification badges, Telegram authentication and profile-save rule mismatches still require their own implementation. This checkpoint does not claim those features are complete.

@@ -14,7 +14,7 @@ function mount(){
  <div class="bc-alert" id="bc-insufficient" hidden>🚫 ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেট রিচার্জ করুন।</div>
  <div class="bc-referral"><label for="bc-ref-code">রেফার কোড / কালেক্টর ID <b>৫% কমিশন</b></label><div class="bc-input-row"><span>#</span><input id="bc-ref-code" inputmode="numeric" maxlength="8" placeholder="রেফারারের ৮ সংখ্যার ID"><button id="bc-verify-ref" type="button">যাচাই</button></div><p id="bc-ref-result" role="status"></p><small id="bc-ref-note"></small></div>
  <div id="bc-bkash" class="bc-payment" hidden><h4>bKash Personal — Send Money</h4><div class="bc-number"><strong id="bc-number">Not configured</strong><button id="bc-copy" type="button">Copy</button></div><p id="bc-instructions"></p><p>সঠিক পরিমাণ Send Money করে নিচের তথ্য দিন। Admin পেমেন্ট যাচাই করে Approve করলে বট আনলক হবে।</p><label for="bc-sender">আপনার bKash নম্বর</label><input id="bc-sender" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX"><label for="bc-trx">Transaction ID</label><input id="bc-trx" maxlength="100" autocomplete="off" placeholder="bKash Transaction ID"></div>
- <p id="bc-message" class="bc-message" role="status" aria-live="polite"></p><button id="bc-submit" class="bc-submit" type="button"></button><button id="bc-recharge" class="bc-recharge" type="button" hidden>ওয়ালেট রিচার্জ করুন →</button><p class="bc-footnote">মাইনিং মেয়াদ ৩০ দিন। ডলার বোনাস টাকায় রূপান্তর করে BDT ওয়ালেটে যোগ করা হয় না।</p>`;
+ <p id="bc-message" class="bc-message" role="status" aria-live="polite"></p><button id="bc-submit" class="bc-submit" type="button"></button><button id="bc-recharge" class="bc-recharge" type="button" hidden>ওয়ালেট রিচার্জ করুন →</button><p class="bc-footnote">মাইনিং মেয়াদ ৩০ দিন। কেনা সফল হলে প্যাকেজের ডলার বোনাস USD Balance-এ একবার জমা হয়।</p>`;
  host.appendChild(section);
  el('bc-close').onclick=close;
  section.querySelectorAll('[name="bot-method"]').forEach(r=>r.onchange=()=>{method=r.value;el('bc-message').textContent='';render();});
@@ -84,3 +84,4 @@ window.HubBotCheckout={open,updateProfile(data){profile=data||{};render();},init
  unsubscribeOrders=db.collection('botPurchaseRequests').where('uid','==',user.uid).onSnapshot(s=>{orders=s.docs.map(d=>({id:d.id,...d.data()}));render();},error=>{if(selected)el('bc-message').textContent='ক্রয়ের অবস্থা লোড হয়নি: '+error.message;});
 }};
 })();
+

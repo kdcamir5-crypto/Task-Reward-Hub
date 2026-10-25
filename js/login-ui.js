@@ -93,11 +93,25 @@
     signupMessage.setAttribute("role", "status");
   }
 
+  function invitationCode() {
+    const params = new URLSearchParams(location.search);
+    const raw = String(params.get('ref') || params.get('startapp') || telegramApp?.initDataUnsafe?.start_param || '');
+    const match = raw.match(/^(?:ref-)?([0-9]{8})$/);
+    try { if (match) sessionStorage.setItem('trh_signup_referrer', match[1]); return match ? match[1] : sessionStorage.getItem('trh_signup_referrer') || ''; } catch (_) { return match ? match[1] : ''; }
+  }
+  const signupReferrerCode = invitationCode();
+  async function resolveSignupReferrer() {
+    if (!signupReferrerCode) return null;
+    const snapshot = await db.collection('publicLeaderboard').where('collectorId','==',signupReferrerCode).limit(2).get();
+    if (snapshot.size !== 1) throw new Error('Referral ID পাওয়া যায়নি। রেফারারকে একবার অ্যাপ খুলতে বলুন।');
+    return {uid:snapshot.docs[0].id, code:signupReferrerCode};
+  }
   function generateCollectorId() {
     return String(Math.floor(10000000 + Math.random() * 90000000));
   }
 
   async function saveNewUserWithUniqueCollectorId(uid, profile) {
+    const referrer = await resolveSignupReferrer();
     let lastError = null;
     for (let attempt = 0; attempt < 12; attempt++) {
       const collectorId = generateCollectorId();
@@ -109,11 +123,18 @@
       });
       batch.set(db.collection("users").doc(uid), {
         ...profile,
+        ...(referrer ? {referrerUid:referrer.uid, referrerCode:referrer.code} : {}),
         collectorId: collectorId,
         referralCode: collectorId
       });
+      if (referrer) batch.set(db.collection('referrals').doc(uid), {
+        inviteeUid:uid, inviteeName:profile.name, collectorId, referrerUid:referrer.uid, referrerCode:referrer.code,
+        status:'pending', purchaseVerified:false, telegramLinked:false, channelVerified:false,
+        createdAt:window.firebase.firestore.FieldValue.serverTimestamp()
+      });
       try {
         await batch.commit();
+        try { sessionStorage.removeItem('trh_signup_referrer'); } catch (_) {}
         return collectorId;
       } catch (error) {
         lastError = error;

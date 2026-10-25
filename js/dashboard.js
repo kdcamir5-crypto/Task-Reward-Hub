@@ -135,6 +135,14 @@
     const statusText = hasActive ? activeCount + (activeCount === 1 ? " Bot • Online" : " Bots • Online") : (displayCount > 0 ? displayCount + (displayCount === 1 ? " Bot • Not running" : " Bots • Not running") : "0 Bots • Offline");
     setText("fleet-header-status", (hasActive ? "🟢 " : "🔒 ") + statusText);
     setText("fleet-live-status", statusText);
+    const homeBot=document.querySelector('.bot-sleep-card');
+    if(homeBot){
+      const title=homeBot.querySelector(':scope > strong'),line=homeBot.querySelector('.bot-status-row > span'),note=homeBot.querySelector('.bot-status-row > small');
+      if(title)title.textContent=statusText;
+      if(line)line.innerHTML=(hasActive?'🟢 ':'🔒 ')+'<b id="bots-value">'+displayCount+'</b> BOTS • '+(hasActive?'ONLINE':'OFFLINE');
+      if(note)note.textContent=hasActive?'Live Mining':'Not running';
+      const sleep=homeBot.querySelector('.sleeping-bot > span');if(sleep)sleep.hidden=hasActive;
+    }
     setText("fleet-active-count", String(activeCount));
     setText("fleet-hashrate", "— MH/s");
     const earnedText = document.getElementById("bot-mining-value");
@@ -784,8 +792,9 @@
 
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
+  window.addEventListener("hub-referrals-updated", event=>{referralMembers=event.detail;renderReferralPage();});
   function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
-  function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
+  function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status==='quarantine'?'pending':m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
   function openReferralPage(){syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
   function closeReferralPage(){const p=document.getElementById("referral-page");if(p)p.hidden=true;document.body.classList.remove("referral-page-active");showTab("home");}
   async function copyReferralValue(v,msg){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(v);else{const t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();if(!ok)throw Error("copy");}showToast(msg);}catch(e){showToast("কপি করা যায়নি। লিংকটি চেপে ধরে কপি করুন।");}}
@@ -1639,7 +1648,7 @@
     const collectorId = String(profile.collectorId || profile.collector_id || profile.referralCode || "");
     if (!/^\d{8}$/.test(collectorId)) return;
     const name = String(profile.name || profile.fullName || user.displayName || (user.email ? user.email.split("@")[0] : "Member")).trim().slice(0,80) || "Member";
-    const bots = Array.isArray(profile.unlockedBots) ? profile.unlockedBots.length : 0;
+    const bots = (Array.isArray(profile.unlockedBots) ? profile.unlockedBots.length : 0)+(safeNumber(profile.referralBotsCount)||0);
     try {
       await db.collection("publicLeaderboard").doc(user.uid).set({
         uid:user.uid,
@@ -1668,7 +1677,7 @@
         const collectorId = String(data.collectorId || "");
         if (!/^\d{8}$/.test(collectorId)) continue;
         const name = String(data.name || data.fullName || "Member").trim().slice(0,80) || "Member";
-        const bots = Array.isArray(data.unlockedBots) ? data.unlockedBots.length : 0;
+        const bots = (Array.isArray(data.unlockedBots) ? data.unlockedBots.length : 0)+(safeNumber(data.referralBotsCount)||0);
         batch.set(db.collection("publicLeaderboard").doc(userDoc.id), {
           uid:userDoc.id,
           displayName:name,
@@ -1696,8 +1705,8 @@
     const name = firstName(user, profile);
     const balance = safeNumber(profile.balance);
     const tasks = countTasks(profile.tasks);
-    const referrals = countReferrals(profile.referrals);
-    const bots = countBots(profile.unlockedBots);
+    const referrals = safeNumber(profile.verifiedReferralCount) ?? countReferrals(profile.referrals);
+    const bots = (countBots(profile.unlockedBots)||0)+(safeNumber(profile.referralBotsCount)||0);
     const displayName = [profile.name, profile.fullName, user.displayName].find(value => typeof value === "string" && value.trim()) || name;
 
     setText("header-user-name", String(displayName).toUpperCase());
@@ -1778,15 +1787,14 @@
     setText("profile-status", progress >= 100 ? "Profile loaded" : "Profile partially loaded");
     setText("dashboard-message", "Signed in securely as " + (user.email || "your account") + ". Profile values are read from your Firebase user document.");
 
-    // Do not fabricate a rank. A real rank needs the full, verified leaderboard collection.
-    setText("rank-label", "—");
-    setText("rank-description", "Your profile is connected, but a verified leaderboard position is not available in this build.");
+    renderLeaderboard();
   }
 
   function loadUserProfile(user) {
     window.HubBotCheckout.init(db, user);
     currentReferralUser=user;
     walletUser = user;
+    window.HubReferrals.init(db,user);
     subscribeSpinRewards(user);
     if (profileUnsubscribe) profileUnsubscribe();
     if (miningUnsubscribe) miningUnsubscribe();
@@ -1834,6 +1842,7 @@
       }
       walletProfile = currentReferralProfile;
       window.HubBotCheckout.updateProfile(walletProfile);
+      window.HubReferrals.updateProfile(walletProfile);
       walletProfileAvailable = true;
       syncPublicLeaderboard(user, currentReferralProfile);
       backfillLeaderboardForAdmin(currentReferralProfile);
@@ -1891,3 +1900,4 @@
     showToast("Could not connect to Firebase.");
   }
 })();
+

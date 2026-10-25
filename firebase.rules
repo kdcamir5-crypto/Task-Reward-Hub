@@ -37,6 +37,8 @@ service cloud.firestore {
         && data.reviewedBy == request.auth.uid && data.reviewedAt == request.time
         && before.balance is number && before.balance >= data.amount
         && after.balance == before.balance - data.amount
+        && data.usdBonus == data.amount / 500.0 && data.usdBonusCredited == true
+        && after.usdBalance == before.get('usdBalance', 0) + data.usdBonus
         && !(data.botId in before.get('unlockedBots', []))
         && after.unlockedBots == before.get('unlockedBots', []).concat([data.botId])
         && after.lastBotPurchaseId == id
@@ -48,13 +50,14 @@ service cloud.firestore {
     }
     function validBotOrder(id, data) {
       return data.keys().hasAll(['uid','userName','email','botId','botName','amount','paymentMethod','senderNumber','trxId','receivingNumber','status','createdAt','referrerUid','referrerCode','referrerName'])
-        && data.keys().hasOnly(['uid','userName','email','botId','botName','amount','paymentMethod','senderNumber','trxId','receivingNumber','status','createdAt','referrerUid','referrerCode','referrerName','reviewedBy','reviewedAt'])
+        && data.keys().hasOnly(['uid','userName','email','botId','botName','amount','paymentMethod','senderNumber','trxId','receivingNumber','status','createdAt','referrerUid','referrerCode','referrerName','reviewedBy','reviewedAt','usdBonus','usdBonusCredited'])
         && data.uid == request.auth.uid && id == data.uid + '_' + data.botId
         && botPrice(data.botId) > 0 && data.amount is int && data.amount == botPrice(data.botId)
         && data.userName is string && data.userName.size() <= 200 && data.email is string && data.botName is string
+        && data.usdBonus == data.amount / 500.0 && data.usdBonusCredited is bool
         && data.createdAt == request.time && validPurchaseReferrer(data)
         && (data.paymentMethod == 'wallet' ? walletBotOrder(id, data)
-          : data.paymentMethod == 'bKash' && data.status == 'pending'
+          : data.paymentMethod == 'bKash' && data.status == 'pending' && data.usdBonusCredited == false
             && !data.keys().hasAny(['reviewedBy','reviewedAt'])
             && data.senderNumber.matches('^01[3-9][0-9]{8}$') && data.trxId.matches('^[A-Z0-9]{5,100}$')
             && get(/databases/$(database)/documents/appSettings/paymentSettings).data.active == true
@@ -69,7 +72,7 @@ service cloud.firestore {
       let order = getAfter(/databases/$(database)/documents/botPurchaseRequests/$(id)).data;
       return freshBotOrder(id) && order.createdAt == request.time && order.uid == uid
         && order.paymentMethod == 'wallet' && order.status == 'approved'
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','unlockedBots','lastBotPurchaseId','purchaseReferrerUid','purchaseReferrerCode','updatedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','usdBalance','unlockedBots','lastBotPurchaseId','purchaseReferrerUid','purchaseReferrerCode','updatedAt'])
         && request.resource.data.updatedAt == request.time
         && walletBotOrder(id, order);
     }
@@ -158,15 +161,53 @@ service cloud.firestore {
         && request.resource.data.collectorId.matches('^[0-9]{8}$')
         && request.resource.data.collectorId == get(/databases/$(database)/documents/users/$(uid)).data.collectorId
         && request.resource.data.botCount is int
-        && request.resource.data.botCount == (('unlockedBots' in get(/databases/$(database)/documents/users/$(uid)).data.keys()) ? get(/databases/$(database)/documents/users/$(uid)).data.unlockedBots.size() : 0)
+        && request.resource.data.botCount == (('unlockedBots' in get(/databases/$(database)/documents/users/$(uid)).data.keys()) ? get(/databases/$(database)/documents/users/$(uid)).data.unlockedBots.size() : 0) + get(/databases/$(database)/documents/users/$(uid)).data.get('referralBotsCount',0)
         && request.resource.data.updatedAt == request.time;
       allow delete: if false;
+    }
+
+    function validRegistrationReferrer(uid, data) {
+      return data.get('referrerUid','') == '' || (data.referrerUid is string && data.referrerUid != uid
+        && data.referrerCode.matches('^[0-9]{8}$')
+        && get(/databases/$(database)/documents/publicLeaderboard/$(data.referrerUid)).data.collectorId == data.referrerCode
+        && getAfter(/databases/$(database)/documents/referrals/$(uid)).data.referrerUid == data.referrerUid);
+    }
+    match /referrals/{inviteeUid} {
+      allow read: if signedIn() && (request.auth.uid == inviteeUid || resource.data.referrerUid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == inviteeUid
+        && !exists(/databases/$(database)/documents/users/$(inviteeUid))
+        && request.resource.data.keys().hasOnly(['inviteeUid','inviteeName','collectorId','referrerUid','referrerCode','status','purchaseVerified','telegramLinked','channelVerified','createdAt'])
+        && request.resource.data.inviteeUid == inviteeUid && request.resource.data.referrerUid != inviteeUid
+        && request.resource.data.status == 'pending' && request.resource.data.purchaseVerified == false
+        && request.resource.data.telegramLinked == false && request.resource.data.channelVerified == false
+        && request.resource.data.createdAt == request.time && request.resource.data.inviteeName is string
+        && request.resource.data.collectorId == userAfter(inviteeUid).collectorId
+        && request.resource.data.referrerUid == userAfter(inviteeUid).referrerUid
+        && request.resource.data.referrerCode == userAfter(inviteeUid).referrerCode
+        && request.resource.data.inviteeName == userAfter(inviteeUid).name;
+      allow update, delete: if false;
+    }
+    match /telegramLinkRequests/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && userBefore(uid).get('telegramUserId','') == ''
+        && request.resource.data.keys().hasOnly(['uid','token','expiresAtMs','createdAt'])
+        && request.resource.data.uid == uid && request.resource.data.token.matches('^[a-f0-9]{48}$')
+        && request.resource.data.createdAt == request.time && request.resource.data.expiresAtMs is int
+        && request.resource.data.expiresAtMs > request.time.toMillis()
+        && request.resource.data.expiresAtMs <= request.time.toMillis() + 900000;
+      allow delete: if false;
+    }
+    match /referralAwards/{inviteeUid} {
+      allow read: if signedIn() && (request.auth.uid == inviteeUid || resource.data.recipientUid == request.auth.uid || isAdmin());
+      allow write: if false;
     }
 
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode'])
+        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode','referrerUid','referrerCode'])
+        && validRegistrationReferrer(uid, request.resource.data)
         && request.resource.data.role == 'user'
         && request.resource.data.balance == 0
         && request.resource.data.tasks == 0
@@ -374,9 +415,12 @@ service cloud.firestore {
       allow update: if (signedIn() && resource.data.uid == request.auth.uid && resource.data.status == 'rejected'
         && request.resource.data.botId == resource.data.botId && validBotOrder(requestId, request.resource.data))
         || (isAdmin() && resource.data.status == 'pending'
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','reviewedBy','reviewedAt','rejectionReason'])
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','reviewedBy','reviewedAt','rejectionReason','usdBonus','usdBonusCredited'])
           && request.resource.data.status in ['approved','rejected']
           && request.resource.data.reviewedBy == request.auth.uid && request.resource.data.reviewedAt == request.time
+          && (request.resource.data.status != 'approved' || (request.resource.data.usdBonus == botPrice(resource.data.botId) / 500.0
+            && request.resource.data.usdBonusCredited == true
+            && userAfter(resource.data.uid).usdBalance == userBefore(resource.data.uid).get('usdBalance',0) + request.resource.data.usdBonus))
           && (request.resource.data.status == 'approved' || (request.resource.data.rejectionReason is string
             && request.resource.data.rejectionReason.size() >= 3 && request.resource.data.rejectionReason.size() <= 300)));
       allow delete: if false;
@@ -408,3 +452,4 @@ service cloud.firestore {
     match /{document=**} { allow read, write: if false; }
   }
 }
+

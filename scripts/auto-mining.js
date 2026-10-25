@@ -42,7 +42,13 @@ async function processBot(db,F,uid,id,now=Date.now(),recordId=id){
   if(!userSnap.exists)return {kind:'notEligible'};
   const profile=userSnap.data(),ids=unlockedIds(profile.unlockedBots);
   if(ids===null)return {kind:'invalidProfile'};
-  if(!ids.includes(id))return {kind:'notEligible'};
+  const isReferral = recordSnap.exists && recordSnap.data().source === 'referral';
+  if(isReferral){
+   const awardId=recordSnap.data().awardId;
+   if(typeof awardId!=='string'||!awardId)return {kind:'invalidRecord'};
+   const award=await tx.get(db.collection('referralAwards').doc(awardId));
+   if(!award.exists||award.data().recipientUid!==uid||award.data().instanceId!==recordId||award.data().botId!==id)return {kind:'notEligible'};
+  }else if(!ids.includes(id))return {kind:'notEligible'};
   if(!recordSnap.exists){
    tx.create(recordRef,{botId:id,botName:pkg.name,durationDays:30,targetReward:pkg.target,earnedReward:0,status:'running',startedAt:F.Timestamp.fromMillis(now),createdAt:F.FieldValue.serverTimestamp(),updatedAt:F.FieldValue.serverTimestamp()});
    return {kind:'created'};
@@ -66,18 +72,21 @@ async function processBot(db,F,uid,id,now=Date.now(),recordId=id){
  });
 }
 async function runMining(db,F,{now=Date.now()}={}){
- const users=await db.collection('users').select('unlockedBots').get();
+ const users=await db.collection('users').select('unlockedBots','referralBotsCount').get();
  const summary={profilesScanned:users.size,eligibleBots:0,recordsCreated:0,recordsCredited:0,creditedPaisa:0,recordsCompleted:0,unchanged:0,stopped:0,futureStarts:0,invalidStartTimes:0,invalidRecords:0,failed:0};
  for(const user of users.docs){
   const ids=unlockedIds(user.data().unlockedBots);
   if(ids===null){summary.invalidRecords++;continue;}
-  if(!ids.length)continue;
+  if(!ids.length&&!(user.data().referralBotsCount>0))continue;
   // Keep legacy record IDs and their paid progress; do not create a second copy.
   let existing;
   try{existing=await user.ref.collection('botMining').get();}catch(_){summary.failed++;continue;}
-  for(const id of ids){
+  const candidates=ids.map(id=>({id,recordId:null}));
+  for(const doc of existing.docs){const d=doc.data();if(d.source==='referral')candidates.push({id:d.botId,recordId:doc.id});}
+  for(const candidate of candidates){
+   const id=candidate.id;
    summary.eligibleBots++;
-   const matching=existing.docs.filter(doc=>doc.id===id||doc.data().botId===id);
+   const matching=candidate.recordId?existing.docs.filter(doc=>doc.id===candidate.recordId):existing.docs.filter(doc=>doc.data().source!=='referral'&&(doc.id===id||doc.data().botId===id));
    if(matching.length>1){summary.invalidRecords++;continue;}
    try{
     const result=await processBot(db,F,user.id,id,now,matching.length?matching[0].id:id);
@@ -109,3 +118,4 @@ if(require.main===module)main().catch(error=>{
  process.exitCode=1;
 });
 module.exports={PACKAGES,DAY_MS,unlockedIds,timestampMs,moneyMinor,calculateReward,processBot,runMining};
+
