@@ -1,0 +1,16 @@
+/* Scoped to activity and ledger content; shared shell dimensions are untouched. */
+.activity-card{--hist-text:#18243a;--hist-muted:#6b7b92}
+#recent-activity-list{display:grid;gap:7px;margin-top:8px}
+#recent-activity-list .history-row{padding:9px 7px;gap:7px}
+#recent-activity-list .history-row-icon{flex-basis:27px;width:27px;height:29px;font-size:14px}
+#recent-activity-list .history-row-main strong{font-size:10px;overflow-wrap:anywhere}
+#recent-activity-list .history-row-main small{font-size:9px}
+#recent-activity-list .history-row-side strong{font-size:10px}
+#ledger-drawer .ledger-status-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:8px}
+#ledger-drawer .ledger-status-row button,#ledger-drawer [data-ledger-refresh]{min-height:32px;border:1px solid #9298a530;border-radius:9px;background:#9298a510;color:var(--hist-muted);font:700 10px sans-serif;cursor:pointer}
+#ledger-drawer .ledger-status-row button.is-active{border-color:#25b86455;background:#19a85a18;color:#23b861}
+#ledger-drawer .ledger-note{font-size:10px;color:var(--hist-muted);line-height:1.5;margin:7px 0}
+#ledger-drawer .ledger-source-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+#ledger-source-status{font-size:10px;color:var(--hist-muted);overflow-wrap:anywhere}
+#ledger-drawer [data-ledger-refresh]{flex-shrink:0;padding:5px 9px}
+#ledger-list .history-row-main strong{overflow-wrap:anywhere}

@@ -6,7 +6,8 @@
     "test:spin": "firebase emulators:exec --only firestore --project demo-trh-spin \"node tests/spin.cjs\"",
     "test:mining": "firebase emulators:exec --only firestore --project demo-trh-mining \"node --test tests/mining.test.cjs\"",
     "test:referrals": "firebase emulators:exec --only firestore --project demo-trh-referrals \"node --test tests/referrals.test.cjs\"",
-    "test:withdrawals": "firebase emulators:exec --only firestore --project demo-trh-withdrawals \"node tests/withdrawals.cjs\""
+    "test:withdrawals": "firebase emulators:exec --only firestore --project demo-trh-withdrawals \"node tests/withdrawals.cjs\"",
+    "test:activity": "node --test tests/activity.test.cjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",

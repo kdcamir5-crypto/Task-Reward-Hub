@@ -645,6 +645,8 @@
   let moneyHistoryStatus = "pending";
   let moneyHistoryRows = [];
   let ledgerRows = [];
+  let activityController = null;
+  let activityState = {rows:[],errors:[],loading:true,fromCache:false};
   function historyStatusKey(status) {
     const s=String(status||"").toLowerCase();
     if(["approved","paid","completed","success","successful","processed"].includes(s))return "paid";
@@ -683,7 +685,7 @@
     const list=document.getElementById("money-history-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>হিস্ট্রি লোড হচ্ছে…</strong></div>';
     if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
     const col=moneyHistoryType==="withdrawals"?"withdrawals":"walletDeposits";
-    try{const snap=await db.collection(col).where("uid","==",walletUser.uid).get();moneyHistoryRows=snap.docs.map(doc=>Object.assign({id:doc.id},doc.data())).sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderMoneyHistory();}
+    try{const snap=await db.collection(col).where("uid","==",walletUser.uid).get();moneyHistoryRows=snap.docs.map(doc=>Object.assign({id:doc.id},doc.data())).sort((a,b)=>window.HubActivity.time(b.reviewedAt||b.createdAt)-window.HubActivity.time(a.reviewedAt||a.createdAt));renderMoneyHistory();}
     catch(error){console.error("History read failed",col,error);if(list)list.innerHTML='<div class="history-empty"><strong>হিস্ট্রি লোড করা যায়নি</strong><p>Firestore permission বা connection পরীক্ষা করতে হবে।</p></div>';}
   }
   document.querySelectorAll("[data-history-type]").forEach(b=>b.addEventListener("click",()=>{moneyHistoryType=b.dataset.historyType;document.querySelectorAll("[data-history-type]").forEach(x=>{const on=x===b;x.classList.toggle("is-active",on);x.setAttribute("aria-pressed",String(on));});document.getElementById("money-history-title").textContent=moneyHistoryType==="withdrawals"?"💸 উইথড্র হিস্ট্রি":"💰 টাকা জমার হিস্ট্রি";loadMoneyHistory();}));
@@ -693,34 +695,47 @@
   document.getElementById("history-new-withdrawal")?.addEventListener("click",()=>{closeMoneyHistoryDrawer();openWithdrawalDrawer();});
   function openFullLedgerDrawer(){const o=document.getElementById("ledger-overlay"),d=document.getElementById("ledger-drawer");if(!o||!d)return;setHistoryTheme(d);o.hidden=false;d.hidden=false;document.body.classList.add("history-drawer-open");loadFullLedger();}
   function closeFullLedgerDrawer(){document.getElementById("ledger-overlay").hidden=true;document.getElementById("ledger-drawer").hidden=true;document.body.classList.remove("history-drawer-open");}
+  function activityDate(row) {
+    return row.timestamp ? new Date(row.timestamp).toLocaleString('bn-BD', {timeZone:'Asia/Dhaka',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'সময় সংরক্ষিত নেই';
+  }
+  function activityStatus(row) {
+    if (['rejected','declined','failed','cancelled'].includes(row.status)) return {key:'rejected',label:row.status};
+    if (['pending','queued','paused'].includes(row.status)) return {key:'pending',label:row.status};
+    if (row.status === 'running') return {key:'pending',label:'mining চলছে'};
+    return {key:'paid',label:row.status};
+  }
+  function activityRowMarkup(row) {
+    const status=activityStatus(row);
+    return '<article class="history-row"><span class="history-row-icon" aria-hidden="true">'+escapeHtml(row.icon||'•')+'</span><div class="history-row-main"><strong>'+escapeHtml(row.title)+'</strong><small>'+escapeHtml(activityDate(row))+'</small><small>'+escapeHtml(row.detail)+'</small></div><div class="history-row-side"><strong>'+escapeHtml(window.HubActivity.amountText(row))+'</strong><small>'+escapeHtml(row.currency==='BOT'?'Bot':row.currency)+'</small><small class="status-'+status.key+'">'+escapeHtml(status.label)+'</small></div></article>';
+  }
+  function renderRecentActivity() {
+    const list=document.getElementById('recent-activity-list');if(!list)return;
+    const rows=ledgerRows.filter(r=>r.recent&&r.timestamp).slice(0,5);
+    list.innerHTML=rows.length?rows.map(activityRowMarkup).join(''):'<p class="activity-empty">'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'কিছু activity লোড করা যায়নি। View Ledger থেকে Retry করুন।':'এখনো সাম্প্রতিক লেনদেনের রেকর্ড নেই।')+'</p>';
+    setText('recent-activity-status',activityState.errors.length?'কিছু উৎসের তথ্য পাওয়া যায়নি':activityState.fromCache?'সংরক্ষিত তথ্য • connection হলে আপডেট হবে':activityState.loading?'লোড হচ্ছে…':'Firestore থেকে সরাসরি আপডেট');
+  }
   function renderFullLedger(){
-    const f=document.querySelector("[data-ledger-filter].is-active")?.dataset.ledgerFilter||"all";
-    const rows=ledgerRows.filter(r=>f==="all"||(f==="money"?["withdrawals","deposits"].includes(r.kind):!["withdrawals","deposits"].includes(r.kind)));
-    const list=document.getElementById("ledger-list");
-    if(!list)return;
-    if(!rows.length){list.innerHTML='<div class="history-empty"><span>▤</span><strong>কোনো সংরক্ষিত লেনদেন পাওয়া যায়নি</strong><p>নতুন রেকর্ড তৈরি হলে এখানে দেখাবে।</p></div>';return;}
-    list.innerHTML=rows.map(r=>{
-      const details=[r.detail||r.type||r.botId||""];
-      if(r.kind==="deposits"&&r.trxId)details.push("Transaction ID: "+r.trxId);
-      if(r.kind==="deposits"&&r.status==="pending")details.push("Admin review pending");
-      if(r.kind==="deposits"&&r.status==="rejected"&&r.rejectionReason)details.push("Reject reason: "+r.rejectionReason);
-      const detailMarkup=details.filter(Boolean).map(detail=>'<small>'+escapeHtml(detail)+'</small>').join("");
-      return '<article class="history-row"><span class="history-row-icon">'+escapeHtml(r.icon||"•")+'</span><div class="history-row-main"><strong>'+escapeHtml(r.title||r.kind)+'</strong><small>'+escapeHtml(historyDate(r))+'</small>'+detailMarkup+'</div><div class="history-row-side"><strong>'+(["withdrawals","purchases"].includes(r.kind)?"−":"+")+'৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"recorded"))+'</small></div></article>';
-    }).join("");
+    const filter=document.querySelector('[data-ledger-filter].is-active')?.dataset.ledgerFilter||'all';
+    const stateFilter=document.querySelector('[data-ledger-status].is-active')?.dataset.ledgerStatus||'all';
+    const rows=ledgerRows.filter(r=>(filter==='all'||(filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(stateFilter==='all'||activityStatus(r).key===stateFilter));
+    const list=document.getElementById('ledger-list');if(!list)return;
+    list.innerHTML=rows.length?rows.map(activityRowMarkup).join(''):'<div class="history-empty"><span>▤</span><strong>'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'সব লেনদেন লোড করা যায়নি':'এই filter-এ কোনো সংরক্ষিত লেনদেন নেই')+'</strong></div>';
+    const sourceLabels={withdrawals:'Withdrawals',deposits:'Deposits',purchases:'Bot purchases',tasks:'Tasks',spins:'Spin',gifts:'Referral bots',profile:'Profile',mining:'Mining'};
+    setText('ledger-source-status',activityState.errors.length?'লোড হয়নি: '+activityState.errors.map(k=>sourceLabels[k]||k).join(', ')+'. Retry করুন।':activityState.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':activityState.loading?'সব উৎসের তথ্য লোড হচ্ছে…':'উপলভ্য রেকর্ড আপডেট হয়েছে।');
   }
-  async function loadFullLedger(){
-    const list=document.getElementById("ledger-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>সব রেকর্ড খোঁজা হচ্ছে…</strong></div>';
-    if(!walletUser||!db){if(list)list.innerHTML='<div class="history-empty"><strong>লগইন তথ্য পাওয়া যায়নি।</strong></div>';return;}
-    const specs=[
-      {name:"withdrawals",kind:"withdrawals",icon:"↗",title:"উত্তোলন",query:()=>db.collection("withdrawals").where("uid","==",walletUser.uid).get()},
-      {name:"walletDeposits",kind:"deposits",icon:"↙",title:"টাকা জমা",query:()=>db.collection("walletDeposits").where("uid","==",walletUser.uid).get()},
-      {name:"botPurchaseRequests",kind:"purchases",icon:"🤖",title:"Bot Purchase",query:()=>db.collection("botPurchaseRequests").where("uid","==",walletUser.uid).get()},
-      {name:"task submissions",kind:"rewards",icon:"🎯",title:"Task Submission",query:()=>db.collection("submissions").where("uid","==",walletUser.uid).get()},
-      {name:"botMining",kind:"rewards",icon:"⛏️",title:"Bot Mining",query:()=>db.collection("users").doc(walletUser.uid).collection("botMining").get()}
-    ];
-    const sets=await Promise.all(specs.map(async s=>{try{const snap=await s.query();return snap.docs.map(doc=>Object.assign({id:doc.id,kind:s.kind,icon:s.icon,title:s.title},doc.data()));}catch(error){console.warn("Ledger source unavailable",s.name,error);return [];}}));
-    ledgerRows=sets.flat().sort((a,b)=>historyDate(b).localeCompare(historyDate(a)));renderFullLedger();
+  function startAccountActivity(user) {
+    if(activityController)activityController.stop();
+    ledgerRows=[];activityState={rows:[],errors:[],loading:true,fromCache:false};renderRecentActivity();renderFullLedger();
+    if(!window.HubActivity||!user||!db){activityState.loading=false;activityState.errors=['activity'];renderRecentActivity();renderFullLedger();return;}
+    activityController=window.HubActivity.create(db,user.uid,state=>{activityState=state;ledgerRows=state.rows;renderRecentActivity();renderFullLedger();});
   }
+  function loadFullLedger(){
+    if(!activityController&&walletUser)startAccountActivity(walletUser);
+    renderFullLedger();
+  }
+  document.querySelectorAll('[data-ledger-open]').forEach(button=>button.addEventListener('click',openFullLedgerDrawer));
+  document.querySelectorAll('[data-ledger-status]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-ledger-status]').forEach(el=>el.classList.toggle('is-active',el===button));renderFullLedger();}));
+  document.querySelector('[data-ledger-refresh]')?.addEventListener('click',()=>{if(!walletUser)return;startAccountActivity(walletUser);activityController?.updateProfile(currentReferralProfile);activityController?.updateMining(currentMiningRecords);});
   document.querySelectorAll("[data-ledger-filter]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-ledger-filter]").forEach(x=>x.classList.toggle("is-active",x===b));renderFullLedger();}));
   document.querySelectorAll("[data-ledger-close]").forEach(b=>b.addEventListener("click",closeFullLedgerDrawer));
   document.getElementById("ledger-overlay")?.addEventListener("click",closeFullLedgerDrawer);
@@ -1371,6 +1386,7 @@
     if (profileButton) profileButton.disabled = true;
     try {
       await auth.signOut();
+      activityController?.stop();
       window.location.replace("../index.html");
     } catch (error) {
       console.error("Task Reward Hub sign-out failed:", error);
@@ -1826,6 +1842,7 @@
     window.HubBotCheckout.init(db, user);
     currentReferralUser=user;
     walletUser = user;
+    startAccountActivity(user);
     window.HubReferrals.init(db,user);
     subscribeSpinRewards(user);
     if (profileUnsubscribe) profileUnsubscribe();
@@ -1854,6 +1871,8 @@
       if (!snapshot.exists) {
         const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member", balance:0 };
         currentReferralProfile=basic;
+        activityController?.updateProfile(null);
+        activityController?.reportError('profile');
         walletProfile = basic;
         walletProfileAvailable = false;
         renderProfile(user, basic);
@@ -1866,6 +1885,7 @@
         return;
       }
       currentReferralProfile=snapshot.data() || {};
+      activityController?.updateProfile(currentReferralProfile);
       if (!/^\d{8}$/.test(String(currentReferralProfile.collectorId || currentReferralProfile.collector_id || ""))) {
         ensureCollectorId(user, currentReferralProfile).catch(error => {
           console.error("Task Reward Hub Collector ID assignment failed:", error);
@@ -1886,6 +1906,7 @@
       renderDepositSettings(depositSettings);
       renderReferralPage();
     }, error => {
+      activityController?.reportError('profile');
       console.error("Task Reward Hub profile listener failed:", error);
       setText("dashboard-message", "Signed in, but Firebase could not read your profile. Check Firestore rules and your connection.");
       setText("profile-status", "Profile unavailable");
@@ -1896,6 +1917,7 @@
     // its saved earnedReward total; it never credits the wallet from the browser.
     miningUnsubscribe = userRef.collection("botMining").onSnapshot(snapshot => {
       currentMiningRecords = snapshot.docs.map(doc => Object.assign({ id:doc.id }, doc.data() || {}));
+      activityController?.updateMining(currentMiningRecords);
       renderMembership();
       const total = currentMiningRecords.reduce((sum, record) => {
         const earned = safeNumber(record.earnedReward);
@@ -1904,6 +1926,7 @@
       setText("bot-mining-value", formatMoney(Math.round((total + Number.EPSILON) * 100) / 100));
       renderBotFleet();
     }, error => {
+      activityController?.reportError('mining');
       console.error("Task Reward Hub mining balance listener failed:", error);
       setText("bot-mining-value", "—");
     });
@@ -1922,6 +1945,7 @@
     auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL).catch(error => console.warn("Firebase persistence setting:", error));
     auth.onAuthStateChanged(user => {
       if (!user) {
+        activityController?.stop();
         window.location.replace("../index.html");
         return;
       }
