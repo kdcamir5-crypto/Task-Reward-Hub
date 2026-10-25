@@ -1450,6 +1450,7 @@
       await auth.signOut();
       activityController?.stop();
       notificationsController?.stop();
+      window.HubFeed?.stop();
       window.location.replace("../index.html");
     } catch (error) {
       console.error("Task Reward Hub sign-out failed:", error);
@@ -1903,6 +1904,7 @@
 
   function loadUserProfile(user) {
     window.HubBotCheckout.init(db, user);
+    window.HubFeed?.init(db,user);
     currentReferralUser=user;
     walletUser = user;
     startNotifications(user);
@@ -2011,6 +2013,7 @@
       if (!user) {
         activityController?.stop();
         notificationsController?.stop();
+        window.HubFeed?.stop();
         window.location.replace("../index.html");
         return;
       }

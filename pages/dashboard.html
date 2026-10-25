@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../css/referrals.css?v=20261025">
   <link rel="stylesheet" href="../css/activity.css?v=20261025-activity1">
   <link rel="stylesheet" href="../css/notifications.css?v=20261025-notifs1">
+  <link rel="stylesheet" href="../css/community.css?v=20261025-feed1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -402,28 +403,27 @@
             <span class="feed-public-badge">🌐 পাবলিক ফিড</span>
           </div>
           <label class="feed-compose-label" for="feed-post-text">আপনার আপডেট লিখুন</label>
-          <textarea id="feed-post-text" maxlength="2000" placeholder="আপনার ইনকাম আপডেট, উইথড্রয়াল প্রুফ বা অভিজ্ঞতা শেয়ার করুন..." rows="4"></textarea>
-          <div class="feed-image-preview" id="feed-image-preview" hidden></div>
+          <textarea id="feed-post-text" maxlength="2000" placeholder="আপনার আপডেট বা অভিজ্ঞতা লিখে শেয়ার করুন..." rows="4"></textarea>
           <div class="feed-compose-actions">
-            <button class="feed-image-button" id="feed-image-trigger" type="button">🖼️ ছবি যুক্ত করুন <small>(সর্বোচ্চ ৩টি)</small></button>
-            <button class="feed-submit-button" type="submit">🕊️ পোস্ট করুন</button>
-            <input id="feed-image-input" type="file" accept="image/*" multiple hidden>
+            <button class="feed-submit-button" id="feed-submit" type="submit">🕊️ পোস্ট করুন</button>
           </div>
           <p class="feed-compose-message" id="feed-compose-message" role="status" aria-live="polite"></p>
-          <div class="feed-policy-note"><span>ⓘ</span><p>আপনার পোস্ট প্রকাশের আগে অ্যাডমিন যাচাই ও অনুমোদন করতে পারেন। অনুগ্রহ করে ভুয়া প্রুফ বা বিভ্রান্তিকর তথ্য শেয়ার করবেন না।</p></div>
+          <div class="feed-policy-note"><span>ⓘ</span><p>শুধু লেখা পোস্ট করা যাবে। পোস্ট সরাসরি প্রকাশ হবে; অনুপযুক্ত পোস্ট admin সরাতে পারবেন।</p></div>
         </form>
 
         <div class="feed-tabs" role="tablist" aria-label="ফিড নির্বাচন">
           <button class="feed-tab is-active" id="feed-public-tab" type="button" role="tab" aria-selected="true" data-feed-view="public">🌐 পাবলিক ফিড</button>
           <button class="feed-tab" id="feed-mine-tab" type="button" role="tab" aria-selected="false" data-feed-view="mine">👤 আমার পোস্টসমূহ</button>
         </div>
+        <p id="feed-source-status" class="cf-status" role="status">Feed খুললে পোস্ট লোড হবে।</p>
         <div class="feed-post-list" id="feed-post-list" aria-live="polite">
           <div class="feed-empty-state">
             <div class="feed-empty-illustration" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="12" y="9" width="37" height="45" rx="5"></rect><path d="M21 21h19M21 29h19M21 37h12"></path><path d="M49 19h4v36H20v-1"></path><path d="M45 42l4 4 7-8"></path></svg></div>
             <strong>কোন পোস্ট পাওয়া যায়নি</strong>
-            <p>এখনো কোনো অনুমোদিত কমিউনিটি পোস্ট নেই। প্রথম পোস্ট শেয়ার করুন—অ্যাডমিন অনুমোদনের পর তা এখানে দেখা যাবে।</p>
+            <p>প্রথম লেখা পোস্টটি শেয়ার করুন।</p>
           </div>
         </div>
+        <button id="feed-load-more" type="button" hidden>আরও নিজের পোস্ট দেখুন</button>
       </section>
 
       <section class="tab-panel panel profile-page" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
@@ -583,7 +583,9 @@
   <script src="../js/activity-core.js?v=20261025-codes1"></script>
   <script src="../js/notifications-core.js?v=20261025-codes1"></script>
   <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
-  <script src="../js/dashboard.js?v=20261025-codes1"></script>
+  <script src="../js/community-core.js?v=20261025-feed1"></script>
+  <script src="../js/community.js?v=20261025-feed1"></script>
+  <script src="../js/dashboard.js?v=20261025-feed1"></script>
 </body>
 </html>
 

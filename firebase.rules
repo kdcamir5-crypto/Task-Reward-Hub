@@ -399,6 +399,25 @@ service cloud.firestore {
       }
     }
 
+    // Public-to-signed-in, text-only community. Ownership and author identity
+    // come from Firebase, never from a role/name supplied by the browser.
+    match /communityPosts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll(['uid','authorName','collectorId','text','createdAt'])
+        && request.resource.data.keys().hasOnly(['uid','authorName','collectorId','text','createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.authorName is string
+        && request.resource.data.authorName.size() > 0 && request.resource.data.authorName.size() <= 200
+        && request.resource.data.authorName == userBefore(request.auth.uid).get('name',userBefore(request.auth.uid).get('fullName','Member'))
+        && request.resource.data.collectorId == userBefore(request.auth.uid).get('collectorId','')
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 2000
+        && request.resource.data.text.matches('[\\s\\S]*\\S[\\s\\S]*')
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
     match /tasks/{tid} {
       allow read: if signedIn();
       allow write: if isAdmin();
