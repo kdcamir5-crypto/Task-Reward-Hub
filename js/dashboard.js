@@ -621,7 +621,7 @@
     if (!overlay || !drawer) return;
     renderWithdrawalWalletOptions();
     const balance = walletProfileAvailable ? safeNumber(walletProfile && walletProfile.balance) : null;
-    setText("withdrawal-balance-note", "Available balance: ৳" + walletMoney(balance));
+    setText("withdrawal-balance-note", "Available: ৳" + walletMoney(balance) + " · Pending reserve: ৳" + walletMoney(walletProfile.withdrawReserved || 0));
     setText("withdrawal-message", "");
     const amount = document.getElementById("withdrawal-amount");
     if (amount) amount.value = "";
@@ -677,7 +677,7 @@
     ["paid","pending","rejected"].forEach(k=>setText("history-"+k+"-total","৳"+formatMoney(moneyHistoryRows.filter(r=>historyStatusKey(r.status)===k).reduce((n,r)=>n+historyAmount(r),0))));
     const rows=moneyHistoryRows.filter(r=>historyStatusKey(r.status)===moneyHistoryStatus),list=document.getElementById("money-history-list");if(!list)return;
     if(!rows.length){list.innerHTML='<div class="history-empty"><span>▱</span><strong>'+escapeHtml(moneyHistoryType==="withdrawals"?"কোনো উইথড্র রিকোয়েস্ট পাওয়া যায়নি":"কোনো টাকা জমার রেকর্ড পাওয়া যায়নি")+'</strong><p>আপনার লেনদেনের রেকর্ড এখানে দেখা যাবে।</p></div>';return;}
-    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+(moneyHistoryType==="withdrawals"?"↗":"↙")+'</span><div class="history-row-main"><strong>'+escapeHtml(moneyHistoryType==="withdrawals"?"উত্তোলন":"টাকা জমা")+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(String(r.type||r.method||r.provider||""))+'</small></div><div class="history-row-side"><strong>৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"pending"))+'</small></div></article>').join("");
+    list.innerHTML=rows.map(r=>'<article class="history-row"><span class="history-row-icon">'+(moneyHistoryType==="withdrawals"?"↗":"↙")+'</span><div class="history-row-main"><strong>'+escapeHtml(moneyHistoryType==="withdrawals"?"উত্তোলন":"টাকা জমা")+'</strong><small>'+escapeHtml(historyDate(r))+'</small><small>'+escapeHtml(String(r.type||r.method||r.provider||""))+(r.rejectionReason?'<br>কারণ: '+escapeHtml(r.rejectionReason):'')+(r.payoutReference?'<br>TRX: '+escapeHtml(r.payoutReference):'')+(r.reservationVersion===2&&r.status==='pending'?'<br>টাকা reserve আছে':'')+'</small></div><div class="history-row-side"><strong>৳'+formatMoney(historyAmount(r))+'</strong><small class="status-'+historyStatusKey(r.status)+'">'+escapeHtml(String(r.status||"pending"))+'</small></div></article>').join("");
   }
   async function loadMoneyHistory() {
     const list=document.getElementById("money-history-list");if(list)list.innerHTML='<div class="history-empty"><span>◌</span><strong>হিস্ট্রি লোড হচ্ছে…</strong></div>';
@@ -733,6 +733,7 @@
     if (event.key === "Escape" && !document.getElementById("withdrawal-drawer")?.hidden) closeWithdrawalDrawer();
   });
 
+  let withdrawalAttempt = null;
   document.getElementById("withdrawal-form")?.addEventListener("submit", async event => {
     event.preventDefault();
     if (withdrawalSubmitting) return;
@@ -769,20 +770,17 @@
         if (message) message.textContent = "আপনার একটি withdrawal request ইতিমধ্যে pending আছে। Admin review শেষ হলে আবার request করতে পারবেন।";
         return;
       }
-      await db.collection("withdrawals").add({
-        uid: walletUser.uid,
-        amount,
-        type: destination.type,
-        number: String(destination.number),
-        status: "pending",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      if (message) message.textContent = "Withdrawal request জমা হয়েছে। Admin review-এর জন্য অপেক্ষা করুন।";
+      if (!window.HubWithdrawals) throw new Error("Withdrawal module লোড হয়নি। App refresh করুন।");
+      const attemptKey = walletUser.uid + ':' + amount + ':' + destination.id;
+      if (!withdrawalAttempt || withdrawalAttempt.key !== attemptKey) withdrawalAttempt = {key:attemptKey,id:db.collection('withdrawals').doc().id};
+      await window.HubWithdrawals.request(db, firebase.firestore.FieldValue, walletUser, amount, destination.id, withdrawalAttempt.id);
+      withdrawalAttempt = null;
+      if (message) message.textContent = "Request জমা হয়েছে। ৳" + amount + " reserve হয়েছে। Reject হলে টাকা available balance-এ ফিরবে।";
       showToast("Withdrawal request submitted for admin review.");
       if (amountInput) amountInput.value = "";
     } catch (error) {
       console.error("Withdrawal request failed:", error);
-      if (message) message.textContent = "Request জমা হয়নি। Firestore rules বা connection পরীক্ষা করে আবার চেষ্টা করুন।";
+      if (message) message.textContent = error.code === 'permission-denied' ? "Request অনুমোদিত হয়নি। Updated Firestore rules publish করা আছে কি না পরীক্ষা করুন।" : (error.message || "Connection পরীক্ষা করে আবার চেষ্টা করুন।");
       showToast("Withdrawal request could not be submitted.");
     } finally {
       withdrawalSubmitting = false;
@@ -1277,8 +1275,8 @@
       const action = button.dataset.tapAction;
       if (action === "withdraw") { openWalletPage(); return; }
       if (action === "ads") { launchRewardedAd(button); return; }
+      if (action === "invite") { openReferralPage(); return; }
       const messages = {
-        invite: "Referral sharing will be connected in the Tap Earning flow."
       };
       showToast(messages[action] || "This Tap Earning action is not connected yet.");
     });
@@ -1737,6 +1735,7 @@
     renderMembership();
     const name = firstName(user, profile);
     const balance = safeNumber(profile.balance);
+    setText("withdrawal-balance-note", "Available: ৳" + walletMoney(balance) + " · Pending reserve: ৳" + walletMoney(profile.withdrawReserved || 0));
     const tasks = countTasks(profile.tasks);
     const referrals = safeNumber(profile.verifiedReferralCount) ?? countReferrals(profile.referrals);
     const bots = (countBots(profile.unlockedBots)||0)+(safeNumber(profile.referralBotsCount)||0);

@@ -203,6 +203,21 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    function reservedWithdrawal(uid, id) {
+      let d = getAfter(/databases/$(database)/documents/withdrawals/$(id)).data;
+      let before = userBefore(uid);
+      let after = userAfter(uid);
+      return !exists(/databases/$(database)/documents/withdrawals/$(id))
+        && d.uid == uid && d.status == 'pending' && d.reservationVersion == 2
+        && d.createdAt == request.time && d.amount is int && d.amount >= 100 && d.amount <= 5000
+        && d.reservedAmount == d.amount && before.get('activeWithdrawalId','') == ''
+        && before.balance is number && before.balance >= d.amount
+        && before.get('withdrawReserved',0) is number && before.get('withdrawReserved',0) >= 0
+        && after.balance == before.balance - d.amount
+        && after.withdrawReserved == before.get('withdrawReserved',0) + d.amount
+        && after.activeWithdrawalId == id && after.lastWithdrawalId == id && after.updatedAt == request.time
+        && after.diff(before).affectedKeys().hasOnly(['balance','withdrawReserved','activeWithdrawalId','lastWithdrawalId','updatedAt']);
+    }
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
@@ -271,6 +286,9 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['referralEarnings']) && referralCredit(uid);
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.lastSpinTicketId is string && spinClaim(uid, request.resource.data.lastSpinTicketId);
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasAny(['activeWithdrawalId'])
+        && reservedWithdrawal(uid, request.resource.data.activeWithdrawalId);
       allow update: if isAdmin();
       match /spinTickets/{ticketId} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
@@ -336,22 +354,45 @@ service cloud.firestore {
     }
 
     match /withdrawals/{withdrawalId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow read: if signedIn() && (!exists(/databases/$(database)/documents/withdrawals/$(withdrawalId)) || resource.data.uid == request.auth.uid || isAdmin());
       allow create: if signedIn()
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == 'pending'
-        && request.resource.data.amount is number
+        && request.resource.data.amount is int
         && request.resource.data.amount >= 100 && request.resource.data.amount <= 5000
         && request.resource.data.type in ['bKash', 'Nagad', 'Rocket']
         && request.resource.data.number is string
         && request.resource.data.number.matches('^01[3-9][0-9]{8}$')
-        && request.resource.data.keys().hasOnly(['uid', 'amount', 'type', 'number', 'status', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'amount', 'type', 'number', 'walletId', 'status', 'createdAt', 'reservationVersion', 'reservedAmount'])
+        && request.resource.data.walletId is string
+        && get(/databases/$(database)/documents/wallets/$(request.resource.data.walletId)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/wallets/$(request.resource.data.walletId)).data.type == request.resource.data.type
+        && get(/databases/$(database)/documents/wallets/$(request.resource.data.walletId)).data.number == request.resource.data.number
+        && reservedWithdrawal(request.auth.uid, withdrawalId)
         && request.resource.data.createdAt == request.time;
       allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt', 'payoutReference', 'rejectionReason', 'settlementVersion'])
         && request.resource.data.status in ['paid', 'rejected']
+        && request.resource.data.settlementVersion == 2
         && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
+        && request.resource.data.reviewedAt == request.time
+        && (request.resource.data.status == 'paid'
+          ? request.resource.data.payoutReference is string && request.resource.data.payoutReference.size() >= 3 && request.resource.data.payoutReference.size() <= 100 && request.resource.data.rejectionReason == ''
+          : request.resource.data.rejectionReason is string && request.resource.data.rejectionReason.size() >= 3 && request.resource.data.rejectionReason.size() <= 100 && request.resource.data.payoutReference == '')
+        && (resource.data.get('reservationVersion',0) == 2
+          ? resource.data.reservedAmount == resource.data.amount
+            && userBefore(resource.data.uid).activeWithdrawalId == withdrawalId
+            && userBefore(resource.data.uid).withdrawReserved >= resource.data.amount
+            && userAfter(resource.data.uid).activeWithdrawalId == ''
+            && userAfter(resource.data.uid).withdrawReserved == userBefore(resource.data.uid).withdrawReserved - resource.data.amount
+            && userAfter(resource.data.uid).balance == userBefore(resource.data.uid).balance + (request.resource.data.status == 'rejected' ? resource.data.amount : 0)
+            && userAfter(resource.data.uid).lastWithdrawalReviewId == withdrawalId
+            && userAfter(resource.data.uid).updatedAt == request.time
+          : request.resource.data.status == 'rejected' || (userBefore(resource.data.uid).balance >= resource.data.amount
+            && userAfter(resource.data.uid).balance == userBefore(resource.data.uid).balance - resource.data.amount
+            && userAfter(resource.data.uid).lastWithdrawalReviewId == withdrawalId
+            && userAfter(resource.data.uid).updatedAt == request.time));
       allow delete: if false;
     }
 

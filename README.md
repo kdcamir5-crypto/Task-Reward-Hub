@@ -252,181 +252,8 @@ Prior project work also configured a Cloudflare Worker and D1 for Monetag postba
 
 The complete current rules are in [`firebase.rules`](firebase.rules). Publish that entire file in Firebase Console → Firestore Database → Rules. GitHub Pages deployments do not publish Firestore rules. The historical snapshot below predates the current purchase workflow; do not deploy it.
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
-    function isAdmin() {
-      return signedIn()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
+The authoritative deployable rules are in [`firebase.rules`](firebase.rules). Copy the entire current file into Firebase Console → Firestore Database → Rules and Publish. Do not deploy an older README snippet.
 
-    match /users/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-      allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.role == 'user'
-        && request.resource.data.balance == 0
-        && request.resource.data.tasks == 0
-        && request.resource.data.referrals == 0;
-      allow update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram']);
-      allow update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unlockedBots', 'lastRedeemCode', 'updatedAt'])
-        && request.resource.data.unlockedBots is list
-        && request.resource.data.unlockedBots.size() == (('unlockedBots' in resource.data.keys()) ? resource.data.unlockedBots.size() + 1 : 1)
-        && request.resource.data.unlockedBots.hasAll(('unlockedBots' in resource.data.keys()) ? resource.data.unlockedBots : [])
-        && request.resource.data.lastRedeemCode is string
-        && request.resource.data.updatedAt == request.time
-        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == true
-        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.usedBy == request.auth.uid
-        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.usedAt == request.time
-        && getAfter(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.botId in request.resource.data.unlockedBots
-        && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.used == false
-        && get(/databases/$(database)/documents/botRedeemCodes/$(request.resource.data.lastRedeemCode)).data.expiresAtMs > request.time.toMillis();
-      allow update: if isAdmin();
-      match /botMining/{botId} {
-        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-        allow write: if false;
-      }
-    }
-
-    match /tasks/{tid} {
-      allow read: if signedIn();
-      allow write: if isAdmin();
-    }
-
-    match /submissions/{sid} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && sid == request.auth.uid + '_' + request.resource.data.taskId
-        && request.resource.data.status == 'pending'
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'taskId', 'taskTitle', 'reward', 'proof', 'image', 'status', 'createdAt'])
-        && request.resource.data.proof is string && request.resource.data.proof.size() <= 300
-        && request.resource.data.image is string && request.resource.data.image.size() <= 450000
-        && (request.resource.data.proof.size() >= 3 || request.resource.data.image.size() >= 1000)
-        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.active == true
-        && request.resource.data.reward == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.reward;
-      allow update: if isAdmin();
-    }
-
-    match /wallets/{walletId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(['uid', 'type', 'number', 'createdAt'])
-        && request.resource.data.type in ['bKash', 'Nagad', 'Rocket']
-        && request.resource.data.number is string
-        && request.resource.data.number.matches('^01[3-9][0-9]{8}$')
-        && request.resource.data.createdAt == request.time;
-      allow update, delete: if isAdmin();
-    }
-
-    match /withdrawals/{withdrawalId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.status == 'pending'
-        && request.resource.data.amount is number
-        && request.resource.data.amount >= 100 && request.resource.data.amount <= 5000
-        && request.resource.data.type in ['bKash', 'Nagad', 'Rocket']
-        && request.resource.data.number is string
-        && request.resource.data.number.matches('^01[3-9][0-9]{8}$')
-        && request.resource.data.keys().hasOnly(['uid', 'amount', 'type', 'number', 'status', 'createdAt'])
-        && request.resource.data.createdAt == request.time;
-      allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
-        && request.resource.data.status in ['paid', 'rejected']
-        && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
-      allow delete: if false;
-    }
-
-    // Wallet deposit requests: user creates and reads only own requests; admin reviews.
-    match /walletDeposits/{depositId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'type', 'amount', 'senderNumber', 'trxId', 'status', 'createdAt'])
-        && request.resource.data.type in ['bKash', 'Nagad']
-        && request.resource.data.amount is int
-        && request.resource.data.amount >= 10 && request.resource.data.amount <= 50000
-        && request.resource.data.senderNumber is string
-        && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
-        && request.resource.data.trxId is string
-        && request.resource.data.trxId.size() >= 5 && request.resource.data.trxId.size() <= 100
-        && request.resource.data.status == 'pending'
-        && request.resource.data.createdAt == request.time;
-      allow update: if isAdmin()
-        && resource.data.status == 'pending'
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
-        && request.resource.data.status in ['approved', 'rejected']
-        && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
-      allow delete: if false;
-    }
-
-    // Bot purchases: requests remain pending until admin approves/rejects.
-    match /botPurchaseRequests/{requestId} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(['uid', 'userName', 'email', 'botId', 'botName', 'amount', 'paymentMethod', 'senderNumber', 'trxId', 'status', 'createdAt'])
-        && request.resource.data.botId in ['pulse', 'quantum', 'neural', 'cyber', 'apex']
-        && request.resource.data.amount is int
-        && request.resource.data.amount == (
-          request.resource.data.botId == 'pulse' ? 50 :
-          request.resource.data.botId == 'quantum' ? 100 :
-          request.resource.data.botId == 'neural' ? 200 :
-          request.resource.data.botId == 'cyber' ? 300 : 500
-        )
-        && request.resource.data.paymentMethod in ['wallet', 'bKash', 'Nagad']
-        && (request.resource.data.paymentMethod == 'wallet'
-          ? request.resource.data.senderNumber == '' && request.resource.data.trxId == ''
-          : request.resource.data.senderNumber is string
-            && request.resource.data.senderNumber.matches('^01[3-9][0-9]{8}$')
-            && request.resource.data.trxId is string
-            && request.resource.data.trxId.size() >= 5
-            && request.resource.data.trxId.size() <= 100)
-        && request.resource.data.status == 'pending'
-        && request.resource.data.createdAt == request.time;
-      allow update: if isAdmin()
-        && resource.data.status == 'pending'
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
-        && request.resource.data.status in ['approved', 'rejected']
-        && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.reviewedAt == request.time;
-      allow delete: if false;
-    }
-
-    match /botRedeemCodes/{codeId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.used == false && resource.data.expiresAtMs > request.time.toMillis());
-      allow create: if isAdmin()
-        && request.resource.data.keys().hasOnly(['code', 'botId', 'botName', 'createdBy', 'createdAt', 'expiresAtMs', 'used', 'usedBy', 'usedAt'])
-        && request.resource.data.code == codeId
-        && request.resource.data.botId in ['pulse', 'quantum', 'neural', 'cyber', 'apex']
-        && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.expiresAtMs > request.time.toMillis()
-        && request.resource.data.expiresAtMs <= request.time.toMillis() + 1800000
-        && request.resource.data.used == false && request.resource.data.usedBy == null && request.resource.data.usedAt == null;
-      allow update: if isAdmin() || (signedIn()
-        && resource.data.used == false
-        && resource.data.expiresAtMs > request.time.toMillis()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedBy', 'usedAt'])
-        && request.resource.data.used == true
-        && request.resource.data.usedBy == request.auth.uid
-        && request.resource.data.usedAt == request.time
-        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.lastRedeemCode == codeId
-        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.unlockedBots.hasAny([resource.data.botId]));
-      allow delete: if isAdmin();
-    }
-
-    match /{document=**} { allow read, write: if false; }
-  }
-}
-```
 
 ## 12. Current source tree
 
@@ -521,10 +348,19 @@ The worker uses Telegram getMe/getWebhookInfo/getUpdates/getChatMember. It refus
 
 Tests: `npm run test:referrals` covers 13 new emulator/security cases; the existing purchase suite additionally checks USD bonuses. Purchase/mining/spin suites remain regression checks. Both repositories mirror `bot-purchase-core.js` and must be updated together.
 
-Outstanding from the broader demo audit: full in-app Support chat/calls, Community Feed publishing, voucher/redeem creation and claiming, complete withdraw settlement, notifications/verification badges, Telegram authentication and profile-save rule mismatches still require their own implementation. This checkpoint does not claim those features are complete.
+Outstanding from the broader demo audit: full in-app Support chat/calls, Community Feed publishing, voucher/redeem creation and claiming, notifications, Telegram authentication and profile-save rule mismatches still require their own implementation. This checkpoint does not claim those features are complete.
 
 ### Live membership displays
 - Header, Home Active Tier, Tap, Referral and Profile badges now share the same live profile/mining data.
 - Verified Member requires the trusted worker's `referralStatus: verified` (all three referral verification conditions). Firebase login or owning a bot alone does not verify membership. Unverified accounts display Verification Pending.
 - Display Level 0 = Starter Novice with no owned package; Levels 1–5 follow the highest owned package: Pulse, Quantum, Neural, Cyber, Apex. Referral-awarded mining instances are included; level is a display only and does not change rewards. Completed owned bots still count toward level.
 - Active Tier uses the highest owned package with a running mining record; otherwise it shows no active bot. Bot ownership without a running record does not claim active mining.
+
+### Tap Invite and reserved withdrawals (2026-10-25)
+- Tap → Invite Friends now opens the existing Referral interface; the shared header and five-tab navigation are retained.
+- New withdrawal requests (BDT 100–5,000, whole taka) atomically subtract the amount from available `users.balance`, add it to `withdrawReserved`, and set `activeWithdrawalId`. The destination must match the owner's saved wallet. Only one reserved request can be pending per account.
+- Admin → Withdrawals now has real Details, Mark Paid and Reject actions. Paid requires confirmation of the actual external transfer and a payment reference. It releases the reserve without another debit. Reject requires a reason and refunds the reserve exactly once. This does not initiate an external MFS payment.
+- Legacy requests have no reserve: rejection does not credit money; paid settlement deducts once from current available balance and fails if insufficient. No historical requests are silently changed.
+- User/admin use the same `withdrawal-core.js`; Firestore rules independently require atomic reservation/settlement and prohibit client self-approval or forged refund. Invalid/double/concurrent operations are rejected. Receipt fields remain visible in history/admin.
+- Deployment: publish the current `firebase.rules` after this update. New requests fail closed until those rules are published. No service-account or Telegram secret changes are needed.
+- Integration check: `npm run test:withdrawals`. This checkpoint implements Invite and withdrawal settlement; Support, Feed, code claiming, full activity, notifications and Telegram login remain separate work.
