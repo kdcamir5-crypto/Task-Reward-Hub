@@ -75,7 +75,7 @@
             <button class="reference-service" type="button" data-referral-open><span>🤝</span><strong>Referrals</strong><small>Invite Friends</small></button>
             <button class="reference-service" type="button" data-withdrawal-open><span>🏦</span><strong>Withdraw</strong><small>Get Your Money</small></button>
             <button class="reference-service" type="button" data-money-history-open><span>🗓️</span><strong>History</strong><small>Transactions</small></button>
-            <button class="reference-service" type="button" data-go="feed"><span>🎫</span><strong>Claim Code</strong><small>Get Bonus</small></button>
+            <button class="reference-service" type="button" data-code-claim-open><span>🎫</span><strong>Claim Code</strong><small>Get Bonus</small></button>
             <button class="reference-service" type="button" data-wallet-open><span>💳</span><strong>My Wallet</strong><small>Balance & Coins</small></button>
             <button class="reference-service" type="button" data-money-history-open><span>💵</span><strong>Payouts</strong><small>Payment Proof</small></button>
             <button class="reference-service" type="button" id="home-support-shortcut"><span>🎧</span><strong>Support</strong><small>24/7 Help</small></button>
@@ -98,7 +98,7 @@
           <button type="button" data-referral-open>♟ Refer Member to Wake Up AI Bot</button>
         </section>
         <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" data-referral-open>Copy Link</button></section>
-        <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
+        <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" maxlength="64" autocomplete="off" autocapitalize="characters" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
         <section class="commission-card"><div><h2>Refer & Earn Commission</h2><p>Earn referral commission for every verified collector you onboard</p><button type="button" data-referral-open>View Program →</button></div><span>🎁</span></section>
         <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-ledger-open>View Ledger</button></div><p id="recent-activity-status" class="activity-empty" role="status">লেনদেন লোড হচ্ছে…</p><div id="recent-activity-list" aria-live="polite"></div></section>
       </section>
@@ -580,9 +580,10 @@
   <script src="../js/spin-core.js?v=20261024-spin1"></script>
   <script src="../js/referrals.js?v=20261025"></script>
   <script src="../js/withdrawal-core.js?v=20261025-withdraw1"></script>
-  <script src="../js/activity-core.js?v=20261025-activity1"></script>
-  <script src="../js/notifications-core.js?v=20261025-notifs1"></script>
-  <script src="../js/dashboard.js?v=20261025-notifs1"></script>
+  <script src="../js/activity-core.js?v=20261025-codes1"></script>
+  <script src="../js/notifications-core.js?v=20261025-codes1"></script>
+  <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
+  <script src="../js/dashboard.js?v=20261025-codes1"></script>
 </body>
 </html>
 

@@ -9,6 +9,7 @@ function events(rows){
    ||(row.source==='withdrawal'&&['paid','rejected'].includes(row.status))
    ||(row.source==='referral-bot'&&row.status==='awarded')
    ||(row.source==='spin'&&row.status==='claimed')
+   ||(row.source==='code'&&row.status==='claimed')
    ||(row.source==='mining'&&['completed','complete','finished'].includes(row.status));
   if(!allowed)continue;
   // A rejected bot order may be resubmitted under the same document ID.
@@ -19,7 +20,7 @@ function events(rows){
    :row.source==='purchase'?(row.status==='approved'?'কেনা বট unlock হয়েছে':'Bot payment বাতিল হয়েছে')
    :row.source==='withdrawal'?(row.status==='paid'?'Withdrawal paid হয়েছে':'Withdrawal বাতিল হয়েছে')
    :row.source==='referral-bot'?'Verified referral থেকে free bot পেয়েছেন'
-   :row.source==='spin'?'Spin reward জমা হয়েছে':'Bot mining সম্পন্ন হয়েছে';
+   :row.source==='spin'?'Spin reward জমা হয়েছে':row.source==='code'?'Code reward পেয়েছেন':'Bot mining সম্পন্ন হয়েছে';
   result.push({...row,id,title});
  }
  return result.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)||a.id.localeCompare(b.id));

@@ -218,6 +218,53 @@ service cloud.firestore {
         && after.activeWithdrawalId == id && after.lastWithdrawalId == id && after.updatedAt == request.time
         && after.diff(before).affectedKeys().hasOnly(['balance','withdrawReserved','activeWithdrawalId','lastWithdrawalId','updatedAt']);
     }
+    function codeClaim(uid, code) {
+      let c = get(/databases/$(database)/documents/rewardCodes/$(code)).data;
+      let next = getAfter(/databases/$(database)/documents/rewardCodes/$(code)).data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/codeClaims/$(code)).data;
+      let before = userBefore(uid);
+      let after = userAfter(uid);
+      return !exists(/databases/$(database)/documents/users/$(uid)/codeClaims/$(code))
+        && c.active == true && c.expiresAtMs > request.time.toMillis() && c.claimedCount < c.maxClaims
+        && next.diff(c).affectedKeys().hasOnly(['claimedCount','lastClaimUid','lastClaimAt'])
+        && next.claimedCount == c.claimedCount + 1 && next.lastClaimUid == uid && next.lastClaimAt == request.time
+        && r.uid == uid && r.code == code && r.status == 'claimed' && r.createdAt == request.time
+        && r.rewardType == c.rewardType && r.amountMinor == c.amountMinor && r.botId == c.botId
+        && after.lastRewardCode == code && after.updatedAt == request.time
+        && (c.rewardType == 'BDT'
+          ? before.balance is number && before.balance >= 0 && after.balance == before.balance + c.amountMinor / 100.0
+            && after.diff(before).affectedKeys().hasOnly(['balance','lastRewardCode','updatedAt'])
+          : c.rewardType == 'USD'
+            ? before.get('usdBalance',0) is number && before.get('usdBalance',0) >= 0
+              && after.usdBalance == before.get('usdBalance',0) + c.amountMinor / 100.0
+              && after.diff(before).affectedKeys().hasOnly(['usdBalance','lastRewardCode','updatedAt'])
+            : c.rewardType == 'bot' && botPrice(c.botId) > 0
+              && !(c.botId in before.get('unlockedBots',[]))
+              && !exists(/databases/$(database)/documents/users/$(uid)/botMining/$(c.botId))
+              && after.unlockedBots == before.get('unlockedBots',[]).concat([c.botId])
+              && after.diff(before).affectedKeys().hasOnly(['unlockedBots','lastRewardCode','updatedAt'])
+              && getAfter(/databases/$(database)/documents/users/$(uid)/botMining/$(c.botId)).data.purchaseId == 'code_' + code);
+    }
+    match /rewardCodes/{code} {
+      allow get: if signedIn();
+      allow list: if isAdmin();
+      allow create: if isAdmin() && code.matches('^TRH-[A-F0-9]{20}$')
+        && request.resource.data.keys().hasAll(['code','rewardType','amountMinor','botId','maxClaims','claimedCount','active','expiresAtMs','createdBy','createdAt','lastClaimUid','lastClaimAt'])
+        && request.resource.data.keys().hasOnly(['code','rewardType','amountMinor','botId','maxClaims','claimedCount','active','expiresAtMs','createdBy','createdAt','lastClaimUid','lastClaimAt'])
+        && request.resource.data.code == code && request.resource.data.rewardType in ['BDT','USD','bot']
+        && request.resource.data.amountMinor is int
+        && (request.resource.data.rewardType == 'bot' ? botPrice(request.resource.data.botId) > 0 && request.resource.data.amountMinor == 0
+          : request.resource.data.botId == '' && request.resource.data.amountMinor >= 1 && request.resource.data.amountMinor <= 100000000)
+        && request.resource.data.maxClaims is int && request.resource.data.maxClaims >= 1 && request.resource.data.maxClaims <= 10000
+        && request.resource.data.claimedCount == 0 && request.resource.data.active == true
+        && request.resource.data.expiresAtMs is int && request.resource.data.expiresAtMs > request.time.toMillis()
+        && request.resource.data.expiresAtMs <= request.time.toMillis() + 1800000
+        && request.resource.data.createdBy == request.auth.uid && request.resource.data.createdAt == request.time
+        && request.resource.data.lastClaimUid == '' && request.resource.data.lastClaimAt == null;
+      allow update: if (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['active']) && request.resource.data.active is bool)
+        || (signedIn() && codeClaim(request.auth.uid,code));
+      allow delete: if false;
+    }
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
@@ -230,6 +277,9 @@ service cloud.firestore {
         && request.resource.data.collectorId.matches('^[0-9]{8}$')
         && request.resource.data.referralCode == request.resource.data.collectorId
         && getAfter(/databases/$(database)/documents/collectorIds/$(request.resource.data.collectorId)).data.uid == request.auth.uid;
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastRewardCode'])
+        && codeClaim(uid,request.resource.data.lastRewardCode);
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram', 'profileAvatar'])
         && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['profileAvatar']) || request.resource.data.profileAvatar in ['👨🏻‍💻', '👨🏽‍🚀', '🧑🏻‍🎤', '👩🏻‍💻', '👩🏽‍🚀', '👩🏻‍🎨', '🧑🏾‍🚀', '🦸🏻‍♂️']);
@@ -290,6 +340,13 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['activeWithdrawalId'])
         && reservedWithdrawal(uid, request.resource.data.activeWithdrawalId);
       allow update: if isAdmin();
+      match /codeClaims/{code} {
+        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['uid','code','rewardType','amountMinor','botId','status','createdAt'])
+          && codeClaim(uid,code);
+        allow update, delete: if false;
+      }
       // Read state is private to its owner and cannot grant notifications, roles or money.
       match /notificationReads/{eventId} {
         allow read: if signedIn() && request.auth.uid == uid;
@@ -329,6 +386,15 @@ service cloud.firestore {
           && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.purchaseId)).data.status == 'approved'
           && getAfter(/databases/$(database)/documents/botPurchaseRequests/$(request.resource.data.purchaseId)).data.createdAt == request.time
           && userAfter(uid).lastBotPurchaseId == request.resource.data.purchaseId);
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['botId','botName','durationDays','targetReward','earnedReward','status','startedAt','purchaseId'])
+          && request.resource.data.botId == botId && botPrice(botId) > 0
+          && request.resource.data.durationDays == 30 && request.resource.data.targetReward == botTarget(botId)
+          && request.resource.data.earnedReward == 0 && request.resource.data.status == 'running'
+          && request.resource.data.startedAt == request.time
+          && request.resource.data.purchaseId == 'code_' + userAfter(uid).lastRewardCode
+          && get(/databases/$(database)/documents/rewardCodes/$(userAfter(uid).lastRewardCode)).data.botId == botId
+          && codeClaim(uid,userAfter(uid).lastRewardCode);
         allow update, delete: if false;
       }
     }

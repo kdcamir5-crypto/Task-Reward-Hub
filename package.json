@@ -9,7 +9,8 @@
     "test:withdrawals": "firebase emulators:exec --only firestore --project demo-trh-withdrawals \"node tests/withdrawals.cjs\"",
     "test:activity": "node --test tests/activity.test.cjs",
     "test:notifications": "node --test tests/notifications.test.cjs",
-    "test:notifications:rules": "firebase emulators:exec --only firestore --project demo-trh-notifications \"node tests/notifications-rules.cjs\""
+    "test:notifications:rules": "firebase emulators:exec --only firestore --project demo-trh-notifications \"node tests/notifications-rules.cjs\"",
+    "test:codes": "firebase emulators:exec --only firestore --project demo-trh-codes \"node tests/reward-codes.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",

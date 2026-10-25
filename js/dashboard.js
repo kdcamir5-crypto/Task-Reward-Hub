@@ -727,7 +727,7 @@
     const rows=ledgerRows.filter(r=>(filter==='all'||(filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(stateFilter==='all'||activityStatus(r).key===stateFilter));
     const list=document.getElementById('ledger-list');if(!list)return;
     list.innerHTML=rows.length?rows.map(activityRowMarkup).join(''):'<div class="history-empty"><span>▤</span><strong>'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'সব লেনদেন লোড করা যায়নি':'এই filter-এ কোনো সংরক্ষিত লেনদেন নেই')+'</strong></div>';
-    const sourceLabels={withdrawals:'Withdrawals',deposits:'Deposits',purchases:'Bot purchases',tasks:'Tasks',spins:'Spin',gifts:'Referral bots',profile:'Profile',mining:'Mining'};
+    const sourceLabels={withdrawals:'Withdrawals',deposits:'Deposits',purchases:'Bot purchases',tasks:'Tasks',spins:'Spin',gifts:'Referral bots',codes:'Code rewards',profile:'Profile',mining:'Mining'};
     setText('ledger-source-status',activityState.errors.length?'লোড হয়নি: '+activityState.errors.map(k=>sourceLabels[k]||k).join(', ')+'. Retry করুন।':activityState.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':activityState.loading?'সব উৎসের তথ্য লোড হচ্ছে…':'উপলভ্য রেকর্ড আপডেট হয়েছে।');
   }
   function startAccountActivity(user) {
@@ -1421,11 +1421,21 @@
   document.querySelectorAll("[data-support-demo]").forEach(button => {
     button.addEventListener("click", () => showToast("Demo only — মেসেজ, ফাইল বা ভয়েস পাঠানো হবে না। যোগাযোগের জন্য WhatsApp বা Telegram ব্যবহার করুন।"));
   });
-  document.getElementById("home-claim-form")?.addEventListener("submit", event => {
-    event.preventDefault();
-    const message = document.getElementById("home-claim-message");
-    if (message) message.textContent = "Code claiming is not connected in this dashboard build yet.";
+  let claimingRewardCode = false;
+  document.getElementById('home-claim-form')?.addEventListener('submit', async event => {
+    event.preventDefault();if(claimingRewardCode)return;
+    const input=document.getElementById('home-claim-code'),message=document.getElementById('home-claim-message'),button=event.target.querySelector('[type="submit"]');
+    if(!walletUser||!db||!window.HubRewardCodes){message.textContent='Account অথবা code module লোড হয়নি। App refresh করুন।';return;}
+    claimingRewardCode=true;button.disabled=true;message.textContent='Code যাচাই হচ্ছে…';
+    try{
+      const result=await window.HubRewardCodes.claim(db,window.firebase.firestore.FieldValue,walletUser,input.value);
+      const reward=result.rewardType==='bot'?window.HubRewardCodes.bots[result.botId].name+' unlock হয়েছে':(result.rewardType==='USD'?'$':'৳')+(result.amountMinor/100).toFixed(2)+' wallet-এ যোগ হয়েছে';
+      message.textContent=result.already?'এই code আগেই claim করেছেন। নতুন করে reward যোগ হয়নি।':reward;showToast(result.already?'Code already claimed.':'Code reward সফল হয়েছে।');
+      if(!result.already)input.value='';
+    }catch(error){message.textContent=error.code==='permission-denied'?'Claim অনুমোদিত হয়নি। Code-এর মেয়াদ/usage limit ও নতুন Firebase rules পরীক্ষা করুন।':error.message;}
+    finally{claimingRewardCode=false;button.disabled=false;}
   });
+  document.querySelectorAll('[data-code-claim-open]').forEach(button=>button.addEventListener('click',()=>{showTab('home');document.getElementById('home-claim-form')?.scrollIntoView({block:'center',behavior:'smooth'});document.getElementById('home-claim-code')?.focus({preventScroll:true});}));
 
   async function signOut() {
     if (!auth) {

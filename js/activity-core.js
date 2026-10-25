@@ -29,6 +29,7 @@ function normalize(sources,profile,mining){
  for(const d of sources.spins||[]){if(d.claimed===true&&['BDT','USD'].includes(d.currency)&&Number.isInteger(d.amountMinor)&&d.amountMinor>0)add('spin',d,{title:'Spin reward',icon:'🎡',amount:d.amountMinor/100,currency:d.currency,effect:'credit',status:'claimed',timestamp:time(d.claimedAt),detail:d.currency+' wallet-এ জমা'});}
  for(const d of sources.tasks||[])add('task',d,{title:'Task submission',icon:'🎯',amount:d.reward,effect:'none',detail:(d.taskTitle||d.taskId||'')+' · জমা দেওয়া task-এর reward; এটি wallet credit receipt নয়'});
  for(const d of sources.gifts||[])add('referral-bot',d,{title:'Referral free bot',icon:'🎁',amount:1,currency:'BOT',effect:'none',status:'awarded',detail:d.botId+' · Verified referral #'+d.ordinal});
+ for(const d of sources.codes||[])add('code',d,{title:'Code reward',icon:'🎫',amount:d.rewardType==='bot'?1:d.amountMinor/100,currency:d.rewardType==='bot'?'BOT':d.rewardType,effect:d.rewardType==='bot'?'none':'credit',status:'claimed',detail:d.code+(d.botId?' · '+d.botId:'')});
  for(const d of mining||[]){if(amount(d.earnedReward)>0)add('mining',d,{title:'Bot mining • মোট অর্জিত',icon:'⛏',amount:d.earnedReward,effect:'total',status:d.status||'recorded',timestamp:time(d.updatedAt||d.lastProcessedAt||d.startedAt),detail:d.botName||d.botId||d.id});}
  if(profile&&amount(profile.referralEarnings)>0)add('referral-total',{id:'total'},{title:'Referral commission • সর্বমোট',icon:'👥',amount:profile.referralEarnings,effect:'total',status:'recorded',timestamp:0,recent:false,detail:'৫% commission-এর সংরক্ষিত মোট; প্রতিটি পুরোনো credit-এর আলাদা receipt নেই'});
  return rows.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)||a.key.localeCompare(b.key));
@@ -40,10 +41,10 @@ function amountText(row){
 }
 function create(db,uid,onChange){
  let stopped=false,profile=null,mining=[],unsubscribers=[];
- const sources={},errors=new Set(),pending=new Set(['withdrawals','deposits','purchases','tasks','spins','gifts']),cached=new Set();
+ const sources={},errors=new Set(),pending=new Set(['withdrawals','deposits','purchases','tasks','spins','gifts','codes']),cached=new Set();
  function emit(){if(!stopped)onChange({rows:normalize(sources,profile,mining),errors:[...errors],loading:pending.size>0,fromCache:cached.size>0});}
  const userRef=db.collection('users').doc(uid);
- const specs=[['withdrawals',db.collection('withdrawals').where('uid','==',uid)],['deposits',db.collection('walletDeposits').where('uid','==',uid)],['purchases',db.collection('botPurchaseRequests').where('uid','==',uid)],['tasks',db.collection('submissions').where('uid','==',uid)],['spins',userRef.collection('spinTickets').where('claimed','==',true)],['gifts',db.collection('referralAwards').where('recipientUid','==',uid)]];
+ const specs=[['withdrawals',db.collection('withdrawals').where('uid','==',uid)],['deposits',db.collection('walletDeposits').where('uid','==',uid)],['purchases',db.collection('botPurchaseRequests').where('uid','==',uid)],['tasks',db.collection('submissions').where('uid','==',uid)],['spins',userRef.collection('spinTickets').where('claimed','==',true)],['gifts',db.collection('referralAwards').where('recipientUid','==',uid)],['codes',userRef.collection('codeClaims')]];
  emit();
  for(const [name,query] of specs){
   try{unsubscribers.push(query.onSnapshot(s=>{if(stopped)return;sources[name]=s.docs.map(d=>({...d.data(),id:d.id}));pending.delete(name);errors.delete(name);if(s.metadata?.fromCache)cached.add(name);else cached.delete(name);emit();},()=>{if(stopped)return;errors.add(name);pending.delete(name);emit();}));}
