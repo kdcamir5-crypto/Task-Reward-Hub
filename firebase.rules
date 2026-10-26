@@ -2,6 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+    // Only changed presentation fields are validated; identity and money remain protected.
+    function validProfileChanges() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      let d = request.resource.data;
+      return (!changed.hasAny(['name']) || (d.name is string && d.name.size() > 0 && d.name.size() <= 80))
+        && (!changed.hasAny(['fullName']) || (d.fullName is string && d.fullName.size() > 0 && d.fullName.size() <= 80))
+        && (!changed.hasAny(['phone']) || (d.phone is string && d.phone.size() <= 24))
+        && (!changed.hasAny(['phoneNumber']) || (d.phoneNumber is string && d.phoneNumber.size() <= 24))
+        && (!changed.hasAny(['telegram']) || (d.telegram is string && d.telegram.size() <= 120))
+        && (!changed.hasAny(['telegramUsername']) || (d.telegramUsername is string && d.telegramUsername.size() <= 120))
+        && (!changed.hasAny(['profileUpdatedAt']) || d.profileUpdatedAt == request.time)
+        && (!changed.hasAny(['profileAvatar']) || d.profileAvatar in ['', '👨🏻‍💻', '👨🏽‍🚀', '🧑🏻‍🎤', '👩🏻‍💻', '👩🏽‍🚀', '👩🏻‍🎨', '🧑🏾‍🚀', '🦸🏻‍♂️'])
+        && (!changed.hasAny(['profilePhotoData']) || (d.profilePhotoData is string && d.profilePhotoData.size() <= 450000
+          && (d.profilePhotoData == '' || d.profilePhotoData.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))));
+    }
     function isAdmin() {
       return signedIn()
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
@@ -281,8 +296,8 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastRewardCode'])
         && codeClaim(uid,request.resource.data.lastRewardCode);
       allow update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'telegram', 'profileAvatar'])
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['profileAvatar']) || request.resource.data.profileAvatar in ['👨🏻‍💻', '👨🏽‍🚀', '🧑🏻‍🎤', '👩🏻‍💻', '👩🏽‍🚀', '👩🏻‍🎨', '🧑🏾‍🚀', '🦸🏻‍♂️']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'fullName', 'phone', 'phoneNumber', 'telegram', 'telegramUsername', 'profileAvatar', 'profilePhotoData', 'profileUpdatedAt'])
+        && validProfileChanges();
       // Daily Tap-to-Earn progress. Only the signed-in user can increment their
       // own count, one coin per write, up to 2,000 per Bangladesh-day key.
       allow update: if signedIn() && request.auth.uid == uid

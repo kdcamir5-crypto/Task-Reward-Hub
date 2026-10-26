@@ -1480,6 +1480,7 @@
   document.querySelectorAll("[data-profile-avatar]").forEach(option => {
     option.addEventListener("click", () => {
       pendingProfileAvatar = option.dataset.profileAvatar || null;
+      pendingProfilePhotoData = null;
       document.querySelectorAll("[data-profile-avatar]").forEach(item => {
         item.classList.toggle("is-selected", item === option);
         item.setAttribute("aria-pressed", String(item === option));
@@ -1506,7 +1507,7 @@
     if (!pendingProfileAvatar) { if (message) message.textContent = "Choose an avatar first."; return; }
     if (button) { button.disabled = true; button.textContent = "Saving…"; }
     try {
-      await db.collection("users").doc(user.uid).update({ profileAvatar: pendingProfileAvatar });
+      await db.collection("users").doc(user.uid).update({ profileAvatar: pendingProfileAvatar, profilePhotoData: "" });
       if (message) message.textContent = "Avatar saved successfully!";
       pendingProfileAvatar = null;
     } catch (error) {
@@ -1547,6 +1548,7 @@
         const data = canvas.toDataURL("image/jpeg", 0.68);
         if (data.length > 450000) { showToast("This image is too large after compression. Choose another image."); return; }
         pendingProfilePhotoData = data;
+        pendingProfileAvatar = null;
         const photo = document.getElementById("profile-photo");
         if (photo) { photo.src = data; photo.hidden = false; }
         const initialsNode = document.getElementById("profile-avatar");
@@ -1573,7 +1575,7 @@
     if (button) { button.disabled = true; button.textContent = "Saving profile…"; }
     setProfileFormMessage("profile-save-message", "Saving your profile details…", "");
     const updates = { name: name, fullName: name, phoneNumber: phone, telegramUsername: telegram, profileUpdatedAt: window.firebase.firestore.FieldValue.serverTimestamp() };
-    if (pendingProfilePhotoData) updates.profilePhotoData = pendingProfilePhotoData;
+    if (pendingProfilePhotoData) { updates.profilePhotoData = pendingProfilePhotoData; updates.profileAvatar = ""; }
     try {
       await db.collection("users").doc(user.uid).update(updates);
       if (user.displayName !== name) {
@@ -1642,7 +1644,7 @@
   });
   document.getElementById("profile-telegram-open")?.addEventListener("click", () => {
     const raw = document.getElementById("profile-telegram-username")?.textContent.trim() || "";
-    const username = raw.replace(/^@/, "");
+    const username = raw.replace(/^https:\/\/(?:www\.)?(?:t\.me|telegram\.me)\//i, "").replace(/^@/, "").replace(/\/$/, "");
     if (username && /^[A-Za-z0-9_]{5,32}$/.test(username)) {
       window.open("https://t.me/" + encodeURIComponent(username), "_blank", "noopener,noreferrer");
     } else {
@@ -1821,7 +1823,6 @@
     setText("collector-id", String(collectorId));
     setText("welcome-title", "Welcome back.");
     setText("welcome-subtitle", "Good to see you, " + name + ". Your reward space is ready.");
-    setText("user-avatar", profile.profileAvatar || ["👨🏻‍💻", "👩🏻‍💻", "👨🏽‍🚀", "👩🏽‍🚀", "🧑🏻‍🎤", "👩🏻‍🎨", "🧑🏾‍🚀", "🦸🏻‍♂️"][String(user.uid || displayName).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0) % 8]);
     setText("balance-value", formatMoney(balance));
     setText("tasks-value", tasks === null ? "—" : String(tasks));
     setText("referrals-value", referrals === null ? "—" : String(referrals));
@@ -1835,7 +1836,7 @@
     setText("profile-name", displayName);
     setText("profile-member-id", String(collectorId));
     const telegramName = profile.telegramUsername || profile.telegram_username || profile.telegram || "";
-    setText("profile-telegram-username", telegramName ? (String(telegramName).startsWith("@") ? String(telegramName) : "@" + String(telegramName)) : "Not set");
+    setText("profile-telegram-username", telegramName ? (/^https:\/\//i.test(String(telegramName)) ? String(telegramName) : (String(telegramName).startsWith("@") ? String(telegramName) : "@" + String(telegramName))) : "Not set");
     setInputValueUnlessFocused("profile-full-name-input", displayName);
     setInputValueUnlessFocused("profile-email-input", user.email || "");
     setInputValueUnlessFocused("profile-phone-input", profile.phoneNumber || profile.phone_number || profile.phone || "");
@@ -1864,7 +1865,14 @@
     const headerAvatar = document.getElementById("user-avatar");
     if (headerAvatar) {
       const onlineDot = headerAvatar.querySelector(".online-dot");
-      headerAvatar.textContent = activeAvatar;
+      headerAvatar.textContent = hasPhoto ? "" : activeAvatar;
+      if (hasPhoto) {
+        const image = document.createElement("img");
+        image.src = photoUrl;
+        image.alt = "Profile picture";
+        image.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block";
+        headerAvatar.appendChild(image);
+      }
       if (onlineDot) headerAvatar.appendChild(onlineDot);
       headerAvatar.style.fontSize = "23px";
     }
@@ -1874,7 +1882,6 @@
     });
     setText("profile-email", user.email || "Email not available");
     setText("profile-role", String(profile.role || "member").toUpperCase());
-    setText("profile-avatar", initials(displayName));
     setText("profile-balance", "৳" + formatMoney(balance));
     setText("profile-tasks", tasks === null ? "—" : String(tasks));
     setText("profile-referrals", referrals === null ? "—" : String(referrals));

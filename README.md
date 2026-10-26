@@ -421,3 +421,10 @@ Outstanding from the broader demo audit: full in-app Support chat/calls, Communi
 - Email/username signup/login remains unchanged and can be used while Worker setup is pending. Firebase LOCAL persistence stays enabled; no forced logout is introduced. Ordinary-browser pages without signed Mini App data instruct users to launch the Telegram Mini App.
 - New secrets are only on the **new** Cloudflare Worker: TELEGRAM_BOT_TOKEN (the Mini App bot) and FIREBASE_SERVICE_ACCOUNT (existing reward-hub-bd JSON). Existing Monetag Worker, GitHub secrets, bot polling/webhooks, Firebase rules and admin panel are unchanged.
 - Validation: 13 backend crypto/API tests + 4 client/persistence tests + 8 real isolated Firestore REST transaction tests (25 total), plus mobile browser tests for the Profile linking/reauth flow, setup-error fallback and 320/390/420px layouts. Real Telegram/Firebase live login remains unverified until the Worker is published/configured and a real signed Mini App launch is used.
+
+
+### Profile save correction — 2026-10-26
+
+Profile edits now accept the existing form fields (name/fullName, phoneNumber, telegramUsername and server profileUpdatedAt), with length/type limits and no permission to edit financial fields, role or verified Telegram identity. Compressed JPEG profile data is capped at 450,000 characters. Choosing an avatar clears the uploaded photo; saving a new photo clears the avatar selection. The saved image appears in the shared header without changing its layout. Telegram profile links support t.me/telegram.me URLs as well as usernames.
+
+Deployment: publish the **entire firebase.rules** file in Firebase Console → Firestore Database → Rules. GitHub Pages deploys the client only; a GitHub commit does not publish Firestore rules. Existing balances, bots, identity mappings and sessions are not migrated. Tests: `npm run test:profile` and `npm run test:profile:display`.

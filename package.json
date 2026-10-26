@@ -13,7 +13,9 @@
     "test:codes": "firebase emulators:exec --only firestore --project demo-trh-codes \"node tests/reward-codes.cjs\"",
     "test:community": "firebase emulators:exec --only firestore --project demo-trh-community \"node tests/community.cjs\"",
     "test:telegram": "node --test tests/telegram-auth.test.mjs tests/telegram-client.test.cjs",
-    "test:telegram:identities": "firebase emulators:exec --only firestore --project demo-trh-telegram \"node --test tests/telegram-identities.test.mjs\""
+    "test:telegram:identities": "firebase emulators:exec --only firestore --project demo-trh-telegram \"node --test tests/telegram-identities.test.mjs\"",
+    "test:profile": "firebase emulators:exec --only firestore --project demo-trh-profile \"node tests/profile.cjs\"",
+    "test:profile:display": "node --test tests/profile-display.test.cjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
