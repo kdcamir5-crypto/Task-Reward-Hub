@@ -1390,6 +1390,36 @@
 
   bindFleetButtons();
 
+  // Native modal supplies focus trapping and Escape dismissal without changing page layout.
+  const hubMenu = document.getElementById('hub-menu');
+  const hubMenuButton = document.querySelector('.home-menu-button');
+  hubMenuButton?.addEventListener('click', () => {
+    if (!hubMenu || hubMenu.open) return;
+    hubMenu.showModal();
+    hubMenuButton.setAttribute('aria-expanded', 'true');
+  });
+  hubMenu?.addEventListener('close', () => hubMenuButton?.setAttribute('aria-expanded', 'false'));
+  document.getElementById('hub-menu-close')?.addEventListener('click', () => hubMenu.close());
+  hubMenu?.addEventListener('click', event => {
+    if (event.target === hubMenu) {
+      const r = hubMenu.getBoundingClientRect();
+      if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) hubMenu.close();
+    }
+  });
+  document.querySelectorAll('[data-menu-route]').forEach(button => {
+    button.addEventListener('click', () => {
+      const route = button.dataset.menuRoute;
+      const actions = {wallet:openWalletPage,deposit:openDepositPage,withdraw:openWithdrawalDrawer,
+        ledger:openFullLedgerDrawer,referrals:openReferralPage,shop:openBotShop,
+        spin:openSpinWheel,tap:openTapEarning,alerts:openNotificationsPage,support:openSupportPage};
+      hubMenu.close();
+      // Clear prior inner pages before opening a destination from any tab.
+      showTab(['home','rank','feed','profile'].includes(route) ? route : (route === 'shop' ? 'bots' : 'home'));
+      if (actions[route]) actions[route]();
+    });
+  });
+
+
   const supportToggle = document.getElementById("support-toggle");
   let supportReturnTab = "home";
   function openSupportPage() {
