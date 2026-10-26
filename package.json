@@ -18,7 +18,8 @@
     "test:profile:display": "node --test tests/profile-display.test.cjs",
     "test:recovery": "node --test tests/recovery-auth.test.mjs tests/recovery-client.test.cjs",
     "test:recovery:rules": "firebase emulators:exec --only firestore --project demo-trh-recovery \"node tests/recovery-rules.cjs\"",
-    "test:recovery:native": "firebase emulators:exec --config tests/firebase-recovery-auth.json --only auth --project demo-trh-recovery \"node tests/recovery-native.cjs\""
+    "test:recovery:native": "firebase emulators:exec --config tests/firebase-recovery-auth.json --only auth --project demo-trh-recovery \"node tests/recovery-native.cjs\"",
+    "test:leaderboard:sync": "firebase emulators:exec --only firestore --project demo-trh-rank \"node --test tests/leaderboard-sync.test.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",

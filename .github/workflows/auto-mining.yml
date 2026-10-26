@@ -8,6 +8,7 @@ on:
     paths:
       - .github/workflows/auto-mining.yml
       - scripts/auto-mining.js
+      - scripts/sync-leaderboard.cjs
 permissions:
   contents: read
 concurrency:
@@ -29,3 +30,9 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           NODE_PATH: ${{ runner.temp }}/mining-worker/node_modules
         run: node scripts/auto-mining.js
+      - name: Synchronize public bot rankings
+        if: ${{ !cancelled() }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_PATH: ${{ runner.temp }}/mining-worker/node_modules
+        run: node scripts/sync-leaderboard.cjs

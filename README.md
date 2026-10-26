@@ -435,3 +435,10 @@ Deployment: publish the **entire firebase.rules** file in Firebase Console → F
 Profile now provides a Firebase-verified Recovery Email flow for existing username accounts, preserving their UID and username via a private immutable reservation. Contact email from signup is not recovery proof. Username fallback validates the current password with Firebase through the dedicated Telegram Auth Worker; email and Telegram login remain available. No recovery email or password is published in Firestore aliases.
 
 **Deployment required:** publish the entire latest `firebase.rules`, then replace/deploy `workers/telegram-auth.mjs` in the existing Telegram Auth Worker, keeping its secrets. The Recovery form stays blocked until the Worker advertises recovery capability. [Full setup and test steps](docs/password-recovery-setup.md). No live accounts were migrated by this commit.
+
+
+### Background Rank sync (2026-10-26)
+
+The existing Secure Auto Mining workflow now runs `scripts/sync-leaderboard.cjs` on each scheduled/manual run, even if the reward-processing step fails (unless the workflow is cancelled). It reads each current user profile in a transaction and publishes only UID, display name, Collector ID, total owned package bots plus referral bot instances, and update time to `publicLeaderboard`. No browser sign-in is needed. Changed entries are updated; identical entries are not rewritten. Invalid profiles are counted and skipped rather than converted to zero; financial/profile fields are never written.
+
+This is scheduled reconciliation, not instant server push: the existing five-minute schedule can be delayed by GitHub. The client still displays new data through its existing live listener. Existing FIREBASE_SERVICE_ACCOUNT is reused; no new secrets, Firebase rules or Cloudflare deployment is needed. The push triggers the first run. Check the Synchronize public bot rankings step for LEADERBOARD_SYNC_SUMMARY counts. Tests: `npm run test:leaderboard:sync` (local Firestore only).
