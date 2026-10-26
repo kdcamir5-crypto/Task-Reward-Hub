@@ -74,7 +74,7 @@
           <article class="stat-card panel" data-referral-card tabindex="0" role="link" aria-label="Open Referral Interface"><span class="stat-icon icon-ref">◷</span><span class="stat-label">PENDING REFERRALS</span><strong id="home-pending-referrals">—</strong><small id="home-pending-referrals-note">লোড হচ্ছে…</small><a href="#referrals">In Progress ›</a></article>
         </section>
         <section class="reference-section">
-          <div class="reference-section-title"><h2>⚡ Quick Access</h2><button type="button" data-go="feed">All Services →</button></div>
+          <div class="reference-section-title"><h2>⚡ Quick Access</h2><button type="button" id="home-all-services">All Services →</button></div>
           <div class="quick-grid reference-quick-grid">
             <button class="reference-service" type="button" data-referral-open><span>🤝</span><strong>Referrals</strong><small>Invite Friends</small></button>
             <button class="reference-service" type="button" data-withdrawal-open><span>🏦</span><strong>Withdraw</strong><small>Get Your Money</small></button>
@@ -87,7 +87,7 @@
           </div>
         </section>
         <section class="reference-section">
-          <div class="reference-section-title"><h2>🔹 Explore Services</h2></div>
+          <div class="reference-section-title" id="home-services-heading" tabindex="-1"><h2>🔹 Explore Services</h2></div>
           <div class="explore-grid">
             <button type="button" class="explore-card" id="spin-wheel-open"><span>⚙️</span><strong>Spin Wheel</strong><small>Spin & Win</small></button>
             <button type="button" class="explore-card" id="tap-earning-open" data-tap-open><span>☝️</span><strong>Tap Earning</strong><small>Tap • Ad • USD</small></button>
@@ -101,7 +101,7 @@
           <p>১টি ভেরিফাইড রেফারেল = ১টি ফ্রি বট আনলক। আপনার AI বট চালু করতে সদস্য রেফার করুন।</p>
           <button type="button" data-referral-open>♟ Refer Member to Wake Up AI Bot</button>
         </section>
-        <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" data-referral-open>Copy Link</button></section>
+        <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" id="home-copy-referral-link">Copy Link</button></section>
         <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" maxlength="64" autocomplete="off" autocapitalize="characters" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
         <section class="commission-card"><div><h2>Refer & Earn Commission</h2><p>Earn referral commission for every verified collector you onboard</p><button type="button" data-referral-open>View Program →</button></div><span>🎁</span></section>
         <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-ledger-open>View Ledger</button></div><p id="recent-activity-status" class="activity-empty" role="status">লেনদেন লোড হচ্ছে…</p><div id="recent-activity-list" aria-live="polite"></div></section>
@@ -561,7 +561,7 @@
   <script src="../js/bot-purchase-core.js?v=20261025-ref1"></script>
   <script src="../js/bot-checkout.js?v=20261025-ref1"></script>
   <script src="../js/spin-core.js?v=20261024-spin1"></script>
-  <script src="../js/referrals.js?v=20261026-home1-20261025"></script>
+  <script src="../js/referrals.js?v=20261026-shortcuts1-20261025"></script>
   <script src="../js/withdrawal-core.js?v=20261025-withdraw1"></script>
   <script src="../js/activity-core.js?v=20261025-codes1"></script>
   <script src="../js/notifications-core.js?v=20261025-codes1"></script>
@@ -570,7 +570,7 @@
   <script src="../js/community.js?v=20261025-feed1"></script>
   <script src="../js/telegram-auth-config.js?v=20261025-tg1"></script>
   <script src="../js/telegram-login.js?v=20261025-tg1"></script>
-  <script src="../js/dashboard.js?v=20261026-home1"></script>
+  <script src="../js/dashboard.js?v=20261026-shortcuts1"></script>
 </body>
 </html>
 

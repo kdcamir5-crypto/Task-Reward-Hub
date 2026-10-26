@@ -1020,7 +1020,26 @@
   document.querySelectorAll("[data-referral-filter]").forEach(b=>b.addEventListener("click",()=>{referralFilter=b.dataset.referralFilter||"all";document.querySelectorAll("[data-referral-filter]").forEach(o=>o.classList.toggle("is-active",o.dataset.referralFilter===referralFilter));renderReferralPage();}));
   document.querySelectorAll("[data-referral-theme]").forEach(b=>b.addEventListener("click",()=>{const p=document.getElementById("referral-page");if(!p)return;p.dataset.theme=b.dataset.referralTheme==="oled"?"oled":"cyber";document.querySelectorAll("[data-referral-theme]").forEach(o=>o.classList.toggle("is-active",o.dataset.referralTheme===p.dataset.theme));}));
   document.getElementById("referral-copy-code")?.addEventListener("click",()=>copyReferralValue(document.getElementById("referral-code-value")?.textContent||"","Referral code copied."));
-  ["referral-copy-link","referral-empty-copy-link"].forEach(id=>document.getElementById(id)?.addEventListener("click",()=>copyReferralValue(document.getElementById("referral-link-value")?.textContent||"","Referral link copied.")));
+  function copyOwnReferralLink() {
+    const code = referralCodeFor(currentReferralUser, currentReferralProfile);
+    if (!currentReferralUser || !/^\d{8}$/.test(code)) {
+      showToast("আপনার referral link এখনো প্রস্তুত হয়নি। একটু পরে চেষ্টা করুন।");
+      return;
+    }
+    return copyReferralValue("https://t.me/Taskrewardhub_bot/Taka?startapp=ref-" + encodeURIComponent(code), "Referral link copied.");
+  }
+  ["home-copy-referral-link", "referral-copy-link", "referral-empty-copy-link"].forEach(id => {
+    document.getElementById(id)?.addEventListener("click", copyOwnReferralLink);
+  });
+  document.getElementById("home-all-services")?.addEventListener("click", () => {
+    const heading = document.getElementById("home-services-heading");
+    if (!heading) return;
+    const header = document.querySelector(".topbar");
+    const offset = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+    heading.focus({ preventScroll:true });
+    window.scrollTo({ top:Math.max(0, window.scrollY + heading.getBoundingClientRect().top - offset - 12),
+      behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
   document.getElementById("spin-wheel-open")?.addEventListener("click", openSpinWheel);
   document.getElementById("spin-wheel-back")?.addEventListener("click", closeSpinWheel);
   document.getElementById("spin-now-button")?.addEventListener("click", runSpinWheel);
