@@ -30,7 +30,7 @@ function order(){return selected&&orders.find(o=>o.id===user.uid+'_'+selected.id
 function render(){
  if(!selected||!el('bot-checkout'))return;
  const p=selected,balance=typeof profile.balance==='number'?profile.balance:null,already=Array.isArray(profile.unlockedBots)&&profile.unlockedBots.includes(p.id),pending=order()?.status==='pending';
- el('bc-name').textContent=p.name;el('bc-engine').textContent=p.rate?p.rate+' AI Engine':'AI Mining Engine · 30 days';
+ el('bc-name').textContent=p.name;el('bc-engine').textContent='মেয়াদ: ৩০ দিন';
  el('bc-price').textContent='৳ '+money(p.price);el('bc-profit').textContent='+৳ '+money(p.target-p.price)+' (৬০%)';el('bc-target').textContent='৳ '+money(p.target);el('bc-bonus').textContent='+$'+money(p.bonus)+' USD';el('bc-commission').textContent='+৳ '+money(p.price/20);el('bc-balance').textContent=balance===null?'লোড হচ্ছে…':'৳ '+money(balance);
  const insufficient=method==='wallet'&&balance!==null&&balance<p.price&&!already&&!pending;
  el('bc-insufficient').hidden=!insufficient;el('bc-recharge').hidden=!insufficient;el('bc-bkash').hidden=method!=='bKash';

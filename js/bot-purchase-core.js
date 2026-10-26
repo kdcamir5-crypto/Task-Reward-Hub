@@ -2,7 +2,7 @@
 (function(root){
 'use strict';
 const packages=Object.freeze({
- pulse:{id:'pulse',name:'AI Pulse Bot v2',price:50,target:80,bonus:0.10,rate:'14.8 MH/s'},
+ pulse:{id:'pulse',name:'AI Pulse Bot v2',price:50,target:80,bonus:0.10},
  quantum:{id:'quantum',name:'Quantum Core Pro',price:100,target:160,bonus:0.20},
  neural:{id:'neural',name:'Neural Matrix Bot',price:200,target:320,bonus:0.40},
  cyber:{id:'cyber',name:'Cyber Forge Titan',price:300,target:480,bonus:0.60},

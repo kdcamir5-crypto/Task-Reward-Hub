@@ -144,7 +144,7 @@
       const sleep=homeBot.querySelector('.sleeping-bot > span');if(sleep)sleep.hidden=hasActive;
     }
     setText("fleet-active-count", String(activeCount));
-    setText("fleet-hashrate", "— MH/s");
+    setText("fleet-completed-count", String(records.filter(record => botStatus(record) === "completed").length));
     const earnedText = document.getElementById("bot-mining-value");
     const earnedValue = earnedText ? safeNumber(earnedText.textContent.replace(/,/g, "")) : null;
     setText("fleet-earned", "৳ " + formatMoney(earnedValue === null ? 0 : earnedValue));
@@ -1884,7 +1884,7 @@
     setText("profile-referral-code", referralCodeFor(user, profile));
     setText('telegram-login-linked-id', profile.telegramUserId ? 'যাচাইকৃত Telegram ID: ' + profile.telegramUserId : 'আগের account-এ Telegram Login যুক্ত করতে নিচের button ব্যবহার করুন।');
     setText("profile-role-badge", profile.role === "admin" ? "🛡 ADMIN" : "🛡 USER");
-    setText("profile-referral-reward", "+ ৳0.00 / ref");
+    setText("profile-referral-reward", "১ verified referral = ১ free bot");
     const profilePhoto = document.getElementById("profile-photo");
     const savedAvatar = typeof profile.profileAvatar === "string" && profile.profileAvatar ? profile.profileAvatar : "";
     const defaultAvatars = ["👨🏻‍💻", "👩🏻‍💻", "👨🏽‍🚀", "👩🏽‍🚀", "🧑🏻‍🎤", "👩🏻‍🎨", "🧑🏾‍🚀", "🦸🏻‍♂️"];
