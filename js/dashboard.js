@@ -10,6 +10,7 @@
   let miningUnsubscribe = null;
   let leaderboardUnsubscribe = null;
   let leaderboardRows = [];
+  let leaderboardGeneration = 0, leaderboardRefreshBusy = false, leaderboardStatus = "loading";
   const collectorIdMigrationTasks = new Map();
 
   function generateCollectorId() {
@@ -1765,18 +1766,58 @@
         return '<article class="rank-list-row" data-name="'+escapeHtml(name.toLowerCase())+'" data-id="'+escapeHtml(id.toLowerCase())+'"><span class="rank-number '+cls+'">#'+rank+'</span><span class="rank-row-avatar">'+escapeHtml(initials(name))+'</span><strong class="rank-member-name">'+escapeHtml(name)+(item.uid===currentUid?' <span>(You)</span>':'')+'</strong><span class="rank-metric">♟ <b>'+(safeNumber(item.botCount)||0)+' Bots</b></span></article>';
       }).join("") + '<p class="rank-empty-state" id="rank-empty" hidden>No matching members found.</p>';
     }
-    setText("rank-data-note", sorted.length ? "Live leaderboard · "+sorted.length+" registered member"+(sorted.length===1?"":"s")+" · updates automatically" : "No leaderboard members yet. Each existing account needs to sign in once to publish its rank profile.");
+    const statusNotes = {loading:"Rank লোড হচ্ছে…",refreshing:"Firebase থেকে নতুন Rank আনা হচ্ছে…",cached:"সংরক্ষিত Rank দেখাচ্ছে। নতুন তথ্যের জন্য Refresh করুন।",error:"নতুন Rank লোড হয়নি। সংযোগ ও Firestore rules পরীক্ষা করে Refresh করুন।"};
+    setText("rank-data-note", statusNotes[leaderboardStatus] || (sorted.length ? "Live leaderboard · "+sorted.length+" registered member"+(sorted.length===1?"":"s")+" · updates automatically" : "No leaderboard members yet. Each existing account needs to sign in once to publish its rank profile."));
     filterRankRows();
   }
-  function startLeaderboardListener() {
+  function startLeaderboardListener(refreshing = false) {
     if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-    leaderboardUnsubscribe = db.collection("publicLeaderboard").onSnapshot(snapshot => {
-      leaderboardRows = snapshot.docs.map(doc => ({uid:doc.id,...(doc.data()||{})}));
+    const generation = ++leaderboardGeneration;
+    if (!refreshing) {
+      leaderboardRows = [];
+      leaderboardRefreshBusy = false;
+      if (rankRefresh) { rankRefresh.disabled = false; rankRefresh.removeAttribute('aria-busy'); }
+    }
+    leaderboardStatus = refreshing ? 'refreshing' : 'loading';
+    renderLeaderboard();
+    leaderboardUnsubscribe = db.collection("publicLeaderboard").onSnapshot({includeMetadataChanges:true}, snapshot => {
+      if (generation !== leaderboardGeneration) return;
+      leaderboardRows = snapshot.docs.map(doc => ({...(doc.data()||{}),uid:doc.id}));
+      if (!leaderboardRefreshBusy) leaderboardStatus = snapshot.metadata.fromCache ? 'cached' : 'live';
       renderLeaderboard();
     }, error => {
-      console.error("Live leaderboard listener failed:", error);
-      setText("rank-data-note", "Leaderboard could not load. Please check the published Firestore rules.");
+      if (generation !== leaderboardGeneration) return;
+      console.error("Live leaderboard listener failed:", error.code);
+      leaderboardStatus = 'error';
+      renderLeaderboard();
     });
+  }
+  async function refreshLeaderboard() {
+    if (leaderboardRefreshBusy || !db || !auth?.currentUser) return;
+    const uid = auth.currentUser.uid;
+    leaderboardRefreshBusy = true;
+    if (rankRefresh) { rankRefresh.disabled = true; rankRefresh.setAttribute('aria-busy','true'); }
+    // Restart a failed listener as well as doing a server-only fetch.
+    startLeaderboardListener(true);
+    const generation = leaderboardGeneration;
+    try {
+      const snapshot = await db.collection('publicLeaderboard').get({source:'server'});
+      if (generation !== leaderboardGeneration || auth.currentUser?.uid !== uid) return;
+      leaderboardRows = snapshot.docs.map(doc => ({...(doc.data()||{}),uid:doc.id}));
+      leaderboardStatus = 'live';
+      renderLeaderboard();
+      showToast('Rank Firebase থেকে আপডেট হয়েছে।');
+    } catch (error) {
+      if (generation !== leaderboardGeneration || auth.currentUser?.uid !== uid) return;
+      leaderboardStatus = 'error';
+      renderLeaderboard();
+      showToast('Rank refresh হয়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+    } finally {
+      if (generation === leaderboardGeneration) {
+        leaderboardRefreshBusy = false;
+        if (rankRefresh) { rankRefresh.disabled = false; rankRefresh.removeAttribute('aria-busy'); }
+      }
+    }
   }
   async function syncPublicLeaderboard(user, profile) {
     if (!user || !profile || !db) return;
@@ -1829,11 +1870,7 @@
     }
   }
   rankSearch?.addEventListener("input", filterRankRows);
-  rankRefresh?.addEventListener("click", () => {
-    if (rankSearch) rankSearch.value = "";
-    filterRankRows();
-    showToast("Leaderboard updates automatically from Firebase.");
-  });
+  rankRefresh?.addEventListener("click", refreshLeaderboard);
 
 
 
