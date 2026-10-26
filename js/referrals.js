@@ -35,9 +35,10 @@ window.HubReferrals={updateProfile(data){profile=data||{};render();},init(databa
  stops.forEach(stop=>stop());stops=[];db=database;user=account;profile={};incoming=null;settings=null;render();
  stops.push(db.collection('appSettings').doc('referralSettings').onSnapshot(s=>{settings=s.exists?s.data():null;render();},()=>{settings=null;render();}));
  stops.push(db.collection('referrals').doc(user.uid).onSnapshot(s=>{incoming=s.exists?s.data():null;render();},()=>{el('rv-status').textContent='Referral verification লোড হয়নি।';}));
- stops.push(db.collection('referrals').where('referrerUid','==',user.uid).onSnapshot(s=>{
+ const ownerUid=user.uid;
+ stops.push(db.collection('referrals').where('referrerUid','==',ownerUid).onSnapshot({includeMetadataChanges:true},s=>{
   const rows=s.docs.map(d=>{const x=d.data();return {name:x.inviteeName||'Member',id:x.collectorId||d.id,code:x.collectorId,status:x.status==='verified'?'verified':'quarantine'};});
-  window.dispatchEvent(new CustomEvent('hub-referrals-updated',{detail:rows}));
- },()=>{const list=el('referral-empty-copy');if(list)list.textContent='Referral তালিকা লোড করা যায়নি।';}));
+  window.dispatchEvent(new CustomEvent('hub-referrals-updated',{detail:{uid:ownerUid,rows,fromCache:s.metadata.fromCache,error:false}}));
+ },()=>{window.dispatchEvent(new CustomEvent('hub-referrals-updated',{detail:{uid:ownerUid,rows:null,error:true}}));const list=el('referral-empty-copy');if(list)list.textContent='Referral তালিকা লোড করা যায়নি।';}));
 }};
 })();

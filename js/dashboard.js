@@ -854,7 +854,28 @@
 
 
   let currentReferralUser=null,currentReferralProfile={},referralFilter="all",referralMembers=[];
-  window.addEventListener("hub-referrals-updated", event=>{referralMembers=event.detail;renderReferralPage();});
+  let homeReferralState = { rows:null, fromCache:false, error:false };
+  function renderHomeReferralStats() {
+    const rows = homeReferralState.rows;
+    const ready = Array.isArray(rows) && !homeReferralState.error;
+    const verified = ready ? rows.filter(row => row.status === 'verified').length : 0;
+    const total = ready ? rows.length : 0;
+    const note = homeReferralState.error ? 'লোড হয়নি' : 'লোড হচ্ছে…';
+    const suffix = homeReferralState.fromCache ? ' · Cached' : '';
+    setText('referrals-value', ready ? String(total) : '—');
+    setText('tasks-value', ready ? String(verified) : '—');
+    setText('home-pending-referrals', ready ? String(total - verified) : '—');
+    setText('home-total-referrals-note', ready ? total + ' Users' + suffix : note);
+    setText('home-verified-referrals-note', ready ? verified + ' Verified' + suffix : note);
+    setText('home-pending-referrals-note', ready ? (total - verified) + ' Pending' + suffix : note);
+  }
+  window.addEventListener("hub-referrals-updated", event => {
+    const state = event.detail;
+    if (!currentReferralUser || state.uid !== currentReferralUser.uid) return;
+    homeReferralState = state;
+    renderHomeReferralStats();
+    if (!state.error) { referralMembers=state.rows;renderReferralPage(); }
+  });
   function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
   function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status==='quarantine'?'pending':m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
   function openReferralPage(){closeNotificationsView();syncProfileNavigation("home");const p=document.getElementById("referral-page");if(!p){showToast("Referral interface could not be opened.");return;}document.body.classList.remove("tap-earning-active","spin-wheel-active");["spin-wheel-page","tap-earning-page","bot-shop-page"].forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true;});document.querySelectorAll("[data-panel]").forEach(e=>{e.hidden=true;e.classList.remove("is-active");});const home=document.querySelector(".home-reference-layout");if(home)home.hidden=true;p.hidden=false;document.body.classList.add("referral-page-active");document.title="Referred Members · Task Reward Hub";renderReferralPage();}
@@ -1824,8 +1845,8 @@
     setText("welcome-title", "Welcome back.");
     setText("welcome-subtitle", "Good to see you, " + name + ". Your reward space is ready.");
     setText("balance-value", formatMoney(balance));
-    setText("tasks-value", tasks === null ? "—" : String(tasks));
-    setText("referrals-value", referrals === null ? "—" : String(referrals));
+    renderHomeReferralStats();
+
     setText("bots-value", bots === null ? "—" : String(bots));
     setText("rank-tasks", tasks === null ? "—" : String(tasks));
     setText("rank-referrals", referrals === null ? "—" : String(referrals));
@@ -1899,6 +1920,9 @@
     window.HubBotCheckout.init(db, user);
     window.HubFeed?.init(db,user);
     currentReferralUser=user;
+    referralMembers=[];
+    homeReferralState={rows:null,fromCache:false,error:false};
+    renderHomeReferralStats();
     walletUser = user;
     startNotifications(user);
     startAccountActivity(user);
