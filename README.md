@@ -428,3 +428,10 @@ Outstanding from the broader demo audit: full in-app Support chat/calls, Communi
 Profile edits now accept the existing form fields (name/fullName, phoneNumber, telegramUsername and server profileUpdatedAt), with length/type limits and no permission to edit financial fields, role or verified Telegram identity. Compressed JPEG profile data is capped at 450,000 characters. Choosing an avatar clears the uploaded photo; saving a new photo clears the avatar selection. The saved image appears in the shared header without changing its layout. Telegram profile links support t.me/telegram.me URLs as well as usernames.
 
 Deployment: publish the **entire firebase.rules** file in Firebase Console → Firestore Database → Rules. GitHub Pages deploys the client only; a GitHub commit does not publish Firestore rules. Existing balances, bots, identity mappings and sessions are not migrated. Tests: `npm run test:profile` and `npm run test:profile:display`.
+
+
+### Password Recovery (2026-10-26)
+
+Profile now provides a Firebase-verified Recovery Email flow for existing username accounts, preserving their UID and username via a private immutable reservation. Contact email from signup is not recovery proof. Username fallback validates the current password with Firebase through the dedicated Telegram Auth Worker; email and Telegram login remain available. No recovery email or password is published in Firestore aliases.
+
+**Deployment required:** publish the entire latest `firebase.rules`, then replace/deploy `workers/telegram-auth.mjs` in the existing Telegram Auth Worker, keeping its secrets. The Recovery form stays blocked until the Worker advertises recovery capability. [Full setup and test steps](docs/password-recovery-setup.md). No live accounts were migrated by this commit.

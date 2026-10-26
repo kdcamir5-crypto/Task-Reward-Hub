@@ -109,7 +109,7 @@
             <div class="field-group"><label for="signup-username">Username</label><div class="input-wrap"><span class="currency-prefix" aria-hidden="true">@</span><input id="signup-username" name="username" type="text" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" placeholder="Choose a username" required></div></div>
             <div class="field-group"><label for="signup-full-name">Full name</label><div class="input-wrap"><span class="currency-prefix" aria-hidden="true">♙</span><input id="signup-full-name" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required></div></div>
             <div class="field-group"><label for="signup-mobile">Mobile number</label><div class="input-wrap"><span class="currency-prefix" aria-hidden="true">☎</span><input id="signup-mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="15" pattern="[0-9+() -]{8,15}" placeholder="e.g. 01712345678" required></div></div>
-            <div class="field-group"><label for="signup-email">Email address <span class="optional-label">(Optional)</span></label><div class="input-wrap"><span class="currency-prefix prefix-dollar" aria-hidden="true">@</span><input id="signup-email" name="signupEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com (optional)"></div></div>
+            <div class="field-group"><label for="signup-email">Contact email <span class="optional-label">(Optional · Recovery নয়)</span></label><div class="input-wrap"><span class="currency-prefix prefix-dollar" aria-hidden="true">@</span><input id="signup-email" name="signupEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com (optional)"></div></div>
             <div class="field-group"><label for="signup-password">Password</label><div class="input-wrap"><span class="currency-prefix prefix-bitcoin" aria-hidden="true">₿</span><input id="signup-password" name="signupPassword" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required><button class="password-toggle" id="toggle-signup-password" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></div>
             <p class="form-message signup-message" id="signup-message" role="status" aria-live="polite"></p>
             <button class="sign-in-button" id="signup-submit" type="submit"><span>Create My Account</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-6-6 6 6-6 6"/></svg></button>
@@ -127,7 +127,8 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/telegram-auth-config.js?v=20261025-tg1"></script>
   <script src="js/telegram-login.js?v=20261025-tg1"></script>
-  <script src="js/login-ui.js?v=20261025-tg1"></script>
+  <script src="js/recovery-auth.js?v=20261026-recovery1"></script>
+  <script src="js/login-ui.js?v=20261026-recovery1"></script>
 </body>
 </html>
 

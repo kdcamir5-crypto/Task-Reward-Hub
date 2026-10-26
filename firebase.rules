@@ -280,11 +280,24 @@ service cloud.firestore {
         || (signedIn() && codeClaim(request.auth.uid,code));
       allow delete: if false;
     }
+    // Immutable username reservation survives a verified Auth email change.
+    match /usernameClaims/{username} {
+      allow get: if signedIn() && (!exists(/databases/$(database)/documents/usernameClaims/$(username)) || resource.data.uid == request.auth.uid);
+      allow list: if false;
+      allow create: if signedIn() && username.matches('^[a-z0-9_]{3,24}$')
+        && request.resource.data.keys().hasOnly(['uid','username','createdAt'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.username == username
+        && request.resource.data.createdAt == request.time
+        && request.auth.token.email == username + '@accounts.task-reward-hub.invalid'
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower == username;
+      allow update, delete: if false;
+    }
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode','referrerUid','referrerCode'])
         && validRegistrationReferrer(uid, request.resource.data)
+        && (!('usernameLower' in request.resource.data) || !exists(/databases/$(database)/documents/usernameClaims/$(request.resource.data.usernameLower)) || getAfter(/databases/$(database)/documents/usernameClaims/$(request.resource.data.usernameLower)).data.uid == uid)
         && request.resource.data.role == 'user'
         && request.resource.data.balance == 0
         && request.resource.data.tasks == 0

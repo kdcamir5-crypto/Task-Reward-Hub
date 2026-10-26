@@ -1938,6 +1938,7 @@
   function loadUserProfile(user) {
     window.HubBotCheckout.init(db, user);
     window.HubFeed?.init(db,user);
+    window.HubRecoveryUI?.init(db,auth);
     currentReferralUser=user;
     referralMembers=[];
     homeReferralState={rows:null,fromCache:false,error:false};

@@ -456,6 +456,17 @@
           <p id="telegram-login-link-message" class="profile-form-message" role="status" aria-live="polite"></p>
         </section>
 
+        <form id="recovery-form" class="profile-form-card">
+          <div class="profile-form-heading"><span>✉</span><div><h3>Recovery Email</h3><p>Password ভুলে গেলে এই email দিয়ে account ফেরত পাবেন।</p></div></div>
+          <p id="recovery-current" class="profile-form-message" role="status"></p>
+          <label class="profile-field"><span>আপনার আসল email</span><span class="profile-input-wrap"><input id="recovery-email" type="email" autocomplete="email" maxlength="254" required></span></label>
+          <label class="profile-field"><span>বর্তমান password <small>(পুরোনো session হলে প্রয়োজন)</small></span><span class="profile-input-wrap"><input id="recovery-password" type="password" autocomplete="current-password"></span></label>
+          <button id="recovery-send" class="profile-save-button" type="submit">Verification Email পাঠান</button>
+          <button id="recovery-refresh" class="profile-avatar-save" type="button">Email যাচাই করেছি — পরীক্ষা করুন</button>
+          <p id="recovery-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <p>Inbox/Spam থেকে Firebase-এর link নিশ্চিত করুন। তবেই email যুক্ত হবে; একই account ID, balance ও bot থাকবে।</p>
+        </form>
+
         <form id="profile-password-form" class="profile-form-card profile-password-card" novalidate>
           <div class="profile-form-heading"><span>🔑</span><div><h3>Change Password</h3><p>Use a strong password to protect your account</p></div></div>
           <label class="profile-field"><span>Current Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🛡</span><input id="profile-current-password" type="password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-current-password" aria-label="Show current password">◉</button></span></label>
@@ -570,7 +581,9 @@
   <script src="../js/community.js?v=20261025-feed1"></script>
   <script src="../js/telegram-auth-config.js?v=20261025-tg1"></script>
   <script src="../js/telegram-login.js?v=20261025-tg1"></script>
-  <script src="../js/dashboard.js?v=20261026-terms1"></script>
+  <script src="../js/recovery-auth.js?v=20261026-recovery1"></script>
+  <script src="../js/recovery-ui.js?v=20261026-recovery1"></script>
+  <script src="../js/dashboard.js?v=20261026-recovery1"></script>
 </body>
 </html>
 

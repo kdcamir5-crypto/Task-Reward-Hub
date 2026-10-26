@@ -102,20 +102,39 @@ async function bodyJson(request){
  const data=new Uint8Array(size);let offset=0;for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
  try{return JSON.parse(new TextDecoder().decode(data));}catch(_){fail('INVALID_REQUEST',400);}
 }
+// Username aliases contain only UID and username, never a recovery email.
+export async function passwordLogin(body, store, access, sa, fetcher=fetch, deps={}) {
+ const username=typeof body.username==='string'?body.username.toLowerCase():'';
+ if(!/^[a-z0-9_]{3,24}$/.test(username)||typeof body.password!=='string'||!body.password||body.password.length>4096)fail('INVALID_CREDENTIALS');
+ const alias=await store.get('usernameClaims/'+username);
+ if(!alias||alias.username!==username||typeof alias.uid!=='string')fail('INVALID_CREDENTIALS');
+ const profile=await store.get('users/'+alias.uid);
+ if(!profile||profile.usernameLower!==username)fail('INVALID_CREDENTIALS');
+ const account=await (deps.checkAccount||checkAccount)(alias.uid,await access(),fetcher);
+ if(typeof account.email!=='string')fail('INVALID_CREDENTIALS');
+ let result;
+ try {result=await requestJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyB7aAoaiSvYjfj9HWdY-TmJmfeDBF8stiY',{
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:account.email,password:body.password,returnSecureToken:true})},fetcher);
+ } catch(e) {if(e.httpStatus===400)fail('INVALID_CREDENTIALS');throw e;}
+ // Do not bypass disabled accounts, MFA or a mismatched identity.
+ if(result.localId!==alias.uid||typeof result.idToken!=='string'||result.mfaPendingCredential)fail('INVALID_CREDENTIALS');
+ return {ok:true,customToken:await (deps.customToken||customToken)(sa,alias.uid)};
+}
 export function createHandler(dependencies={}){return async(request,env)=>{
  const origin=request.headers.get('Origin'),url=new URL(request.url),headers={'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',Vary:'Origin'};
  if(origin===ORIGIN){headers['Access-Control-Allow-Origin']=ORIGIN;headers['Access-Control-Allow-Headers']='Content-Type, Authorization';headers['Access-Control-Allow-Methods']='POST, GET, OPTIONS';}
  const reply=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
- if(request.method==='GET'&&url.pathname==='/health'){let configured=true;try{serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))configured=false;}catch(_){configured=false;}return reply({ok:true,service:'telegram-auth',configured,version:1});}
+ if(request.method==='GET'&&url.pathname==='/health'){let configured=true;try{serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))configured=false;}catch(_){configured=false;}return reply({ok:true,service:'telegram-auth',configured,version:2,passwordRecovery:true});}
  if(origin!==ORIGIN)return reply({ok:false,code:'ORIGIN_DENIED'},403);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
- if(request.method!=='POST'||!['/login','/link'].includes(url.pathname))return reply({ok:false,code:'NOT_FOUND'},404);
+ if(request.method!=='POST'||!['/login','/link','/password-login'].includes(url.pathname))return reply({ok:false,code:'NOT_FOUND'},404);
  try{
   const sa=serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))fail('SETUP_REQUIRED',503);
   const body=await bodyJson(request);if(!body||typeof body!=='object'||Array.isArray(body))fail('INVALID_REQUEST',400);
-  const telegram=await verifyTelegram(body.initData,env.TELEGRAM_BOT_TOKEN);
   const fetcher=dependencies.fetcher||fetch,access=dependencies.accessToken||(()=>oauth(sa,fetcher));
   const store=dependencies.store||new IdentityStore(PROJECT,access,fetcher);
+  if(url.pathname==='/password-login')return reply(await passwordLogin(body,store,access,sa,fetcher,dependencies));
+  const telegram=await verifyTelegram(body.initData,env.TELEGRAM_BOT_TOKEN);
   if(url.pathname==='/link'){
    const bearer=request.headers.get('Authorization')?.match(/^Bearer (\S+)$/)?.[1];
    const claims=await (dependencies.verifyFirebase||verifyFirebase)(bearer,fetcher);

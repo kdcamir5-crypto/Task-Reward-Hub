@@ -256,10 +256,14 @@
       try {
         await auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
         const authEmail = identifier.includes("@") ? identifier : identifier.toLowerCase() + "@accounts.task-reward-hub.invalid";
-        await auth.signInWithEmailAndPassword(authEmail, password.value);
+        try { await auth.signInWithEmailAndPassword(authEmail, password.value); }
+        catch(error) {
+          if (identifier.includes('@') || !['auth/invalid-credential','auth/user-not-found','auth/wrong-password'].includes(error.code)) throw error;
+          await window.HubRecovery.signInUsername(auth,identifier,password.value);
+        }
         window.location.replace("pages/dashboard.html");
       } catch (error) {
-        showMessage(friendlyAuthError(error));
+        showMessage(error.code ? friendlyAuthError(error) : (error.message || 'Login হয়নি। আবার চেষ্টা করুন।'));
       } finally {
         setSubmitting(false);
       }
@@ -368,15 +372,18 @@
       const email = document.getElementById("email");
       const identifier = email ? email.value.trim() : "";
       if (!identifier || !identifier.includes("@")) {
-        showMessage("Enter the Firebase email address linked to your account first.");
+        showMessage("Recovery email দিন। আগে যুক্ত না করলে Telegram Login দিয়ে ঢুকে Profile → Recovery Email থেকে যুক্ত করুন।");
         if (email) email.focus();
         return;
+      }
+      if (identifier.toLowerCase().endsWith('@accounts.task-reward-hub.invalid')) {
+        showMessage('এই ঠিকানায় email পৌঁছাবে না। আপনার যাচাইকৃত Recovery Email ব্যবহার করুন।'); return;
       }
       if (!firebaseIsReady()) return;
       forgotPassword.disabled = true;
       try {
         await auth.sendPasswordResetEmail(identifier);
-        showMessage("If an account exists for this email, Firebase has sent a password reset email. Check your inbox and spam folder.", "success");
+        showMessage("If an account exists for this email, reset email পাঠানোর অনুরোধ হয়েছে। Inbox ও Spam দেখুন। Signup-এর contact email নিজে থেকে recovery email হয় না; আগে Profile থেকে যুক্ত থাকতে হবে.", "success");
       } catch (error) {
         showMessage(friendlyAuthError(error));
       } finally {
