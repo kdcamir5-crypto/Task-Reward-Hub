@@ -168,8 +168,12 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create, update: if signedIn()
         && (request.auth.uid == uid || isAdmin())
-        && request.resource.data.keys().hasOnly(['uid', 'displayName', 'collectorId', 'botCount', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'displayName', 'collectorId', 'botCount', 'updatedAt', 'rankAvatar', 'rankPhoto'])
         && request.resource.data.uid == uid
+        && request.resource.data.get('rankAvatar','') in ['', '👨🏻‍💻', '👩🏻‍💻', '👨🏽‍🚀', '👩🏽‍🚀', '🧑🏻‍🎤', '👩🏻‍🎨', '🧑🏾‍🚀', '🦸🏻‍♂️']
+        && request.resource.data.get('rankPhoto','') is string
+        && request.resource.data.get('rankPhoto','').size() <= 12000
+        && (request.resource.data.get('rankPhoto','') == '' || request.resource.data.rankPhoto.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
         && request.resource.data.displayName is string
         && request.resource.data.displayName.size() > 0
         && request.resource.data.displayName.size() <= 80

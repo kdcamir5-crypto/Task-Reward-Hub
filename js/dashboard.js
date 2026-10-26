@@ -1738,6 +1738,17 @@
     const empty = document.getElementById("rank-empty");
     if (empty) empty.hidden = visible !== 0;
   }
+  function rankAvatarMarkup(item) {
+    const A=window.HubRankAvatar;
+    const own=item.uid===currentReferralUser?.uid ? A.source(item.uid,currentReferralProfile||{}) : null;
+    const avatar=own?.rankAvatar || (A.avatars.includes(item.rankAvatar)?item.rankAvatar:A.fallback(item.uid));
+    const photo=own ? own.photo : (A.jpeg(item.rankPhoto)?item.rankPhoto:'');
+    return '<span class="rank-avatar-fallback">'+escapeHtml(avatar)+'</span>'+(photo?'<img class="rank-avatar-photo" src="'+escapeHtml(photo)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">':'');
+  }
+  // Broken image data leaves the saved/default avatar visible without an inline handler.
+  document.getElementById('panel-rank')?.addEventListener('error',event=>{
+    if(event.target.classList?.contains('rank-avatar-photo'))event.target.remove();
+  },true);
   function renderLeaderboard() {
     const sorted = leaderboardRows.slice().sort((a,b) => (safeNumber(b.botCount)||0) - (safeNumber(a.botCount)||0) || String(a.displayName||"").localeCompare(String(b.displayName||"")));
     const currentUid = currentReferralUser && currentReferralUser.uid;
@@ -1750,7 +1761,7 @@
         const item = sorted[slot.index];
         if (!item) return '<article class="podium-card '+slot.cls+'"><span class="podium-crown">♛</span><div class="podium-avatar">—</div><span class="podium-position">#'+slot.position+'</span><h3>Waiting for members</h3><span class="podium-bots">♟ 0 Bots</span></article>';
         const name = String(item.displayName || "Member");
-        return '<article class="podium-card '+slot.cls+'"><span class="podium-crown">♛</span><div class="podium-avatar">'+escapeHtml(initials(name))+'</div><span class="podium-position">#'+slot.position+'</span><h3>'+escapeHtml(name)+(slot.position===1?' 👑':'')+'</h3><span class="podium-bots">♟ '+(safeNumber(item.botCount)||0)+' Bots</span></article>';
+        return '<article class="podium-card '+slot.cls+'"><span class="podium-crown">♛</span><div class="podium-avatar">'+rankAvatarMarkup(item)+'</div><span class="podium-position">#'+slot.position+'</span><h3>'+escapeHtml(name)+(slot.position===1?' 👑':'')+'</h3><span class="podium-bots">♟ '+(safeNumber(item.botCount)||0)+' Bots</span></article>';
       }).join("");
       podium.innerHTML = top;
     }
@@ -1763,7 +1774,7 @@
         const name = String(item.displayName || "Member");
         const id = String(item.collectorId || item.uid || "");
         const cls = rank===1?"rank-gold":rank===2?"rank-silver":rank===3?"rank-bronze":"";
-        return '<article class="rank-list-row" data-name="'+escapeHtml(name.toLowerCase())+'" data-id="'+escapeHtml(id.toLowerCase())+'"><span class="rank-number '+cls+'">#'+rank+'</span><span class="rank-row-avatar">'+escapeHtml(initials(name))+'</span><strong class="rank-member-name">'+escapeHtml(name)+(item.uid===currentUid?' <span>(You)</span>':'')+'</strong><span class="rank-metric">♟ <b>'+(safeNumber(item.botCount)||0)+' Bots</b></span></article>';
+        return '<article class="rank-list-row" data-name="'+escapeHtml(name.toLowerCase())+'" data-id="'+escapeHtml(id.toLowerCase())+'"><span class="rank-number '+cls+'">#'+rank+'</span><span class="rank-row-avatar">'+rankAvatarMarkup(item)+'</span><strong class="rank-member-name">'+escapeHtml(name)+(item.uid===currentUid?' <span>(You)</span>':'')+'</strong><span class="rank-metric">♟ <b>'+(safeNumber(item.botCount)||0)+' Bots</b></span></article>';
       }).join("") + '<p class="rank-empty-state" id="rank-empty" hidden>No matching members found.</p>';
     }
     const statusNotes = {loading:"Rank লোড হচ্ছে…",refreshing:"Firebase থেকে নতুন Rank আনা হচ্ছে…",cached:"সংরক্ষিত Rank দেখাচ্ছে। নতুন তথ্যের জন্য Refresh করুন।",error:"নতুন Rank লোড হয়নি। সংযোগ ও Firestore rules পরীক্ষা করে Refresh করুন।"};

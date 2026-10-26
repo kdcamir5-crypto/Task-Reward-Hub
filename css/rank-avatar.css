@@ -1,0 +1,3 @@
+#panel-rank .podium-avatar,#panel-rank .rank-row-avatar{position:relative;overflow:hidden;isolation:isolate}
+#panel-rank .rank-avatar-fallback{grid-area:1/1;line-height:1;font-size:1.35em}
+#panel-rank .rank-avatar-photo{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}

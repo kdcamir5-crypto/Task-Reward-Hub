@@ -9,6 +9,7 @@ on:
       - .github/workflows/auto-mining.yml
       - scripts/auto-mining.js
       - scripts/sync-leaderboard.cjs
+      - js/rank-avatar.js
 permissions:
   contents: read
 concurrency:
@@ -24,7 +25,7 @@ jobs:
         with:
           node-version: '24'
       - name: Install Firebase Admin SDK
-        run: npm install --prefix "$RUNNER_TEMP/mining-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
+        run: npm install --prefix "$RUNNER_TEMP/mining-worker" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0 sharp@0.34.5
       - name: Process secure mining rewards
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

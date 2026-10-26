@@ -19,12 +19,15 @@
     "test:recovery": "node --test tests/recovery-auth.test.mjs tests/recovery-client.test.cjs",
     "test:recovery:rules": "firebase emulators:exec --only firestore --project demo-trh-recovery \"node tests/recovery-rules.cjs\"",
     "test:recovery:native": "firebase emulators:exec --config tests/firebase-recovery-auth.json --only auth --project demo-trh-recovery \"node tests/recovery-native.cjs\"",
-    "test:leaderboard:sync": "firebase emulators:exec --only firestore --project demo-trh-rank \"node --test tests/leaderboard-sync.test.cjs\""
+    "test:leaderboard:sync": "firebase emulators:exec --only firestore --project demo-trh-rank \"node --test tests/leaderboard-sync.test.cjs\"",
+    "test:rank:avatar": "node --test tests/rank-avatar.test.cjs",
+    "test:rank:avatar:rules": "firebase emulators:exec --only firestore --project demo-trh-avatar \"node tests/rank-avatar-rules.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
     "firebase": "13.1.0",
     "firebase-tools": "14.27.0",
-    "firebase-admin": "13.6.0"
+    "firebase-admin": "13.6.0",
+    "sharp": "0.34.5"
   }
 }
