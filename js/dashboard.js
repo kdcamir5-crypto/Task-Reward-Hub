@@ -270,6 +270,7 @@
   }
 
 
+  let transactionMaintenance = null;
   let walletUser = null, walletProfile = {}, walletDocRef = null, walletProfileAvailable = false, walletReturnTab = "home", selectedMfsProvider = "bKash", walletRecords = [], walletRecordsUnsubscribe = null, withdrawalSubmitting = false;
   let depositReturnTab = "profile", depositSettings = null, depositSettingsUnsubscribe = null, depositSubmitting = false;
   function walletMoney(value) {
@@ -339,19 +340,19 @@
   }
 
   function depositSettingsReady() {
-    return !!(depositSettings && depositSettings.active === true && /^01[3-9][0-9]{8}$/.test(String(depositSettings.bkashNumber || "")));
+    return !!(transactionMaintenance === false && depositSettings && depositSettings.active === true && /^01[3-9][0-9]{8}$/.test(String(depositSettings.bkashNumber || "")));
   }
   function renderDepositSettings(data) {
     depositSettings = data && typeof data === "object" ? data : null;
     const number = String(depositSettings && depositSettings.bkashNumber || "").replace(/\s+/g, "");
     const ready = depositSettingsReady();
-    setText("deposit-bkash-number", ready ? number : "Not configured");
-    setText("deposit-settings-status", ready
+    setText("deposit-bkash-number", ready ? number : "Unavailable");
+    setText("deposit-settings-status", transactionMaintenance === true ? "লেনদেন সাময়িক বন্ধ। এখন টাকা পাঠাবেন না।" : transactionMaintenance === null ? "লেনদেনের অবস্থা যাচাই হচ্ছে। এখন টাকা পাঠাবেন না।" : ready
       ? "Payment details are configured by the admin. Please verify the number before paying."
       : depositSettings && depositSettings.active === false
         ? "Deposits are temporarily disabled by the admin."
         : "The admin has not configured an active bKash Personal number yet.");
-    setText("deposit-instructions", String(depositSettings && depositSettings.instructions || "Payment instructions will appear here after the admin configures them."));
+    setText("deposit-instructions", ready ? String(depositSettings && depositSettings.instructions || "") : "");
     const copy = document.getElementById("deposit-copy-number");
     if (copy) copy.disabled = !ready;
     const submit = document.getElementById("deposit-submit");
@@ -429,6 +430,7 @@
   });
   document.getElementById("deposit-form")?.addEventListener("submit", async event => {
     event.preventDefault();
+    if (transactionMaintenance !== false) { const message = document.getElementById("deposit-message"); if (message) message.textContent = transactionMaintenance === true ? "লেনদেন সাময়িক বন্ধ রয়েছে। পরে চেষ্টা করুন।" : "লেনদেনের অবস্থা যাচাই করা যায়নি। পরে চেষ্টা করুন।"; return; }
     if (depositSubmitting) return;
     const amountInput = document.getElementById("deposit-amount");
     const senderInput = document.getElementById("deposit-sender-number");
@@ -801,6 +803,7 @@
   let withdrawalAttempt = null;
   document.getElementById("withdrawal-form")?.addEventListener("submit", async event => {
     event.preventDefault();
+    if (transactionMaintenance !== false) { const message = document.getElementById("withdrawal-message"); if (message) message.textContent = transactionMaintenance === true ? "লেনদেন সাময়িক বন্ধ রয়েছে। পরে চেষ্টা করুন।" : "লেনদেনের অবস্থা যাচাই করা যায়নি। পরে চেষ্টা করুন।"; return; }
     if (withdrawalSubmitting) return;
     const amountInput = document.getElementById("withdrawal-amount");
     const walletSelect = document.getElementById("withdrawal-wallet");
@@ -2206,6 +2209,7 @@
         window.location.replace("../index.html");
         return;
       }
+      db.collection("appSettings").doc("transactionControls").onSnapshot(snapshot => { transactionMaintenance = snapshot.exists && snapshot.data().maintenance === true; renderDepositSettings(depositSettings); }, () => { transactionMaintenance = null; renderDepositSettings(depositSettings); });
       loadUserProfile(user);
     });
   } catch (error) {
