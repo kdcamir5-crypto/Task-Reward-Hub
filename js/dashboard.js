@@ -1107,6 +1107,10 @@
   document.querySelectorAll("[data-go]").forEach(button => {
     button.addEventListener("click", () => showTab(button.dataset.go));
   });
+  document.getElementById("home-bot-shop-open")?.addEventListener("click", () => {
+    showTab("bots");
+    openBotShop();
+  });
   document.querySelectorAll("[data-tap-open]").forEach(button => {
     button.addEventListener("click", openTapEarning);
   });
