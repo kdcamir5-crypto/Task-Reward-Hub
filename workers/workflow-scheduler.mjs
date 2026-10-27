@@ -44,7 +44,7 @@ async function github(fetcher, url, token, method = 'GET') {
   } catch (_) { throw new Error('GITHUB_RESPONSE_INVALID'); }
 }
 
-export async function checkAndDispatch(workflow, token, fetcher = fetch, now = Date.now()) {
+export async function checkAndDispatch(workflow, token, fetcher = (...args) => globalThis.fetch(...args), now = Date.now()) {
   if (!WORKFLOWS.includes(workflow)) throw new Error('UNKNOWN_WORKFLOW');
   const base = API + workflow;
   const runs = await github(fetcher, base + '/runs?per_page=20', token);
@@ -53,7 +53,7 @@ export async function checkAndDispatch(workflow, token, fetcher = fetch, now = D
   return 'dispatched';
 }
 
-export async function runScheduled(env, fetcher = fetch, now = Date.now()) {
+export async function runScheduled(env, fetcher = (...args) => globalThis.fetch(...args), now = Date.now()) {
   const token = env.GITHUB_ACTIONS_TOKEN;
   if (typeof token !== 'string' || !token.trim() || token.length > 512) throw new Error('TOKEN_NOT_CONFIGURED');
   const settled = await Promise.allSettled(WORKFLOWS.map(workflow => checkAndDispatch(workflow, token, fetcher, now)));
