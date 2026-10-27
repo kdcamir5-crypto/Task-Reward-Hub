@@ -8,7 +8,9 @@ on:
       - firebase.rules
       - tests/purchases.cjs
       - tests/withdrawals.cjs
-      - tests/maintenance.cjs
+      - tests/maintenance-candidate.rules
+      - tests/maintenance-purchases.cjs
+      - tests/maintenance-withdrawals.cjs
 permissions:
   contents: read
 jobs:
@@ -30,3 +32,7 @@ jobs:
         run: npm run test:purchases
       - name: Test withdrawals
         run: npm run test:withdrawals
+      - name: Test maintenance purchase and deposit controls
+        run: npx firebase emulators:exec --only firestore --project demo-trh-purchase 'node tests/maintenance-purchases.cjs'
+      - name: Test maintenance withdrawal controls
+        run: npx firebase emulators:exec --only firestore --project demo-trh-withdrawals 'node tests/maintenance-withdrawals.cjs'
