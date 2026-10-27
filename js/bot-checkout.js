@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const Core=window.HubBotPurchase;
-let db,user,profile={},selected=null,referrer=null,refLoading=false,refError='',method='wallet',settings=null,busy=false,orders=[],unsubscribeSettings,unsubscribeOrders,lookupVersion=0;
+let db,user,profile={},selected=null,referrer=null,refLoading=false,refError='',method='wallet',settings=null,busy=false,orders=[],unsubscribeSettings,unsubscribeOrders,unsubscribeControls,maintenance=null,lookupVersion=0;
 const el=id=>document.getElementById(id),money=n=>Number(n).toFixed(2),escape=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function mount(){
  if(el('bot-checkout'))return;
@@ -33,13 +33,13 @@ function render(){
  el('bc-name').textContent=p.name;el('bc-engine').textContent='মেয়াদ: ৩০ দিন';
  el('bc-price').textContent='৳ '+money(p.price);el('bc-profit').textContent='+৳ '+money(p.target-p.price)+' (৬০%)';el('bc-target').textContent='৳ '+money(p.target);el('bc-bonus').textContent='+$'+money(p.bonus)+' USD';el('bc-commission').textContent='+৳ '+money(p.price/20);el('bc-balance').textContent=balance===null?'লোড হচ্ছে…':'৳ '+money(balance);
  const insufficient=method==='wallet'&&balance!==null&&balance<p.price&&!already&&!pending;
- el('bc-insufficient').hidden=!insufficient;el('bc-recharge').hidden=!insufficient;el('bc-bkash').hidden=method!=='bKash';
+ el('bc-insufficient').hidden=!insufficient;el('bc-recharge').hidden=!insufficient;el('bc-bkash').hidden=method!=='bKash'||maintenance!==false;
  el('bc-number').textContent=paymentReady()?settings.bkashNumber:'Admin payment নম্বর চালু করেননি';el('bc-copy').disabled=!paymentReady();el('bc-instructions').textContent=settings?.instructions||'';
  el('bc-ref-result').textContent=refLoading?'রেফারার যাচাই হচ্ছে…':refError|| (referrer?'✓ রেফারার: '+referrer.displayName+' (কালেক্টর ID: #'+referrer.collectorId+')':'রেফারার থাকলে তার ৮ সংখ্যার Collector ID দিন।');
  el('bc-ref-note').textContent='💡 যিনি রেফার করেছেন তার ID বা কোড দিলে তিনি এই প্যাকেজে ৫% রেফার বোনাস (+৳'+money(p.price/20)+') পাবেন।';
  const code=el('bc-ref-code').value.trim(),badRef=refLoading||!!refError||(!!code&&!referrer)||(!!Core.boundReferrer(profile)&&!referrer);
- const button=el('bc-submit');button.disabled=busy||already||pending||badRef||balance===null||(method==='wallet'?insufficient:!paymentReady());
- button.textContent=busy?'প্রক্রিয়া চলছে…':already?'✓ বট সক্রিয় আছে':pending?'⏳ Admin অনুমোদনের অপেক্ষায়':insufficient?'🔒 ব্যালেন্স অপ্রতুল (রিচার্জ করুন)':method==='wallet'?'🔓 Wallet দিয়ে কিনুন ও সক্রিয় করুন — ৳'+money(p.price):'পেমেন্ট তথ্য জমা দিন — ৳'+money(p.price);
+ const button=el('bc-submit');button.disabled=maintenance!==false||busy||already||pending||badRef||balance===null||(method==='wallet'?insufficient:!paymentReady());
+ button.textContent=maintenance===true?'লেনদেন সাময়িক বন্ধ':maintenance===null?'লেনদেনের অবস্থা যাচাই হচ্ছে…':busy?'প্রক্রিয়া চলছে…':already?'✓ বট সক্রিয় আছে':pending?'⏳ Admin অনুমোদনের অপেক্ষায়':insufficient?'🔒 ব্যালেন্স অপ্রতুল (রিচার্জ করুন)':method==='wallet'?'🔓 Wallet দিয়ে কিনুন ও সক্রিয় করুন — ৳'+money(p.price):'পেমেন্ট তথ্য জমা দিন — ৳'+money(p.price);
  el('bc-close').disabled=busy;sectionControls(busy);
  if(pending)el('bc-message').textContent='আপনার পেমেন্ট জমা হয়েছে। Admin যাচাই করে Approve করলে বট আনলক হবে।';
  else if(order()?.status==='rejected'&&!busy&&!el('bc-message').textContent)el('bc-message').textContent='পূর্বের আবেদন বাতিল: '+(order().rejectionReason||'Admin rejected')+'। সংশোধন করে নতুন Transaction ID দিয়ে আবার জমা দিন।';
@@ -79,7 +79,8 @@ async function submit(){
  finally{busy=false;render();}
 }
 window.HubBotCheckout={open,updateProfile(data){profile=data||{};render();},init(database,account){
- db=database;user=account;mount();unsubscribeSettings?.();unsubscribeOrders?.();
+ db=database;user=account;mount();unsubscribeSettings?.();unsubscribeOrders?.();unsubscribeControls?.();maintenance=null;
+ unsubscribeControls=db.collection('appSettings').doc('transactionControls').onSnapshot(s=>{maintenance=s.exists&&s.data().maintenance===true;render();},()=>{maintenance=null;render();});
  unsubscribeSettings=db.collection('appSettings').doc('paymentSettings').onSnapshot(s=>{settings=s.exists?s.data():null;render();},()=>{settings=null;render();});
  unsubscribeOrders=db.collection('botPurchaseRequests').where('uid','==',user.uid).onSnapshot(s=>{orders=s.docs.map(d=>({id:d.id,...d.data()}));render();},error=>{if(selected)el('bc-message').textContent='ক্রয়ের অবস্থা লোড হয়নি: '+error.message;});
 }};
