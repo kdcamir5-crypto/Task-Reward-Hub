@@ -315,31 +315,38 @@ service cloud.firestore {
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'fullName', 'phone', 'phoneNumber', 'telegram', 'telegramUsername', 'profileAvatar', 'profilePhotoData', 'profileUpdatedAt'])
         && validProfileChanges();
-      // Daily Tap-to-Earn progress. Only the signed-in user can increment their
-      // own count, one coin per write, up to 2,000 per Bangladesh-day key.
+      // Bangladesh calendar day is based on trusted request time, not the client clock.
+      function bangladeshTapDay() {
+        let t = request.time + duration.value(6, 'h');
+        return string(t.year()) + '-' + (t.month() < 10 ? '0' : '') + string(t.month()) + '-' + (t.day() < 10 ? '0' : '') + string(t.day());
+      }
+      // One stored tap per write; 200 taps unlock today's ads.
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tapCoinsDate', 'tapCoinsCount', 'tapAdsUnlockedDate', 'tapCoinsUpdatedAt'])
-        && request.resource.data.tapCoinsDate is string
+        && request.resource.data.tapCoinsDate == bangladeshTapDay()
         && request.resource.data.tapCoinsCount is int
-        && request.resource.data.tapCoinsCount >= 1
-        && request.resource.data.tapCoinsCount <= 2000
+        && request.resource.data.tapCoinsCount >= 1 && request.resource.data.tapCoinsCount <= 200
         && request.resource.data.tapCoinsUpdatedAt == request.time
         && (
-          (resource.data.tapCoinsDate == request.resource.data.tapCoinsDate
-            && resource.data.tapCoinsCount is int
-            && resource.data.tapCoinsCount >= 0
-            && resource.data.tapCoinsCount < 2000
+          (resource.data.get('tapCoinsDate', '') == request.resource.data.tapCoinsDate
+            && resource.data.get('tapCoinsCount', -1) is int
+            && resource.data.get('tapCoinsCount', -1) >= 0
+            && resource.data.get('tapCoinsCount', -1) < 200
             && request.resource.data.tapCoinsCount == resource.data.tapCoinsCount + 1)
-          ||
-          (resource.data.tapCoinsDate != request.resource.data.tapCoinsDate
-            && request.resource.data.tapCoinsCount == 1)
-          ||
-          (!('tapCoinsDate' in resource.data.keys())
+          || (resource.data.get('tapCoinsDate', '') != request.resource.data.tapCoinsDate
             && request.resource.data.tapCoinsCount == 1)
         )
-        && (request.resource.data.tapCoinsCount == 2000
+        && (request.resource.data.tapCoinsCount == 200
           ? request.resource.data.tapAdsUnlockedDate == request.resource.data.tapCoinsDate
           : request.resource.data.tapAdsUnlockedDate == null);
+      // Preserve users who had already reached 200–2,000 before this change.
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tapAdsUnlockedDate', 'tapCoinsUpdatedAt'])
+        && resource.data.get('tapCoinsDate', '') == bangladeshTapDay()
+        && resource.data.get('tapCoinsCount', -1) is int
+        && resource.data.tapCoinsCount >= 200 && resource.data.tapCoinsCount <= 2000
+        && request.resource.data.tapAdsUnlockedDate == bangladeshTapDay()
+        && request.resource.data.tapCoinsUpdatedAt == request.time;
       // Existing accounts may receive an ID once, only when the matching reservation
       // is created in the same atomic Firestore batch.
       allow update: if signedIn() && request.auth.uid == uid

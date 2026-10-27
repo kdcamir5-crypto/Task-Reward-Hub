@@ -1152,9 +1152,10 @@
     });
   });
   // Tap coins are a daily, non-cash counter used only to unlock rewarded ads.
-  const TAP_DAILY_TARGET = 2000;
+  const TAP_DAILY_TARGET = 200;
   let tapCoinWriteInProgress = false;
-  let tapPendingCount = 0;
+  let tapPendingCount = 0, tapPendingDate = null;
+  let tapRenderedDate = null;
   let tapQueueRunning = false;
   let tapPointerIds = new Set();
   let tapFeedbackTimer = null;
@@ -1179,7 +1180,8 @@
 
   function renderTapDailyProgress(profile = currentReferralProfile) {
     const progress = getTapDailyProgress(profile);
-    const visibleCount = Math.min(TAP_DAILY_TARGET, progress.count + tapPendingCount);
+    tapRenderedDate = progress.today;
+    const visibleCount = Math.min(TAP_DAILY_TARGET, progress.count + (tapPendingDate === progress.today ? tapPendingCount : 0));
     setText("tap-coin-value", String(visibleCount));
     setText("tap-progress-label", visibleCount.toLocaleString("en-US") + " / " + TAP_DAILY_TARGET.toLocaleString("en-US"));
     const fill = document.getElementById("tap-progress-fill");
@@ -1195,6 +1197,8 @@
       button.setAttribute("aria-disabled", String(!progress.unlocked || monetagLaunchInProgress));
     });
 
+    const sponsoredHeading = document.querySelector("#tap-sponsored-card .tap-sponsored-copy strong");
+    if (sponsoredHeading) sponsoredHeading.textContent = progress.unlocked ? "Watch a rewarded ad" : "Complete 200 daily coins to unlock ads";
     const sponsoredCopy = document.querySelector("#tap-sponsored-card .tap-sponsored-copy em");
     if (sponsoredCopy && !monetagLaunchInProgress) {
       sponsoredCopy.textContent = progress.unlocked
@@ -1206,8 +1210,8 @@
     const note = document.querySelector(".tap-feature-note");
     if (tapAdStatusDate && tapAdStatusDate !== progress.today) { tapAdStatus = ""; tapAdStatusDate = ""; }
     const noteText = tapAdStatus || (progress.unlocked
-      ? "Daily 2,000-coin goal complete. Rewarded ads are unlocked for today."
-      : "Tap once to earn 1 coin. Complete 2,000 coins today to unlock ads. Coins have no cash value and reset daily.");
+      ? "Daily 200-coin goal complete. Rewarded ads are unlocked for today."
+      : "Tap once to earn 1 coin. Complete 200 coins today to unlock ads. Coins have no cash value and reset daily.");
     if (note && note.textContent !== noteText) note.textContent = noteText;
     const tapButton = document.getElementById("tap-main-button");
     if (tapButton) {
@@ -1241,6 +1245,7 @@
       return;
     }
     const progress = getTapDailyProgress();
+    if (tapPendingDate !== progress.today) { tapPendingCount = 0; tapPendingDate = progress.today; }
     const remaining = Math.max(0, TAP_DAILY_TARGET - progress.count - tapPendingCount);
     if (remaining <= 0) {
       renderTapDailyProgress();
@@ -1263,11 +1268,17 @@
           tapPendingCount = 0;
           break;
         }
+        const queuedDay = tapPendingDate;
+        if (queuedDay !== bangladeshDateKey()) {
+          if (tapPendingDate === queuedDay) { tapPendingCount = 0; tapPendingDate = null; }
+          break;
+        }
         const result = await db.runTransaction(async transaction => {
           const snapshot = await transaction.get(userRef);
           if (!snapshot.exists) throw new Error("Your Firebase profile could not be found.");
           const profile = snapshot.data() || {};
           const today = bangladeshDateKey();
+          if (today !== queuedDay) return { dayChanged: true };
           const oldCount = profile.tapCoinsDate === today ? Number(profile.tapCoinsCount) || 0 : 0;
           const count = Math.max(0, Math.min(TAP_DAILY_TARGET, Math.floor(oldCount)));
           if (count >= TAP_DAILY_TARGET) return { count: TAP_DAILY_TARGET, alreadyComplete: true };
@@ -1280,6 +1291,10 @@
           });
           return { count: nextCount, alreadyComplete: false };
         });
+        if (tapPendingDate !== queuedDay) continue;
+        if (result.dayChanged || bangladeshDateKey() !== queuedDay) {
+          tapPendingCount = 0; tapPendingDate = null; break;
+        }
         if (tapPendingCount > 0) tapPendingCount -= 1;
         if (result.alreadyComplete) {
           tapPendingCount = 0;
@@ -1294,7 +1309,7 @@
         renderTapDailyProgress();
       }
       if (savedThisRun > 0 && getTapDailyProgress().count >= TAP_DAILY_TARGET) {
-        showToast("2,000 coins completed! Rewarded ads are now unlocked for today.");
+        showToast("200 coins completed! Rewarded ads are now unlocked for today.");
       }
     } catch (error) {
       console.error("Tap coin save failed:", error);
@@ -1307,6 +1322,30 @@
         window.setTimeout(() => { if (!tapQueueRunning) void flushTapCoinQueue(uid); }, 300);
       }
     }
+  }
+
+  // Refresh the displayed goal after Bangladesh midnight, including when the app resumes.
+  function refreshTapDay() {
+    if (tapRenderedDate && tapRenderedDate !== bangladeshDateKey()) renderTapDailyProgress();
+  }
+  window.setInterval(refreshTapDay, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshTapDay(); });
+
+  async function ensureTapUnlock(user) {
+    const uid = user.uid, userRef = db.collection("users").doc(uid);
+    await db.runTransaction(async transaction => {
+      const snapshot = await transaction.get(userRef);
+      if (!snapshot.exists) throw new Error("আপনার account profile পাওয়া যায়নি।");
+      const profile = snapshot.data() || {}, today = bangladeshDateKey(), count = profile.tapCoinsCount;
+      if (profile.tapCoinsDate !== today || !Number.isSafeInteger(count) || count < TAP_DAILY_TARGET || count > 2000) {
+        throw new Error("আজকের ২০০ tap আগে সম্পূর্ণ করুন।");
+      }
+      if (profile.tapAdsUnlockedDate !== today) transaction.update(userRef, {
+        tapAdsUnlockedDate: today,
+        tapCoinsUpdatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    if (!auth.currentUser || auth.currentUser.uid !== uid) throw new Error("Account পরিবর্তিত হয়েছে। আবার চেষ্টা করুন।");
   }
 
   const MONETAG_WORKER_URL = "https://task-reward-hub-monetag-rewards.kdcamir5.workers.dev";
@@ -1343,7 +1382,10 @@
     renderTapDailyProgress();
 
     try {
-      const idToken = await auth.currentUser.getIdToken();
+      const user = auth.currentUser;
+      await ensureTapUnlock(user);
+      const idToken = await user.getIdToken();
+      if (!auth.currentUser || auth.currentUser.uid !== user.uid) throw new Error("Account পরিবর্তিত হয়েছে। আবার চেষ্টা করুন।");
       const sessionResponse = await fetch(MONETAG_WORKER_URL + "/ad-session", {
         method: "POST",
         headers: {
