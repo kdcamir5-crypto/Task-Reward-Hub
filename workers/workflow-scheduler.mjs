@@ -31,13 +31,11 @@ async function github(fetcher, url, token, method = 'GET') {
   let response;
   try {
     response = await fetcher(url, {
-      method, headers, redirect: 'error', signal: AbortSignal.timeout(15000),
+      method, headers, redirect: 'manual', signal: AbortSignal.timeout(15000),
       ...(method === 'POST' ? {body: JSON.stringify({ref: 'main'})} : {})
     });
   } catch (error) {
-    const raw = String(error?.message || '');
-    console.error('FETCH_ERROR_DETAIL', error?.name, raw.split(token).join('[token]').slice(0, 200));
-    const message = raw;
+    const message = String(error?.message || '');
     const code = /illegal invocation/i.test(message) ? 'ILLEGAL_INVOCATION'
       : /abortsignal.*timeout|timeout.*not a function/i.test(message) ? 'TIMEOUT_UNSUPPORTED'
       : /header|character|invalid.*value/i.test(message) ? 'INVALID_HEADER'
@@ -66,13 +64,6 @@ export async function checkAndDispatch(workflow, token, fetcher = (...args) => g
 export async function runScheduled(env, fetcher = (...args) => globalThis.fetch(...args), now = Date.now()) {
   const token = typeof env.GITHUB_ACTIONS_TOKEN === 'string' ? env.GITHUB_ACTIONS_TOKEN.trim() : '';
   if (!token || token.length > 512) throw new Error('TOKEN_NOT_CONFIGURED');
-  console.log('TOKEN_SHAPE', JSON.stringify({
-    len: token.length,
-    prefix: token.slice(0, 4),
-    ws: /\s/.test(token),
-    nonAscii: /[^\x20-\x7E]/.test(token),
-    quote: /["']/.test(token)
-  }));
   const settled = await Promise.allSettled(WORKFLOWS.map(workflow => checkAndDispatch(workflow, token, fetcher, now)));
   let failed = false;
   settled.forEach((result, index) => {
