@@ -34,7 +34,15 @@ async function github(fetcher, url, token, method = 'GET') {
       method, headers, redirect: 'error', signal: AbortSignal.timeout(15000),
       ...(method === 'POST' ? {body: JSON.stringify({ref: 'main'})} : {})
     });
-  } catch (_) { throw new Error('GITHUB_CONNECTION_FAILED'); }
+  } catch (error) {
+    const message = String(error?.message || '');
+    const code = /illegal invocation/i.test(message) ? 'ILLEGAL_INVOCATION'
+      : /abortsignal.*timeout|timeout.*not a function/i.test(message) ? 'TIMEOUT_UNSUPPORTED'
+      : /header|character|invalid.*value/i.test(message) ? 'INVALID_HEADER'
+      : error?.name === 'TimeoutError' || error?.name === 'AbortError' ? 'TIMEOUT'
+      : error?.name === 'TypeError' ? 'TYPE_ERROR' : 'OTHER';
+    throw new Error('GITHUB_CONNECTION_' + code);
+  }
   if (!response.ok) throw new Error('GITHUB_HTTP_' + response.status);
   if (method === 'POST') return null;
   try {
@@ -60,7 +68,7 @@ export async function runScheduled(env, fetcher = (...args) => globalThis.fetch(
   let failed = false;
   settled.forEach((result, index) => {
     if (result.status === 'fulfilled') console.log('SCHEDULER', WORKFLOWS[index], result.value);
-    else { failed = true; const safe = /^(GITHUB_CONNECTION_FAILED|GITHUB_RESPONSE_INVALID|GITHUB_HTTP_\d{3})$/.test(result.reason?.message || '') ? result.reason.message : 'DISPATCH_FAILED'; console.error('SCHEDULER', WORKFLOWS[index], safe); }
+    else { failed = true; const safe = /^(GITHUB_CONNECTION_(?:FAILED|ILLEGAL_INVOCATION|TIMEOUT_UNSUPPORTED|INVALID_HEADER|TIMEOUT|TYPE_ERROR|OTHER)|GITHUB_RESPONSE_INVALID|GITHUB_HTTP_\d{3})$/.test(result.reason?.message || '') ? result.reason.message : 'DISPATCH_FAILED'; console.error('SCHEDULER', WORKFLOWS[index], safe); }
   });
   if (failed) throw new Error('SCHEDULER_DISPATCH_FAILED');
 }
