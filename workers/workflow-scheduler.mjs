@@ -1,6 +1,6 @@
 /* Dedicated scheduled dispatcher. Store the GitHub token only as a Worker Secret. */
 const REPOSITORY = 'kdcamir5-crypto/Task-Reward-Hub';
-const WORKFLOWS = Object.freeze(['auto-mining.yml', 'verify-referrals.yml']);
+const WORKFLOWS = Object.freeze(['auto-mining.yml', 'verify-referrals.yml', 'prepare-spin-rewards.yml']);
 const API = 'https://api.github.com/repos/' + REPOSITORY + '/actions/workflows/';
 const SUCCESS_MAX_AGE_MS = 5 * 60 * 1000;
 const ACTIVE_MAX_AGE_MS = 12 * 60 * 1000;
