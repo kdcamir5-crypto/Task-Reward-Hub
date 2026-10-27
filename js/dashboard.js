@@ -1158,6 +1158,7 @@
   let tapQueueRunning = false;
   let tapPointerIds = new Set();
   let tapFeedbackTimer = null;
+  let tapAdStatus = "", tapAdStatusDate = "";
 
   function bangladeshDateKey(date = new Date()) {
     return new Intl.DateTimeFormat("en-CA", {
@@ -1203,9 +1204,11 @@
     const sponsoredTag = document.querySelector("#tap-sponsored-card .tap-sponsored-tag");
     if (sponsoredTag) sponsoredTag.textContent = progress.unlocked ? "UNLOCKED" : "LOCKED";
     const note = document.querySelector(".tap-feature-note");
-    if (note) note.textContent = progress.unlocked
+    if (tapAdStatusDate && tapAdStatusDate !== progress.today) { tapAdStatus = ""; tapAdStatusDate = ""; }
+    const noteText = tapAdStatus || (progress.unlocked
       ? "Daily 2,000-coin goal complete. Rewarded ads are unlocked for today."
-      : "Tap once to earn 1 coin. Complete 2,000 coins today to unlock ads. Coins have no cash value and reset daily.";
+      : "Tap once to earn 1 coin. Complete 2,000 coins today to unlock ads. Coins have no cash value and reset daily.");
+    if (note && note.textContent !== noteText) note.textContent = noteText;
     const tapButton = document.getElementById("tap-main-button");
     if (tapButton) {
       tapButton.disabled = progress.count >= TAP_DAILY_TARGET;
@@ -1328,6 +1331,8 @@
     }
 
     monetagLaunchInProgress = true;
+    tapAdStatus = "বিজ্ঞাপন প্রস্তুত হচ্ছে…";
+    tapAdStatusDate = bangladeshDateKey();
     const originalText = triggerButton && triggerButton.textContent;
     if (triggerButton) {
       triggerButton.disabled = true;
@@ -1357,15 +1362,15 @@
         requestVar: "daily_reward"
       });
 
-      if (result && result.reward_event_type === "valued") {
-        showToast("Ad watched successfully! Please check your balance for the reward.");
-        if (sponsoredCopy) sponsoredCopy.textContent = "Ad watched successfully";
+      if (result && ["valued", "non_valued"].includes(result.reward_event_type)) {
+        tapAdStatus = "বিজ্ঞাপনের ফল পাওয়া গেছে। Reward জমা হলে wallet balance-এ দেখাবে; যাচাইয়ে সময় লাগতে পারে।";
       } else {
-        showToast("This ad did not qualify for a reward. No balance was added by the app.");
-        if (sponsoredCopy) sponsoredCopy.textContent = "Watch a qualifying rewarded ad";
+        tapAdStatus = "বিজ্ঞাপনের ফল নিশ্চিত হয়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
       }
+      showToast(tapAdStatus);
     } catch (error) {
       console.error("Monetag rewarded ad launch failed:", error);
+      tapAdStatus = "বিজ্ঞাপন চালু বা যাচাই করা যায়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
       showToast(error && error.message ? String(error.message) : "Ad could not start. Please try again.");
       if (sponsoredCopy) sponsoredCopy.textContent = "Tap to watch a rewarded ad";
     } finally {
