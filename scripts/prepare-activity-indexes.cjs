@@ -8,7 +8,7 @@ async function main(){
  async function request(url,method='GET',body){
   const token=(await credential.getAccessToken()).access_token;
   const response=await fetch(url,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),redirect:'error',signal:AbortSignal.timeout(30000)});
-  if(!response.ok)throw Error('INDEX_API_HTTP_'+response.status);
+  if(!response.ok){const body=await response.json().catch(()=>({}));const detail=String(body.error?.message||'').split(token).join('[redacted]').replace(/[\r\n]/g,' ').slice(0,250);throw Error('INDEX_API_HTTP_'+response.status+' '+method+' '+detail);}
   return response.json();
  }
  const base='https://firestore.googleapis.com/v1/projects/reward-hub-bd/databases/(default)/collectionGroups/';
