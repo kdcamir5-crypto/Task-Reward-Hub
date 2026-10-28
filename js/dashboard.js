@@ -1032,6 +1032,7 @@
     if (!ticket) { updateSpinCount(); return; }
     const disc = document.getElementById('spin-wheel-disc'), result = document.getElementById('spin-result-message');
     if (!disc) return;
+    window.HubSpinSound?.unlock();
     spinInProgress = true; updateSpinCount();
     if (result) result.textContent = 'আপনার স্পিন যাচাই হচ্ছে…';
     try {
@@ -1045,15 +1046,18 @@
         if (finished) return; finished = true;
         disc.removeEventListener('transitionend', onTransition);
         spinInProgress = false;
+        window.HubSpinSound?.finish();
         if (result) result.textContent = (outcome.alreadyClaimed ? 'এই Spin-এর পুরস্কার আগেই জমা হয়েছে: ' : 'অভিনন্দন! ') + spinRewards[selected].label + (outcome.currency === 'USD' ? ' — ডলার ওয়ালেটে জমা হয়েছে।' : ' — Main Balance-এ জমা হয়েছে।');
         updateSpinCount(); updateSpinWalletDisplay();
       };
       const onTransition = event => { if (event.target === disc && event.propertyName === 'transform') finish(); };
       disc.addEventListener('transitionend', onTransition);
+      window.HubSpinSound?.start();
       if (result) result.textContent = 'চাকা ঘুরছে… শুভকামনা!';
       disc.style.transform = 'rotate('+spinRotation+'deg)';
       window.setTimeout(finish, 5600);
     } catch (error) {
+      window.HubSpinSound?.stop();
       spinInProgress = false; updateSpinCount();
       if (result) result.textContent = error.code === 'permission-denied' ? 'Spin জমা করা যায়নি। Support-এ যোগাযোগ করুন; আবার চাপ দিয়ে চেষ্টা করলেও একই পুরস্কার দুবার জমা হবে না।' : error.message || 'সংযোগ বিচ্ছিন্ন হয়েছে। আবার চেষ্টা করুন।';
     }
@@ -1095,13 +1099,6 @@
   document.getElementById("spin-wheel-open")?.addEventListener("click", openSpinWheel);
   document.getElementById("spin-wheel-back")?.addEventListener("click", closeSpinWheel);
   document.getElementById("spin-now-button")?.addEventListener("click", runSpinWheel);
-  document.getElementById("spin-sound-button")?.addEventListener("click", event => {
-    const button = event.currentTarget;
-    const enabled = button.getAttribute("aria-pressed") !== "true";
-    button.setAttribute("aria-pressed", String(enabled));
-    button.textContent = enabled ? "🔔" : "🔊";
-    showToast(enabled ? "Sound control enabled (sound integration pending)." : "Sound control muted.");
-  });
   document.querySelectorAll("[data-spin-theme]").forEach(button => {
     button.addEventListener("click", () => {
       const page = document.getElementById("spin-wheel-page");

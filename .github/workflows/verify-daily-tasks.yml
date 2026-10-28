@@ -7,6 +7,8 @@ on:
       - .github/workflows/verify-daily-tasks.yml
       - js/daily-tasks*.js
       - js/dashboard.js
+      - js/spin-sound.js
+      - tests/spin-sound.test.cjs
       - pages/dashboard.html
       - js/activity-core.js
       - js/notifications-core.js
@@ -32,6 +34,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Spin sound
+        run: node --test tests/spin-sound.test.cjs
       - name: Tap input and daily goal
         run: node --test tests/tap-input.test.cjs tests/tap-200.test.cjs
       - name: Task boundaries and visibility
