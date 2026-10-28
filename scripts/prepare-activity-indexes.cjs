@@ -13,7 +13,7 @@ async function main(){
  }
  const base='https://firestore.googleapis.com/v1/projects/reward-hub-bd/databases/(default)/collectionGroups/';
  const collections=[...new Set(definitions.map(d=>d.collectionGroup))];
- async function list(collection){const result=[];let token='';do{const body=await request(base+collection+'/indexes?pageSize=100'+(token?'&pageToken='+encodeURIComponent(token):''));result.push(...body.indexes||[]);token=body.nextPageToken||'';}while(token);return result;}
+ async function list(collection){const result=[];let token='';do{const body=await request(base+collection+'/indexes'+(token?'?pageToken='+encodeURIComponent(token):''));result.push(...body.indexes||[]);token=body.nextPageToken||'';}while(token);return result;}
  const same=(a,b)=>a.queryScope===b.queryScope&&JSON.stringify(a.fields.filter(f=>f.fieldPath!=='__name__'))===JSON.stringify(b.fields);
  for(const collection of collections){const indexes=await list(collection);for(const d of definitions.filter(d=>d.collectionGroup===collection)){if(!indexes.some(i=>same(i,d))){await request(base+collection+'/indexes','POST',{queryScope:d.queryScope,fields:d.fields});console.log('Created activity index:',collection,d.fields.map(f=>f.fieldPath).join(','));}}}
  for(let attempt=0;attempt<45;attempt++){
