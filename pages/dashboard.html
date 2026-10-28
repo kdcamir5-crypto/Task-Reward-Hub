@@ -14,7 +14,7 @@
   <script src='//libtl.com/sdk.js' data-zone='12051888' data-sdk='show_12051888'></script>
   <link rel="stylesheet" href="../css/bot-checkout.css?v=20261028-readable1">
   <link rel="stylesheet" href="../css/referrals.css?v=20261028-readable1">
-  <link rel="stylesheet" href="../css/activity.css?v=20261028-readable1">
+  <link rel="stylesheet" href="../css/activity.css?v=20261028-history-pages1">
   <link rel="stylesheet" href="../css/notifications.css?v=20261028-readable1">
   <link rel="stylesheet" href="../css/community.css?v=20261028-readable1">
   <link rel="stylesheet" href="../css/support-links.css?v=20261028-readable1">
@@ -201,10 +201,11 @@
       </section>
       <section id="notifications-page" class="notifications-page" aria-labelledby="notifications-title" hidden>
         <div class="nf-heading"><button id="notifications-back" type="button" aria-label="Back">←</button><div><h1 id="notifications-title">🔔 Notifications / Alerts</h1><p>আপনার অ্যাকাউন্টের আসল updates</p></div></div>
-        <div class="nf-tools"><div class="nf-filters"><button type="button" class="is-active" data-notification-filter="all">সব</button><button type="button" data-notification-filter="unread">Unread</button></div><button id="notifications-mark-all" type="button" disabled>সব পড়া হয়েছে</button><button id="notifications-refresh" type="button">Refresh</button></div>
+        <div class="nf-tools"><div class="nf-filters"><button type="button" class="is-active" data-notification-filter="all">সব</button><button type="button" data-notification-filter="unread">Unread</button></div><button id="notifications-mark-all" type="button" disabled>লোড হওয়া সব পড়া হয়েছে</button><button id="notifications-refresh" type="button">Refresh</button></div>
         <p id="notifications-source-status" class="nf-status" role="status">Notification লোড হচ্ছে…</p>
         <p id="notifications-action-status" class="nf-status" role="status"></p>
         <div id="notifications-list" class="nf-list" aria-live="polite"></div>
+        <button id="notifications-load-more" class="activity-load-more" type="button" hidden>Load More — পুরোনো notifications</button>
       </section>
       <section id="referral-page" class="referral-page" data-theme="cyber" hidden>
       <div class="rf-head"><button id="referral-back" type="button" aria-label="Back">←</button><div><small>COMMUNITY REWARDS</small><h1>Referred Members <span>(রেফারেল তালিকা)</span></h1></div><b>👥 <span id="referral-member-count">0</span> জন</b></div>
@@ -570,6 +571,7 @@
       <p class="ledger-note">BDT ও USD আলাদা। Mining ও referral commission-এর “মোট” নতুন credit নয়; এই তালিকা দিয়ে balance পুনর্গণনা করা হয় না।</p>
       <div class="ledger-source-row"><small id="ledger-source-status" role="status">লোড হচ্ছে…</small><button type="button" data-ledger-refresh>Refresh / Retry</button></div>
       <div id="ledger-list" class="history-list ledger-list" aria-live="polite"><div class="history-empty"><span>▤</span><strong>লেনদেন লোড হচ্ছে…</strong></div></div>
+      <button id="ledger-load-more" class="activity-load-more" type="button" hidden>Load More — আরও history</button>
     </section>
     <nav class="bottom-nav" aria-label="Main navigation">
       <button class="nav-item is-active" type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
@@ -605,7 +607,9 @@
   <script src="../js/referrals.js?v=20261026-terms1-20261025"></script>
   <script src="../js/withdrawal-core.js?v=20261025-withdraw1"></script>
   <script src="../js/activity-core.js?v=20261028-task-realtime1"></script>
-  <script src="../js/notifications-core.js?v=20261028-tasks1"></script>
+  <script src="../js/activity-paged-core.js?v=20261028-history-pages1"></script>
+  <script src="../js/activity-router.js?v=20261028-history-pages1"></script>
+  <script src="../js/notifications-core.js?v=20261028-history-pages1"></script>
   <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
   <script src="../js/community-core.js?v=20261025-feed1"></script>
   <script src="../js/community.js?v=20261025-feed1"></script>
@@ -617,7 +621,7 @@
   <script src="../js/daily-tasks-core.js?v=20261028-tasks1"></script>
   <script src="../js/daily-tasks.js?v=20261028-task-realtime1"></script>
   <script src="../js/spin-sound.js?v=20261028-sound1"></script>
-  <script src="../js/dashboard.js?v=20261028-sound1"></script>
+  <script src="../js/dashboard.js?v=20261028-history-pages1"></script>
 </body>
 </html>
 

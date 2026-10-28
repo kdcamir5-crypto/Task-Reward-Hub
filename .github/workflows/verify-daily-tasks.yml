@@ -11,6 +11,11 @@ on:
       - tests/spin-sound.test.cjs
       - pages/dashboard.html
       - js/activity-core.js
+      - js/activity-paged-core.js
+      - js/activity-router.js
+      - tests/activity-pagination.test.cjs
+      - tests/activity-router.test.cjs
+      - tests/activity-rules.cjs
       - js/notifications-core.js
       - scripts/cleanup-daily-tasks.cjs
       - tests/daily-tasks*
@@ -39,7 +44,9 @@ jobs:
       - name: Tap input and daily goal
         run: node --test tests/tap-input.test.cjs tests/tap-200.test.cjs
       - name: Task boundaries and visibility
-        run: node --test tests/task-realtime.test.cjs tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs tests/activity.test.cjs tests/notifications.test.cjs
+        run: node --test tests/task-realtime.test.cjs tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs tests/activity.test.cjs tests/activity-pagination.test.cjs tests/activity-router.test.cjs tests/notifications.test.cjs
+      - name: Activity history owner rules and realtime paging
+        run: npx firebase emulators:exec --only firestore --project demo-trh-activity 'node tests/activity-rules.cjs'
       - name: Daily task rules and transactions
         run: npx firebase emulators:exec --only firestore --project demo-trh-daily-tasks 'node tests/daily-tasks.cjs'
       - name: Regression purchases and withdrawals

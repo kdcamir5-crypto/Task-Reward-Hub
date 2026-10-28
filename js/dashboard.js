@@ -674,6 +674,7 @@
   let moneyHistoryStatus = "pending";
   let moneyHistoryRows = [];
   let ledgerRows = [];
+  let ledgerLimit=50;
   let activityController = null;
   let notificationsController = null;
   let notificationsState = {events:[],unread:0,ready:false,loading:true,readError:false,sourceErrors:[]};
@@ -751,13 +752,14 @@
     const stateFilter=document.querySelector('[data-ledger-status].is-active')?.dataset.ledgerStatus||'all';
     const rows=ledgerRows.filter(r=>(filter==='all'||(filter==='tasks'?r.source==='task':filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(stateFilter==='all'||activityStatus(r).key===stateFilter));
     const list=document.getElementById('ledger-list');if(!list)return;
-    list.innerHTML=rows.length?rows.map(activityRowMarkup).join(''):'<div class="history-empty"><span>▤</span><strong>'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'সব লেনদেন লোড করা যায়নি':'এই filter-এ কোনো সংরক্ষিত লেনদেন নেই')+'</strong></div>';
+    list.innerHTML=rows.length?rows.slice(0,ledgerLimit).map(activityRowMarkup).join(''):'<div class="history-empty"><span>▤</span><strong>'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'সব লেনদেন লোড করা যায়নি':activityState.hasMore?'লোড হওয়া history-তে এই filter-এর রেকর্ড নেই; Load More দিয়ে আরও দেখুন':'এই filter-এ কোনো সংরক্ষিত লেনদেন নেই')+'</strong></div>';
     const sourceLabels={withdrawals:'Withdrawals',deposits:'Deposits',purchases:'Bot purchases',tasks:'Tasks',spins:'Spin',gifts:'Referral bots',codes:'Code rewards',profile:'Profile',mining:'Mining'};
-    setText('ledger-source-status',activityState.errors.length?'লোড হয়নি: '+activityState.errors.map(k=>sourceLabels[k]||k).join(', ')+'. Retry করুন।':activityState.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':activityState.loading?'সব উৎসের তথ্য লোড হচ্ছে…':'উপলভ্য রেকর্ড আপডেট হয়েছে।');
+    setText('ledger-source-status',activityState.errors.length?'লোড হয়নি: '+activityState.errors.map(k=>sourceLabels[k.split('.')[0]]||k).join(', ')+'. Retry করুন।':activityState.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':activityState.loading?'সব উৎসের তথ্য লোড হচ্ছে…':'লোড হওয়া রেকর্ড আপডেট হয়েছে।'+(activityState.hasMore?' পুরোনো বা তারিখবিহীন রেকর্ড দেখতে Load More চাপুন।':''));
+    const more=document.getElementById('ledger-load-more');if(more){more.hidden=!(activityState.hasMore||rows.length>ledgerLimit);more.disabled=activityState.loading||activityState.loadingMore;more.textContent=activityState.loadingMore?'লোড হচ্ছে…':'Load More — আরও history';}
   }
   function startAccountActivity(user) {
     if(activityController)activityController.stop();
-    ledgerRows=[];activityState={rows:[],errors:[],loading:true,fromCache:false};renderRecentActivity();renderFullLedger();
+    ledgerLimit=50;ledgerRows=[];activityState={rows:[],errors:[],loading:true,fromCache:false};renderRecentActivity();renderFullLedger();
     if(!window.HubActivity||!user||!db){activityState.loading=false;activityState.errors=['activity'];renderRecentActivity();renderFullLedger();return;}
     activityController=window.HubActivity.create(db,user.uid,state=>{activityState=state;ledgerRows=state.rows;notificationsController?.setActivity(state);renderRecentActivity();renderFullLedger();});
   }
@@ -782,13 +784,14 @@
   function renderNotifications() {
     const state=notificationsState,badge=document.getElementById('notification-unread-count'),button=document.querySelector('.notification-button');
     const uncertain=state.readError||state.sourceErrors.length>0;
-    if(badge){badge.hidden=!uncertain&&(!state.ready||state.loading||state.unread===0);badge.textContent=uncertain?'!':state.unread>99?'99+':String(state.unread);}
-    if(button)button.setAttribute('aria-label',uncertain?'Notifications: কিছু তথ্য লোড হয়নি':!state.ready||state.loading?'Notifications লোড হচ্ছে':'Notifications: '+state.unread+' unread');
+    if(badge){badge.hidden=!uncertain&&(!state.ready||state.loading||state.unread===0);badge.textContent=uncertain?'!':state.unread>99?'99+':String(state.unread)+(state.hasMore&&state.unread>0?'+':'');}
+    if(button)button.setAttribute('aria-label',uncertain?'Notifications: কিছু তথ্য লোড হয়নি':!state.ready||state.loading?'Notifications লোড হচ্ছে':'Notifications: লোড হওয়া history-তে '+state.unread+' unread');
     const list=document.getElementById('notifications-list');if(!list)return;
     const rows=state.events.filter(row=>notificationFilter!=='unread'||!row.read);
-    list.innerHTML=rows.length?rows.map(row=>'<button type="button" class="nf-item '+(row.read?'is-read':'is-unread')+'" data-notification-read="'+escapeHtml(row.id)+'" '+(row.read||state.saving||!state.ready?'disabled':'')+'><span class="nf-icon" aria-hidden="true">'+escapeHtml(row.icon||'🔔')+'</span><span class="nf-copy"><strong>'+escapeHtml(row.title)+'</strong><span>'+escapeHtml(row.detail)+'</span><small>'+escapeHtml(activityDate(row))+'</small><small>'+escapeHtml(row.read?'পড়া হয়েছে':'Unread • পড়া হয়েছে চিহ্নিত করতে চাপুন')+'</small></span><span class="nf-amount">'+escapeHtml(window.HubActivity.amountText(row))+'</span></button>').join(''):'<p class="nf-empty">'+(!state.ready||state.loading?'Notification লোড হচ্ছে…':uncertain?'কিছু তথ্য লোড করা যায়নি। Refresh করুন।':notificationFilter==='unread'?'কোনো unread notification নেই।':'এখনো কোনো সংরক্ষিত account update নেই।')+'</p>';
+    list.innerHTML=rows.length?rows.map(row=>'<button type="button" class="nf-item '+(row.read?'is-read':'is-unread')+'" data-notification-read="'+escapeHtml(row.id)+'" '+(row.read||state.saving||!state.ready?'disabled':'')+'><span class="nf-icon" aria-hidden="true">'+escapeHtml(row.icon||'🔔')+'</span><span class="nf-copy"><strong>'+escapeHtml(row.title)+'</strong><span>'+escapeHtml(row.detail)+'</span><small>'+escapeHtml(activityDate(row))+'</small><small>'+escapeHtml(row.read?'পড়া হয়েছে':'Unread • পড়া হয়েছে চিহ্নিত করতে চাপুন')+'</small></span><span class="nf-amount">'+escapeHtml(window.HubActivity.amountText(row))+'</span></button>').join(''):'<p class="nf-empty">'+(!state.ready||state.loading?'Notification লোড হচ্ছে…':uncertain?'কিছু তথ্য লোড করা যায়নি। Refresh করুন।':notificationFilter==='unread'?state.hasMore?'লোড হওয়া notification-গুলো পড়া হয়েছে। পুরোনোগুলো Load More দিয়ে দেখুন।':'কোনো unread notification নেই।':'এখনো কোনো সংরক্ষিত account update নেই।')+'</p>';
     const all=document.getElementById('notifications-mark-all');if(all)all.disabled=!state.ready||state.loading||uncertain||state.saving||state.unread===0;
-    setText('notifications-source-status',state.readError?'Read status পাওয়া যায়নি। নতুন Firestore rules publish করে Refresh করুন।':state.sourceErrors.length?'কিছু account update লোড হয়নি। সংখ্যা এখন সম্পূর্ণ নয়; Refresh করুন।':!state.ready||state.loading?'Notification ও read status লোড হচ্ছে…':state.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':state.unread+'টি unread • account updates সরাসরি আসবে');
+    setText('notifications-source-status',state.readError?'Read status পাওয়া যায়নি। নতুন Firestore rules publish করে Refresh করুন।':state.sourceErrors.length?'কিছু account update লোড হয়নি। সংখ্যা এখন সম্পূর্ণ নয়; Refresh করুন।':!state.ready||state.loading?'Notification ও read status লোড হচ্ছে…':state.fromCache?'সংরক্ষিত তথ্য দেখাচ্ছে; connection হলে আপডেট হবে।':'লোড হওয়া history-তে '+state.unread+'টি unread • নতুন update সরাসরি আসবে'+(state.hasMore?' • পুরোনো notification আরও থাকতে পারে':''));
+    const more=document.getElementById('notifications-load-more');if(more){more.hidden=!state.hasMore;more.disabled=state.loading||state.loadingMore;more.textContent=state.loadingMore?'লোড হচ্ছে…':'Load More — পুরোনো notifications';}
   }
   function startNotifications(user) {
     notificationsController?.stop();notificationsController=null;
@@ -808,6 +811,19 @@
   document.getElementById('notifications-list')?.addEventListener('click',event=>{const button=event.target.closest('[data-notification-read]');if(button&&!button.disabled)markNotifications(button.dataset.notificationRead);});
   document.getElementById('notifications-mark-all')?.addEventListener('click',()=>markNotifications());
   document.getElementById('notifications-refresh')?.addEventListener('click',()=>{setText('notifications-action-status','');notificationsController?.retry();if(walletUser){startAccountActivity(walletUser);activityController?.updateProfile(currentReferralProfile);activityController?.updateMining(currentMiningRecords);}});
+  async function loadMoreActivity(){
+    if(!activityController)return;
+    ledgerLimit+=50;
+    await activityController.loadMore();
+    renderFullLedger();
+  }
+  document.getElementById('ledger-load-more')?.addEventListener('click',()=>{
+    const filter=document.querySelector('[data-ledger-filter].is-active')?.dataset.ledgerFilter||'all';
+    const status=document.querySelector('[data-ledger-status].is-active')?.dataset.ledgerStatus||'all';
+    const count=ledgerRows.filter(r=>(filter==='all'||(filter==='tasks'?r.source==='task':filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(status==='all'||activityStatus(r).key===status)).length;
+    if(count>ledgerLimit){ledgerLimit+=50;renderFullLedger();}else void loadMoreActivity();
+  });
+  document.getElementById('notifications-load-more')?.addEventListener('click',()=>{void loadMoreActivity();});
   document.querySelectorAll('[data-ledger-open]').forEach(button=>button.addEventListener('click',openFullLedgerDrawer));
   document.querySelectorAll('[data-ledger-status]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-ledger-status]').forEach(el=>el.classList.toggle('is-active',el===button));renderFullLedger();}));
   document.querySelector('[data-ledger-refresh]')?.addEventListener('click',()=>{if(!walletUser)return;startAccountActivity(walletUser);activityController?.updateProfile(currentReferralProfile);activityController?.updateMining(currentMiningRecords);});

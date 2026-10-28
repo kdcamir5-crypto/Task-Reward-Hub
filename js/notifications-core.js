@@ -30,7 +30,7 @@ function events(rows){
 function create(db,F,uid,onChange){
  let stopped=false,ready=false,readError=false,saving=false,activity={rows:[],loading:true,errors:[],fromCache:false},readIds=new Set(),cached=false;
  const ref=db.collection('users').doc(uid).collection('notificationReads');
- function state(){const list=events(activity.rows).map(e=>({...e,read:readIds.has(e.id)}));return {events:list,unread:list.filter(e=>!e.read).length,ready,readError,saving,loading:activity.loading,sourceErrors:activity.errors||[],fromCache:cached||activity.fromCache};}
+ function state(){const list=events(activity.rows).map(e=>({...e,read:readIds.has(e.id)}));return {events:list,unread:list.filter(e=>!e.read).length,ready,readError,saving,loading:activity.loading,sourceErrors:activity.errors||[],fromCache:cached||activity.fromCache,hasMore:!!activity.hasMore,loadingMore:!!activity.loadingMore};}
  function emit(){if(!stopped)onChange(state());}
  function watch(){return ref.onSnapshot({includeMetadataChanges:true},snapshot=>{if(stopped)return;readIds=new Set(snapshot.docs.filter(d=>d.data().read===true&&!d.metadata?.hasPendingWrites).map(d=>d.id));ready=true;readError=false;cached=snapshot.metadata?.fromCache===true;emit();},()=>{if(stopped)return;ready=false;readError=true;emit();});}
  let unsubscribe;

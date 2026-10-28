@@ -8,17 +8,17 @@ async function main(){
  async function request(url,method='GET',body){
   const token=(await credential.getAccessToken()).access_token;
   const response=await fetch(url,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),redirect:'error',signal:AbortSignal.timeout(30000)});
-  if(!response.ok){const body=await response.json().catch(()=>({}));const detail=String(body.error?.message||'').split(token).join('[redacted]').replace(/[\r\n]/g,' ').slice(0,250);throw Error('INDEX_API_HTTP_'+response.status+' '+method+' '+detail);}
+  if(!response.ok){if(response.status===403)console.error('Index permission needed for service account:',account.client_email);const body=await response.json().catch(()=>({}));const detail=String(body.error?.message||'').split(token).join('[redacted]').replace(/[\r\n]/g,' ').slice(0,250);throw Error('INDEX_API_HTTP_'+response.status+' '+method+' '+detail);}
   return response.json();
  }
  const base='https://firestore.googleapis.com/v1/projects/reward-hub-bd/databases/(default)/collectionGroups/';
  const collections=[...new Set(definitions.map(d=>d.collectionGroup))];
  async function list(collection){const result=[];let token='';do{const body=await request(base+collection+'/indexes'+(token?'?pageToken='+encodeURIComponent(token):''));result.push(...body.indexes||[]);token=body.nextPageToken||'';}while(token);return result;}
- const same=(a,b)=>a.queryScope===b.queryScope&&JSON.stringify(a.fields.filter(f=>f.fieldPath!=='__name__'))===JSON.stringify(b.fields);
+ const same=(a,b)=>{const fields=a.fields.filter(f=>f.fieldPath!=='__name__');return a.queryScope===b.queryScope&&fields.length===b.fields.length&&fields.every((f,i)=>f.fieldPath===b.fields[i].fieldPath&&f.order===b.fields[i].order);};
  for(const collection of collections){const indexes=await list(collection);for(const d of definitions.filter(d=>d.collectionGroup===collection)){if(!indexes.some(i=>same(i,d))){await request(base+collection+'/indexes','POST',{queryScope:d.queryScope,fields:d.fields});console.log('Created activity index:',collection,d.fields.map(f=>f.fieldPath).join(','));}}}
  for(let attempt=0;attempt<45;attempt++){
   let pending=0;for(const collection of collections){const indexes=await list(collection);for(const d of definitions.filter(d=>d.collectionGroup===collection)){const index=indexes.find(i=>same(i,d));if(index?.state==='NEEDS_REPAIR')throw Error('INDEX_NEEDS_REPAIR');if(index?.state!=='READY')pending++;}}
-  console.log('Activity indexes still building:',pending);if(!pending)return;
+  console.log('Activity indexes still building:',pending);if(!pending){admin.initializeApp({credential});await admin.firestore().doc('appSettings/activityHistory').set({pagingReady:true,version:1,updatedAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});console.log('Bounded activity history enabled.');return;}
   await new Promise(r=>setTimeout(r,20000));
  }
  throw Error('INDEX_BUILD_PENDING');
