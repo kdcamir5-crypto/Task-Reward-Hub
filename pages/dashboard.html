@@ -21,7 +21,7 @@
   <style>#telegram-link-password-wrap[hidden]{display:none!important}</style>
   <link rel="stylesheet" href="../css/menu.css?v=20261026-menu1">
   <link rel="stylesheet" href="../css/rank-avatar.css?v=20261026-photo1">
-  <link rel="stylesheet" href="../css/daily-tasks.css?v=20261028-tasks1">
+  <link rel="stylesheet" href="../css/daily-tasks.css?v=20261028-history1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -525,7 +525,8 @@
       <section class="daily-tasks-page" id="daily-tasks-page" aria-labelledby="daily-tasks-title" hidden>
         <div class="dt-heading"><button type="button" id="daily-tasks-back" aria-label="Back to Home">←</button><h1 id="daily-tasks-title">Daily Tasks</h1><button type="button" id="daily-tasks-refresh">Refresh</button></div>
         <div class="dt-note">কাজের লিংক খুলে নির্দেশনা অনুসরণ করুন। লিখিত proof জমা দিলে taskটি আপনার তালিকা থেকে সরে যাবে। Admin approve করলে reward পাবেন। সব task বাংলাদেশ সময় রাত ১২টায় শেষ হয়।</div>
-        <p id="daily-task-source" role="status"></p><p id="daily-task-message" role="status" aria-live="polite"></p><div id="daily-task-list"></div>
+        <div class="dt-view-switch" role="group" aria-label="Task views"><button type="button" id="daily-tasks-available" aria-pressed="true">আজকের Task</button><button type="button" id="daily-tasks-history" aria-pressed="false">কাজের History</button></div>
+        <p id="daily-task-source" role="status"></p><p id="daily-task-message" role="status" aria-live="polite"></p><div id="daily-task-list"></div><div id="daily-task-history" hidden></div><button class="dt-history-more" type="button" id="daily-task-history-more" hidden>আরও History দেখুন</button>
       </section>
     </main>
 
@@ -613,7 +614,7 @@
   <script src="../js/recovery-ui.js?v=20261026-recovery1"></script>
   <script src="../js/rank-avatar.js?v=20261026-photo1"></script>
   <script src="../js/daily-tasks-core.js?v=20261028-tasks1"></script>
-  <script src="../js/daily-tasks.js?v=20261028-tasks1"></script>
+  <script src="../js/daily-tasks.js?v=20261028-history1"></script>
   <script src="../js/dashboard.js?v=20261028-tasks1"></script>
 </body>
 </html>
