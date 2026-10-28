@@ -205,6 +205,7 @@
   }
 
   function openBotShop() {
+    hideDailyTasks();
     closeNotificationsView();
     const fleet = document.getElementById("panel-bots");
     const shop = document.getElementById("bot-shop-page");
@@ -227,7 +228,26 @@
     if (fleet) fleet.scrollIntoView({ block:"start", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }
 
+  function hideDailyTasks() {
+    const page = document.getElementById('daily-tasks-page');
+    if (page && !page.hidden) { page.hidden = true; window.HubDailyTasks?.show(false); }
+    document.body.classList.remove('daily-tasks-active');
+  }
+  function openDailyTasks() {
+    showTab('home');
+    document.querySelectorAll('[data-panel]').forEach(panel => { panel.hidden = true; panel.classList.remove('is-active'); });
+    const home = document.querySelector('.home-reference-layout'); if (home) home.hidden = true;
+    document.body.classList.remove('reference-home-active');
+    const page = document.getElementById('daily-tasks-page'); if (!page) return;
+    page.hidden = false; document.body.classList.add('daily-tasks-active');
+    document.title = 'Daily Tasks · Task Reward Hub'; window.HubDailyTasks?.show(true);
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  document.getElementById('daily-tasks-open')?.addEventListener('click', openDailyTasks);
+  document.getElementById('daily-tasks-back')?.addEventListener('click', () => showTab('home'));
+
   function showTab(tabName) {
+    hideDailyTasks();
     closeNotificationsView();
     document.body.classList.remove("tap-earning-active", "spin-wheel-active", "referral-page-active", "support-page-active", "wallet-page-active", "deposit-page-active");
     const supportPage = document.getElementById("support-page");
@@ -307,6 +327,7 @@
     }).join("");
   }
   function openWalletPage() {
+    hideDailyTasks();
     closeNotificationsView();
     syncProfileNavigation("home");
     document.body.classList.remove("deposit-page-active");
@@ -378,6 +399,7 @@
     setText("deposit-current-balance", walletProfileAvailable ? formatMoney(walletProfile && walletProfile.balance) : "—");
   }
   function openDepositPage() {
+    hideDailyTasks();
     closeNotificationsView();
     if (!walletUser || !db) {
       showToast("Please sign in before submitting a deposit request.");
@@ -748,6 +770,7 @@
     document.body.classList.remove('notifications-page-active');
   }
   function openNotificationsPage() {
+    hideDailyTasks();
     showTab('home');
     const page=document.getElementById('notifications-page');if(!page)return;
     document.querySelectorAll('[data-panel]').forEach(el=>{el.hidden=true;el.classList.remove('is-active');});
@@ -883,6 +906,7 @@
   function referralCodeFor(user,profile){const s=profile&&(profile.collectorId||profile.collector_id||profile.referralCode||profile.referral_code);if(typeof s==="string"&&/^\d{8}$/.test(s.trim()))return s.trim();return "—";}
   function renderReferralPage(){if(!currentReferralUser)return;const code=referralCodeFor(currentReferralUser,currentReferralProfile);setText("referral-code-value",code);setText("referral-link-value","https://t.me/Taskrewardhub_bot/Taka?startapp=ref-"+encodeURIComponent(code));setText("referral-member-count",referralMembers.length);setText("referral-all-count",referralMembers.length);setText("referral-verified-count",referralMembers.filter(m=>m.status==="verified").length);setText("referral-quarantine-count",referralMembers.filter(m=>m.status==="quarantine").length);setText("referral-earned-value",formatMoney(safeNumber(currentReferralProfile.referralEarnings)||0));const q=String(document.getElementById("referral-search")?.value||"").trim().toLowerCase();const rows=referralMembers.filter(m=>(referralFilter==="all"||m.status===referralFilter)&&(!q||[m.name,m.id,m.code].join(" ").toLowerCase().includes(q)));const list=document.getElementById("referral-member-list"),empty=document.getElementById("referral-empty-state");if(list){list.hidden=!rows.length;list.innerHTML=rows.map(m=>'<article class="rf-row"><b>'+escapeHtml(initials(m.name))+'</b><span><strong>'+escapeHtml(m.name)+'</strong><small>'+escapeHtml(m.id||m.code||"Member")+'</small></span><em>'+escapeHtml(m.status==='quarantine'?'pending':m.status)+'</em></article>').join("");}if(empty)empty.hidden=rows.length>0;if(!rows.length){setText("referral-empty-title",q?"কোনো মিল পাওয়া যায়নি":"কোনো রেফারেল পাওয়া যায়নি");setText("referral-empty-copy",q?"অন্য নাম, ID বা কোড দিয়ে খুঁজুন।":"আপনার ইনভাইট লিংক বন্ধুদের সঙ্গে শেয়ার করুন। যাচাইকৃত রেফারেল তথ্য যুক্ত হলে সদস্যদের প্রোফাইল এখানে দেখা যাবে।");}}
   function openReferralPage() {
+    hideDailyTasks();
     const page = document.getElementById("referral-page");
     if (!page) { showToast("Referral interface could not be opened."); return; }
     closeNotificationsView();
@@ -909,6 +933,7 @@
   function closeReferralPage(){const p=document.getElementById("referral-page");if(p)p.hidden=true;document.body.classList.remove("referral-page-active");showTab("home");}
   async function copyReferralValue(v,msg){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(v);else{const t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();if(!ok)throw Error("copy");}showToast(msg);}catch(e){showToast("কপি করা যায়নি। লিংকটি চেপে ধরে কপি করুন।");}}
   function openSpinWheel() {
+    hideDailyTasks();
     closeNotificationsView();
     syncProfileNavigation("home");
     const page = document.getElementById("spin-wheel-page");
@@ -1092,6 +1117,7 @@
   });
 
   function openTapEarning() {
+    hideDailyTasks();
     closeNotificationsView();
     const page = document.getElementById("tap-earning-page");
     if (!page) {
@@ -1501,6 +1527,7 @@
   const supportToggle = document.getElementById("support-toggle");
   let supportReturnTab = "home";
   function openSupportPage() {
+    hideDailyTasks();
     closeNotificationsView();
     syncProfileNavigation("home");
     document.body.classList.remove("deposit-page-active", "wallet-page-active");
@@ -1575,6 +1602,7 @@
       activityController?.stop();
       notificationsController?.stop();
       window.HubFeed?.stop();
+      window.HubDailyTasks?.stop();
       window.location.replace("../index.html");
     } catch (error) {
       console.error("Task Reward Hub sign-out failed:", error);
@@ -2093,6 +2121,7 @@
   function loadUserProfile(user) {
     window.HubBotCheckout.init(db, user);
     window.HubFeed?.init(db,user);
+    window.HubDailyTasks?.init(db,user);
     window.HubRecoveryUI?.init(db,auth);
     currentReferralUser=user;
     referralMembers=[];
@@ -2206,6 +2235,7 @@
         activityController?.stop();
         notificationsController?.stop();
         window.HubFeed?.stop();
+      window.HubDailyTasks?.stop();
         window.location.replace("../index.html");
         return;
       }

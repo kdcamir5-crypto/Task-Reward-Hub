@@ -461,3 +461,8 @@ Firestore rules restrict updates to one tap per write and enforce the Bangladesh
 ### Backup scheduler for Mining and Referral (2026-10-27)
 
 `workers/workflow-scheduler.mjs` is a separate Cloudflare Cron Worker that can trigger the existing Mining and Referral GitHub Actions when no recent successful or active run exists. The original schedules remain enabled. Setup requires a new Worker, a repository-limited GitHub Actions token stored as a Cloudflare Secret, and a five-minute Cron Trigger; see [setup instructions](docs/workflow-scheduler-setup.md). Code alone does not deploy or activate the Worker. Existing financial scripts, Firebase rules and Telegram polling are unchanged. Scheduled events and jobs can still be delayed, and Firestore usage grows with accounts. `npm run test:workflow-scheduler` tests the scheduler without live dispatch.
+
+
+## Daily Tasks — 2026-10-28
+
+Home → Explore Services → Daily Tasks supports admin-published text-proof tasks. Tasks end at Bangladesh midnight; each user can submit once per task. Admin deletion preserves all proof and payment receipts. Approved v2 proofs credit main balance once through a transaction. Expired definitions are cleaned by the existing auto-mining job; server expiry is enforced independently of cleanup scheduling. Publish the updated `firebase.rules` before using this flow. See [daily-tasks.md](docs/daily-tasks.md) for deployment, tests and limitations.

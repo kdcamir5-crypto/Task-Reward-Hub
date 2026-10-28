@@ -8,7 +8,7 @@ function wrap(db){
  return {collection:col,runTransaction:cb=>S.runTransaction(db,tx=>cb({get:async r=>{const s=await tx.get(r.raw);return {exists:s.exists(),data:()=>s.data()};},set:(r,d)=>tx.set(r.raw,d),update:(r,d)=>tx.update(r.raw,d),delete:r=>tx.delete(r.raw)}))};
 }
 (async()=>{
- const rules=fs.readFileSync(process.env.TASK_RULES_FILE||__dirname+'/daily-tasks-candidate.rules','utf8');
+ const rules=fs.readFileSync(process.env.TASK_RULES_FILE||__dirname+'/../firebase.rules','utf8');
  const env=await initializeTestEnvironment({projectId:'demo-trh-daily-tasks',firestore:{host:'127.0.0.1',port:8088,rules}});
  const context=uid=>env.authenticatedContext(uid,{email:uid+'@test.invalid'}).firestore(),buyer={uid:'buyer',email:'buyer@test.invalid'},other={uid:'other',email:'other@test.invalid'},admin={uid:'admin'};
  const seed=(path,d)=>env.withSecurityRulesDisabled(c=>S.setDoc(S.doc(c.firestore(),path),d));

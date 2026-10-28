@@ -24,7 +24,9 @@
     "test:rank:avatar:rules": "firebase emulators:exec --only firestore --project demo-trh-avatar \"node tests/rank-avatar-rules.cjs\"",
     "test:tap200": "node --test tests/tap-200.test.cjs",
     "test:tap200:rules": "firebase emulators:exec --only firestore --project demo-trh-tap200 \"node tests/tap-200-rules.cjs\"",
-    "test:workflow-scheduler": "node --test tests/workflow-scheduler.test.mjs"
+    "test:workflow-scheduler": "node --test tests/workflow-scheduler.test.mjs",
+    "test:daily-tasks": "firebase emulators:exec --only firestore --project demo-trh-daily-tasks \"node tests/daily-tasks.cjs\"",
+    "test:daily-tasks:unit": "node --test tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",

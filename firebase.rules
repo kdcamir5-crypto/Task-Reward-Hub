@@ -467,24 +467,63 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
     }
+    function taskDayEndMs() {
+      return ((request.time + duration.value(6, 'h')).date() + duration.value(18, 'h')).toMillis();
+    }
+    function taskPaid(uid, sid, d) {
+      let before = userBefore(uid);
+      let after = userAfter(uid);
+      return after.balance == before.balance + d.reward
+        && after.tasks == before.get('tasks', 0) + 1
+        && after.lastTaskRewardId == sid && after.updatedAt == request.time
+        && after.diff(before).affectedKeys().hasOnly(['balance','tasks','lastTaskRewardId','updatedAt']);
+    }
     match /tasks/{tid} {
       allow read: if signedIn();
-      allow write: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['schemaVersion','title','description','url','rewardMinor','reward','expiresAtMs','createdAt','createdBy'])
+        && request.resource.data.schemaVersion == 2
+        && request.resource.data.title is string && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 120
+        && request.resource.data.description is string && request.resource.data.description.size() >= 3 && request.resource.data.description.size() <= 1500
+        && request.resource.data.url is string && request.resource.data.url.size() <= 1000 && request.resource.data.url.matches('^https://[^/\\s]+.*$')
+        && request.resource.data.rewardMinor is int && request.resource.data.rewardMinor >= 1 && request.resource.data.rewardMinor <= 1000000
+        && request.resource.data.reward == request.resource.data.rewardMinor / 100.0
+        && request.resource.data.expiresAtMs == taskDayEndMs()
+        && request.resource.data.createdAt == request.time && request.resource.data.createdBy == request.auth.uid;
+      // A published task's terms are immutable. Delete it and create a new task to change them.
+      allow update: if false;
+      allow delete: if isAdmin();
     }
-
     match /submissions/{sid} {
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow get: if signedIn() && (!exists(/databases/$(database)/documents/submissions/$(sid)) || isAdmin() || resource.data.uid == request.auth.uid);
+      allow list: if signedIn() && (isAdmin() || resource.data.uid == request.auth.uid);
       allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['schemaVersion','uid','email','taskId','taskTitle','taskUrl','taskExpiresAtMs','rewardMinor','reward','proof','status','createdAt'])
+        && request.resource.data.schemaVersion == 2 && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.get('email','')
         && sid == request.auth.uid + '_' + request.resource.data.taskId
-        && request.resource.data.status == 'pending'
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'taskId', 'taskTitle', 'reward', 'proof', 'image', 'status', 'createdAt'])
-        && request.resource.data.proof is string && request.resource.data.proof.size() <= 300
-        && request.resource.data.image is string && request.resource.data.image.size() <= 450000
-        && (request.resource.data.proof.size() >= 3 || request.resource.data.image.size() >= 1000)
-        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.active == true
+        && request.resource.data.status == 'pending' && request.resource.data.createdAt == request.time
+        && request.resource.data.proof is string && request.resource.data.proof.size() >= 3 && request.resource.data.proof.size() <= 1000
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.schemaVersion == 2
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.createdAt <= request.time
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.expiresAtMs > request.time.toMillis()
+        && request.resource.data.taskExpiresAtMs == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.expiresAtMs
+        && request.resource.data.taskTitle == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.title
+        && request.resource.data.taskUrl == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.url
+        && request.resource.data.rewardMinor == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.rewardMinor
         && request.resource.data.reward == get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.reward;
-      allow update: if isAdmin();
+      allow update: if isAdmin() && resource.data.get('schemaVersion',0) == 2
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','reviewedBy','reviewedAt','rejectionReason','rewardCredited'])
+        && request.resource.data.reviewedBy == request.auth.uid && request.resource.data.reviewedAt == request.time
+        && request.resource.data.status in ['approved','rejected']
+        && request.resource.data.rejectionReason is string && request.resource.data.rejectionReason.size() <= 300
+        && (request.resource.data.status == 'approved'
+          ? (request.resource.data.rewardCredited == true && request.resource.data.rejectionReason == '' && taskPaid(resource.data.uid, sid, resource.data))
+          : (request.resource.data.rewardCredited == false && request.resource.data.rejectionReason.size() >= 3));
+      // Keep already-stored legacy submissions readable; no migration or deletion of old receipts.
+      allow update: if isAdmin() && resource.data.get('schemaVersion',0) != 2 && request.resource.data.get('schemaVersion',0) != 2;
+      allow delete: if false;
     }
 
     match /wallets/{walletId} {

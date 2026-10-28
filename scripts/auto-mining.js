@@ -110,6 +110,8 @@ async function main(){
  admin.initializeApp({credential:admin.credential.cert(credential)});
  const summary=await runMining(admin.firestore(),admin.firestore);
  console.log('MINING_SUMMARY '+JSON.stringify(summary));
+ const cleanup=await require('./cleanup-daily-tasks.cjs').cleanupDailyTasks(admin.firestore());
+ console.log('TASK_CLEANUP_SUMMARY '+JSON.stringify(cleanup));
  if(summary.failed>0)process.exitCode=1;
 }
 if(require.main===module)main().catch(error=>{

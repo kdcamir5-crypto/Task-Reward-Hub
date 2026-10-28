@@ -21,6 +21,7 @@
   <style>#telegram-link-password-wrap[hidden]{display:none!important}</style>
   <link rel="stylesheet" href="../css/menu.css?v=20261026-menu1">
   <link rel="stylesheet" href="../css/rank-avatar.css?v=20261026-photo1">
+  <link rel="stylesheet" href="../css/daily-tasks.css?v=20261028-tasks1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -90,9 +91,10 @@
         </section>
         <section class="reference-section">
           <div class="reference-section-title" id="home-services-heading" tabindex="-1"><h2>🔹 Explore Services</h2></div>
-          <div class="explore-grid">
+          <div class="explore-grid has-daily-tasks">
             <button type="button" class="explore-card" id="spin-wheel-open"><span>⚙️</span><strong>Spin Wheel</strong><small>Spin & Win</small></button>
             <button type="button" class="explore-card" id="tap-earning-open" data-tap-open><span>☝️</span><strong>Tap Earning</strong><small>Tap • Ad • USD</small></button>
+            <button type="button" class="explore-card" id="daily-tasks-open"><span>🎯</span><strong>Daily Tasks</strong><small>কাজ করুন · Proof দিন</small></button>
             <button type="button" class="explore-card" id="home-bot-shop-open"><span>🤖</span><em>PRO</em><strong>AI Bot Shop</strong><small>160% Yield</small></button>
           </div>
         </section>
@@ -520,6 +522,11 @@
         <p class="spin-disclaimer">টাকা জিতলে Main Balance-এ এবং ডলার জিতলে USD Wallet-এ জমা হয়। দৈনিক ২টি ফ্রি Spin বাংলাদেশ সময় রাত ১২টায় রিসেট হয়।</p>
       </section>
 
+      <section class="daily-tasks-page" id="daily-tasks-page" aria-labelledby="daily-tasks-title" hidden>
+        <div class="dt-heading"><button type="button" id="daily-tasks-back" aria-label="Back to Home">←</button><h1 id="daily-tasks-title">Daily Tasks</h1><button type="button" id="daily-tasks-refresh">Refresh</button></div>
+        <div class="dt-note">কাজের লিংক খুলে নির্দেশনা অনুসরণ করুন। লিখিত proof জমা দিলে taskটি আপনার তালিকা থেকে সরে যাবে। Admin approve করলে reward পাবেন। সব task বাংলাদেশ সময় রাত ১২টায় শেষ হয়।</div>
+        <p id="daily-task-source" role="status"></p><p id="daily-task-message" role="status" aria-live="polite"></p><div id="daily-task-list"></div>
+      </section>
     </main>
 
     <div id="withdrawal-overlay" class="withdrawal-overlay" hidden></div>
@@ -595,8 +602,8 @@
   <script src="../js/spin-core.js?v=20261024-spin1"></script>
   <script src="../js/referrals.js?v=20261026-terms1-20261025"></script>
   <script src="../js/withdrawal-core.js?v=20261025-withdraw1"></script>
-  <script src="../js/activity-core.js?v=20261025-codes1"></script>
-  <script src="../js/notifications-core.js?v=20261025-codes1"></script>
+  <script src="../js/activity-core.js?v=20261028-tasks1"></script>
+  <script src="../js/notifications-core.js?v=20261028-tasks1"></script>
   <script src="../js/reward-code-core.js?v=20261025-codes1"></script>
   <script src="../js/community-core.js?v=20261025-feed1"></script>
   <script src="../js/community.js?v=20261025-feed1"></script>
@@ -605,7 +612,9 @@
   <script src="../js/recovery-auth.js?v=20261026-recovery1"></script>
   <script src="../js/recovery-ui.js?v=20261026-recovery1"></script>
   <script src="../js/rank-avatar.js?v=20261026-photo1"></script>
-  <script src="../js/dashboard.js?v=20261027-maint1"></script>
+  <script src="../js/daily-tasks-core.js?v=20261028-tasks1"></script>
+  <script src="../js/daily-tasks.js?v=20261028-tasks1"></script>
+  <script src="../js/dashboard.js?v=20261028-tasks1"></script>
 </body>
 </html>
 
