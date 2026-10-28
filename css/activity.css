@@ -14,3 +14,5 @@
 #ledger-source-status{font-size:10px;color:var(--hist-muted);overflow-wrap:anywhere}
 #ledger-drawer [data-ledger-refresh]{flex-shrink:0;padding:5px 9px}
 #ledger-list .history-row-main strong{overflow-wrap:anywhere}
+
+#ledger-drawer .ledger-filter-row{grid-template-columns:repeat(2,minmax(0,1fr))}

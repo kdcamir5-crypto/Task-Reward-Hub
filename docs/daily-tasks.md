@@ -22,3 +22,10 @@ Ledger and notifications identify only approved v2 receipts with `rewardCredited
 Publish the complete updated `firebase.rules` in the reward-hub-bd Firestore console after the emulator workflow passes. User app files are hosted by GitHub Pages, admin files by the connected Cloudflare Pages repository. The existing scheduler and its secrets do not need replacement; cleanup runs inside the already-scheduled mining job.
 
 Run `node --test tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs` and the `Verify daily tasks` GitHub Actions workflow. Test accounts are isolated in an emulator, never production. Validate task publishing, per-user hiding, admin deletion, approval and rejection with authorized test accounts after publishing rules. Screenshots/full visual acceptance and production money changes are separate from mocked interface tests.
+
+
+## Realtime earnings displays
+
+An admin approval commits the main balance and the approved receipt atomically. The existing profile listener updates header/profile/wallet balances; the account activity listener updates Home Recent Activity, View Ledger, Profile Collection Ledger and notifications. The Task History page watches the owner's submissions and shows each saved decision and the sum of confirmed task credits. No display listener credits money or recomputes the wallet from history. Network/cache state can delay delivery; no manual refresh is required once the server snapshot arrives.
+
+The Ledger Task filter isolates task receipts; pending/rejected proofs never show an earned credit. Quick Access History/Payouts remains dedicated to deposit and withdrawal records. Spin-specific history remains about spin rewards.

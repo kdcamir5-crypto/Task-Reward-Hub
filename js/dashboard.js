@@ -749,7 +749,7 @@
   function renderFullLedger(){
     const filter=document.querySelector('[data-ledger-filter].is-active')?.dataset.ledgerFilter||'all';
     const stateFilter=document.querySelector('[data-ledger-status].is-active')?.dataset.ledgerStatus||'all';
-    const rows=ledgerRows.filter(r=>(filter==='all'||(filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(stateFilter==='all'||activityStatus(r).key===stateFilter));
+    const rows=ledgerRows.filter(r=>(filter==='all'||(filter==='tasks'?r.source==='task':filter==='money'?['withdrawals','deposits'].includes(r.kind):!['withdrawals','deposits'].includes(r.kind)))&&(stateFilter==='all'||activityStatus(r).key===stateFilter));
     const list=document.getElementById('ledger-list');if(!list)return;
     list.innerHTML=rows.length?rows.map(activityRowMarkup).join(''):'<div class="history-empty"><span>▤</span><strong>'+(activityState.loading?'লেনদেন লোড হচ্ছে…':activityState.errors.length?'সব লেনদেন লোড করা যায়নি':'এই filter-এ কোনো সংরক্ষিত লেনদেন নেই')+'</strong></div>';
     const sourceLabels={withdrawals:'Withdrawals',deposits:'Deposits',purchases:'Bot purchases',tasks:'Tasks',spins:'Spin',gifts:'Referral bots',codes:'Code rewards',profile:'Profile',mining:'Mining'};

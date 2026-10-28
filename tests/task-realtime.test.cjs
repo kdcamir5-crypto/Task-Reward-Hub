@@ -1,0 +1,33 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const A=require('../js/activity-core.js'),C=require('../js/daily-tasks-core.js');
+function setup(){
+ const source=fs.readFileSync(__dirname+'/../js/dashboard.js','utf8'),listeners=[],nodes=new Map(),handlers={};
+ const user={uid:'buyer',email:'buyer@test.invalid'},silent=()=>{};
+ function element(id){if(['profile-photo','profile-avatar','user-avatar','profile-progress'].includes(id))return null;if(!nodes.has(id))nodes.set(id,{id,hidden:false,innerHTML:'',textContent:'',attributes:{},setAttribute(k,v){this.attributes[k]=v;},querySelectorAll:()=>[],addEventListener(n,f){handlers[id+':'+n]=f;}});return nodes.get(id);}
+ function ref(path,filters=[]){return {doc:id=>ref(path+'/'+id),collection:n=>ref(path+'/'+n),where:(...f)=>ref(path,[...filters,f]),onSnapshot(...args){const next=typeof args[0]==='function'?args[0]:args[1],error=typeof args[0]==='function'?args[1]:args[2],l={path,filters,next,error,stopped:false};listeners.push(l);return()=>l.stopped=true;}};}
+ const ctx={document:{activeElement:null,hidden:false,body:{classList:{add:silent,remove:silent}},getElementById:element,querySelector:s=>s==='[data-ledger-filter].is-active'?{dataset:{ledgerFilter:ctx.filter}}:s==='[data-ledger-status].is-active'?{dataset:{ledgerStatus:'all'}}:null,querySelectorAll:()=>[],addEventListener:silent},window:{HubActivity:A,HubDailyTaskCore:C,HubBotCheckout:{updateProfile:silent},HubReferrals:{updateProfile:silent}},db:{collection:n=>ref(n)},user,userRef:ref('users/buyer'),walletUser:user,activityController:null,notificationsController:{setActivity:silent},ledgerRows:[],activityState:{rows:[],errors:[],loading:true,fromCache:false},currentReferralProfile:{},currentMiningRecords:[],walletProfile:{},walletProfileAvailable:false,depositSettings:null,filter:'all',Date,URL,Map,Set,console,setTimeout:()=>1,clearTimeout:silent,
+ renderMembership:silent,firstName:()=> 'Buyer',safeNumber:n=>typeof n==='number'&&Number.isFinite(n)?n:null,walletMoney:n=>Number(n||0).toFixed(2),formatMoney:n=>Number(n||0).toFixed(2),countTasks:n=>Number(n||0),countReferrals:n=>Number(n||0),countBots:n=>Array.isArray(n)?n.length:0,initials:()=> 'B',renderTapDailyProgress:silent,renderHomeReferralStats:silent,renderBotFleet:silent,setInputValueUnlessFocused:silent,referralCodeFor:()=> '12345678',renderLeaderboard:silent,syncPublicLeaderboard:silent,backfillLeaderboardForAdmin:silent,renderDepositBalance:silent,updateSpinWalletDisplay:silent,updateSpinCount:silent,renderDepositSettings:silent,renderReferralPage:silent,showToast:silent,escapeHtml:s=>String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))};
+ ctx.renderWalletPage=()=>{element('wallet-main-balance').textContent='৳'+Number(ctx.walletProfile.balance||0).toFixed(2);};
+ const extract=name=>{const found=source.match(new RegExp('  function '+name+'\\([^\\n]*\\)\\s*\\{[\\s\\S]*?\\n  \\}'));assert(found,name);return found[0];};
+ vm.createContext(ctx);vm.runInContext(['setText','activityDate','activityStatus','activityRowMarkup','renderRecentActivity','renderFullLedger','startAccountActivity','renderProfile'].map(extract).join('\n'),ctx);
+ const begin=source.indexOf('    profileUnsubscribe = userRef.onSnapshot('),end=source.indexOf('\n\n    // Mining',begin);assert(begin>0&&end>begin);vm.runInContext(source.slice(begin,end),ctx);
+ vm.runInContext(fs.readFileSync(__dirname+'/../js/daily-tasks.js','utf8'),ctx);ctx.startAccountActivity(user);ctx.window.HubDailyTasks.init(ctx.db,user);ctx.window.HubDailyTasks.show(true);
+ function emit(path,data){for(const l of listeners.filter(l=>l.path===path&&!l.stopped)){const docs=Array.isArray(data)?data:[];l.next(path==='users/buyer'?{exists:true,data:()=>data,metadata:{fromCache:false,hasPendingWrites:false}}:{docs:docs.map(d=>({id:d.id,data:()=>d,metadata:{hasPendingWrites:false}})),metadata:{fromCache:false}});}}
+ return {ctx,element,handlers,emit};
+}
+test('one approved task snapshot updates live main balance, Home activity, Ledger and Task History without refresh',()=>{
+ const s=setup(),profile={name:'Buyer',role:'user',balance:10,tasks:0,collectorId:'12345678'},proof={id:'buyer_t1',uid:'buyer',taskId:'t1',schemaVersion:2,taskTitle:'Channel work',proof:'@buyer',reward:2.5,rewardMinor:250,status:'pending',createdAt:{seconds:100}};
+ s.emit('users/buyer',profile);s.emit('tasks',[]);s.emit('submissions',[proof]);s.handlers['daily-tasks-history:click']();
+ assert.equal(s.element('balance-value').textContent,'10.00');assert(!s.element('recent-activity-list').innerHTML.includes('+৳2.50'));assert(s.element('daily-task-history').innerHTML.includes('এখনো টাকা যোগ হয়নি'));
+ // These are server snapshots from the single approval transaction, not client-side credits.
+ s.emit('users/buyer',{...profile,balance:12.5,tasks:1});s.emit('submissions',[{...proof,status:'approved',rewardCredited:true,reviewedAt:{seconds:200}}]);
+ assert.equal(s.element('balance-value').textContent,'12.50');assert.equal(s.element('profile-balance').textContent,'৳12.50');assert.equal(s.element('wallet-main-balance').textContent,'৳12.50');
+ for(const id of ['recent-activity-list','ledger-list']){assert(s.element(id).innerHTML.includes('টাস্ক সম্পন্ন করে আয়'));assert(s.element(id).innerHTML.includes('+৳2.50'));assert(s.element(id).innerHTML.includes('Channel work'));}
+ assert(s.element('daily-task-history').innerHTML.includes('৳2.50 আপনার Main Balance-এ যোগ হয়েছে'));assert(s.element('daily-task-history').innerHTML.includes('Task থেকে মোট আয়: ৳2.50'));
+ s.emit('submissions',[{...proof,status:'approved',rewardCredited:true,reviewedAt:{seconds:200}}]);assert.equal((s.element('ledger-list').innerHTML.match(/টাস্ক সম্পন্ন করে আয়/g)||[]).length,1);assert.equal(s.element('balance-value').textContent,'12.50');
+ s.emit('walletDeposits',[{id:'d1',uid:'buyer',amount:100,status:'approved',createdAt:{seconds:10}}]);s.ctx.filter='tasks';s.ctx.renderFullLedger();assert(s.element('ledger-list').innerHTML.includes('Channel work'));assert(!s.element('ledger-list').innerHTML.includes('টাকা জমা'));
+});
+test('Quick Access payout history remains limited to deposits and withdrawals',()=>{
+ const source=fs.readFileSync(__dirname+'/../js/dashboard.js','utf8');const start=source.indexOf('  async function loadMoneyHistory()'),end=source.indexOf('  document.querySelectorAll("[data-history-type]")',start);const fn=source.slice(start,end);
+ assert(fn.includes('moneyHistoryType==="withdrawals"?"withdrawals":"walletDeposits"'));assert(!fn.includes('submissions'));
+});

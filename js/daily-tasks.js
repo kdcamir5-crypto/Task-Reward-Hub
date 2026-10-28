@@ -11,11 +11,12 @@ function date(value){const ms=time(value);return Number.isFinite(ms)&&ms>0?new D
 function renderHistory(ready){
  const host=el('daily-task-history');if(!host)return;
  const own=receipts.filter(r=>r.schemaVersion===2&&r.uid===user?.uid).sort((a,b)=>time(b.reviewedAt||b.createdAt)-time(a.reviewedAt||a.createdAt)||a.id.localeCompare(b.id));
+ const earnedMinor=own.filter(r=>r.status==='approved'&&r.rewardCredited===true&&Number.isInteger(r.rewardMinor)&&r.rewardMinor>0&&r.rewardMinor<=1000000&&r.reward===r.rewardMinor/100).reduce((total,r)=>total+r.rewardMinor,0);
  const button=el('daily-tasks-history');if(button){button.textContent='কাজের History'+(ready?' ('+own.length+')':'');button.setAttribute('aria-pressed',String(historyVisible));}
  el('daily-tasks-available')?.setAttribute('aria-pressed',String(!historyVisible));
  host.hidden=!historyVisible;el('daily-task-list').hidden=historyVisible;
  const more=el('daily-task-history-more');if(more)more.hidden=!historyVisible||!ready||own.length<=historyLimit;
- host.innerHTML=!ready?'<div class="dt-empty">'+(failed?'History লোড হয়নি। Refresh করে আবার চেষ্টা করুন।':'History লোড হচ্ছে…')+'</div>':!own.length?'<div class="dt-empty">এখনো কোনো task জমা দেননি। Proof জমা দিলে তার অবস্থা এখানে দেখাবে।</div>':own.slice(0,historyLimit).map(r=>{
+ host.innerHTML=!ready?'<div class="dt-empty">'+(failed?'History লোড হয়নি। Refresh করে আবার চেষ্টা করুন।':'History লোড হচ্ছে…')+'</div>':!own.length?'<div class="dt-empty">এখনো কোনো task জমা দেননি। Proof জমা দিলে তার অবস্থা এখানে দেখাবে।</div>':'<div class="dt-note"><strong>Task থেকে মোট আয়: ৳'+(earnedMinor/100).toFixed(2)+'</strong><br>অনুমোদিত কাজের এই টাকা Main Balance-এ যোগ হয়েছে।</div>'+own.slice(0,historyLimit).map(r=>{
   const valid=Number.isInteger(r.rewardMinor)&&r.rewardMinor>0&&r.rewardMinor<=1000000&&r.reward===r.rewardMinor/100;
   const paid=r.status==='approved'&&r.rewardCredited===true&&valid;
   const status=r.status==='approved'?'Approved':r.status==='rejected'?'Rejected':r.status==='pending'?'Pending':'অবস্থা নিশ্চিত নয়';

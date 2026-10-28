@@ -31,6 +31,14 @@ function wrap(db){
  await test('expired tasks cannot accept new proof but existing proof can be approved',async()=>{await create();await submit();const t=await read('tasks/task1');await seed('tasks/task1',{...t,expiresAtMs:Date.now()-1});await assert.rejects(submit(other));const receipt=await read('submissions/buyer_task1');await assertFails(S.setDoc(S.doc(context('other'),'submissions/other_task1'),{...receipt,uid:'other',email:other.email,taskExpiresAtMs:Date.now()-1,createdAt:S.serverTimestamp()}));await review();assert.equal((await read('users/buyer')).balance,12.5);});
  await test('cleanup deletes only expired v2 tasks and retains submissions and live tasks',async()=>{await create();await submit();const t=await read('tasks/task1');await seed('tasks/expired',{...t,expiresAtMs:Date.now()-1});await seed('tasks/legacy',{expiresAtMs:1});await env.withSecurityRulesDisabled(async c=>{const result=await cleanupDailyTasks(wrap(c.firestore()));assert.equal(result.deleted,1);});assert.equal(await read('tasks/expired'),undefined);assert(await read('tasks/task1'));assert(await read('tasks/legacy'));assert(await read('submissions/buyer_task1'));});
  await test('submission listeners can query only their own receipts',async()=>{await create();await submit();const db=context('other');await assertFails(S.getDocs(S.collection(db,'submissions')));await S.getDocs(S.query(S.collection(db,'submissions'),S.where('uid','==','other')));});
+ await test('approval streams update main balance and task earnings without manual reads or refresh',async()=>{
+  await create();await submit();const A=require('../js/activity-core.js'),owner=context('buyer'),unsubscribers=[],timers=[];
+  function observe(target,predicate){return new Promise((resolve,reject)=>{timers.push(setTimeout(()=>reject(Error('Realtime snapshot timed out')),10000));unsubscribers.push(S.onSnapshot(target,{includeMetadataChanges:true},snap=>{if(!snap.metadata.fromCache&&!snap.metadata.hasPendingWrites){const result=predicate(snap);if(result)resolve(result);}},reject));});}
+  const balance=observe(S.doc(owner,'users/buyer'),snap=>snap.exists()&&snap.data().balance===12.5&&snap.data().tasks===1?snap.data():null);
+  const income=observe(S.query(S.collection(owner,'submissions'),S.where('uid','==','buyer')),snap=>{const rows=A.normalize({tasks:snap.docs.map(d=>({...d.data(),id:d.id}))});return rows.find(r=>r.source==='task'&&r.status==='approved'&&r.effect==='credit'&&r.amount===2.5);});
+  try{const [,profile,row]=await Promise.all([review(),balance,income]);assert.equal(profile.balance,12.5);assert.equal(A.amountText(row),'+৳2.50');assert(row.detail.includes('Channel')||row.detail.includes('Join our channel'));}
+  finally{timers.forEach(clearTimeout);unsubscribers.forEach(stop=>stop());}
+ });
  console.log('All '+count+' daily task integration tests passed.');
  }finally{await env.cleanup();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

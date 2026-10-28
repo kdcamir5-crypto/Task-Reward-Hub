@@ -6,10 +6,13 @@ on:
     paths:
       - .github/workflows/verify-daily-tasks.yml
       - js/daily-tasks*.js
+      - js/dashboard.js
+      - pages/dashboard.html
       - js/activity-core.js
       - js/notifications-core.js
       - scripts/cleanup-daily-tasks.cjs
       - tests/daily-tasks*
+      - tests/task-realtime.test.cjs
       - firebase.rules
 permissions:
   contents: read
@@ -28,7 +31,7 @@ jobs:
           java-version: '21'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Task boundaries and visibility
-        run: node --test tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs tests/activity.test.cjs tests/notifications.test.cjs
+        run: node --test tests/task-realtime.test.cjs tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs tests/activity.test.cjs tests/notifications.test.cjs
       - name: Daily task rules and transactions
         run: npx firebase emulators:exec --only firestore --project demo-trh-daily-tasks 'node tests/daily-tasks.cjs'
       - name: Regression purchases and withdrawals
