@@ -1460,7 +1460,7 @@
   const tapMainButton = document.getElementById("tap-main-button");
   if (tapMainButton) {
     tapMainButton.addEventListener("pointerdown", event => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (tapMainButton.disabled || (event.pointerType === "mouse" && event.button !== 0)) return;
       if (tapPointerIds.has(event.pointerId)) return;
       tapPointerIds.add(event.pointerId);
       showTapFeedback(tapMainButton, event);
@@ -1471,10 +1471,21 @@
     tapMainButton.addEventListener("pointerup", releaseTapPointer);
     tapMainButton.addEventListener("pointercancel", releaseTapPointer);
     tapMainButton.addEventListener("lostpointercapture", releaseTapPointer);
+    // Capture releases anywhere, including when the mouse leaves the coin.
+    window.addEventListener("pointerup", releaseTapPointer, true);
+    window.addEventListener("pointercancel", releaseTapPointer, true);
+    window.addEventListener("blur", () => tapPointerIds.clear());
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) tapPointerIds.clear();
+    });
     tapMainButton.addEventListener("click", event => {
-      // Pointerdown handles mouse, pen and every individual touch; this only blocks
-      // synthetic click activation from double-counting the same physical tap.
+      // Native keyboard/assistive activation has no physical pointer click count.
+      // Physical pointer clicks were already counted on pointerdown.
       event.preventDefault();
+      if (event.detail === 0 && !tapMainButton.disabled) {
+        showTapFeedback(tapMainButton);
+        queueTapCoin();
+      }
     });
   }
   document.getElementById("tap-sponsored-card")?.addEventListener("click", event => {

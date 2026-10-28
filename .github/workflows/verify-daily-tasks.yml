@@ -13,6 +13,8 @@ on:
       - scripts/cleanup-daily-tasks.cjs
       - tests/daily-tasks*
       - tests/task-realtime.test.cjs
+      - tests/tap-input.test.cjs
+      - tests/tap-200.test.cjs
       - firebase.rules
 permissions:
   contents: read
@@ -30,6 +32,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Tap input and daily goal
+        run: node --test tests/tap-input.test.cjs tests/tap-200.test.cjs
       - name: Task boundaries and visibility
         run: node --test tests/task-realtime.test.cjs tests/daily-tasks.test.cjs tests/daily-tasks-ui.test.cjs tests/daily-tasks-routing.test.cjs tests/activity.test.cjs tests/notifications.test.cjs
       - name: Daily task rules and transactions
