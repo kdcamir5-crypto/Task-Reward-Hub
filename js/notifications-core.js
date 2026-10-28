@@ -10,6 +10,7 @@ function events(rows){
    ||(row.source==='referral-bot'&&row.status==='awarded')
    ||(row.source==='spin'&&row.status==='claimed')
    ||(row.source==='code'&&row.status==='claimed')
+   ||(row.source==='task'&&row.taskVersion===2&&((row.status==='approved'&&row.effect==='credit')||row.status==='rejected'))
    ||(row.source==='mining'&&['completed','complete','finished'].includes(row.status));
   if(!allowed)continue;
   // A rejected bot order may be resubmitted under the same document ID.
@@ -19,6 +20,7 @@ function events(rows){
   const title=row.source==='deposit'?(row.status==='approved'?'Deposit অনুমোদিত হয়েছে':'Deposit বাতিল হয়েছে')
    :row.source==='purchase'?(row.status==='approved'?'কেনা বট unlock হয়েছে':'Bot payment বাতিল হয়েছে')
    :row.source==='withdrawal'?(row.status==='paid'?'Withdrawal paid হয়েছে':'Withdrawal বাতিল হয়েছে')
+   :row.source==='task'?(row.status==='approved'?'Task approve হয়েছে, reward জমা হয়েছে':'Task proof বাতিল হয়েছে')
    :row.source==='referral-bot'?'Verified referral থেকে free bot পেয়েছেন'
    :row.source==='spin'?'Spin reward জমা হয়েছে':row.source==='code'?'Code reward পেয়েছেন':'Bot mining সম্পন্ন হয়েছে';
   result.push({...row,id,title});

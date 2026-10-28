@@ -14,3 +14,10 @@ test('amounts and task links reject unsafe values',()=>{
  for(const u of ['javascript:alert(1)','data:text/html,x','http://example.com','https://a:b@example.com'])assert.throws(()=>C.link(u));
  assert.equal(C.link('https://t.me/example'),'https://t.me/example');
 });
+test('ledger and notifications distinguish approved task credits from old or pending proofs',()=>{
+ const A=require('../js/activity-core.js'),N=require('../js/notifications-core.js');
+ const receipts=[{id:'v2',schemaVersion:2,taskTitle:'Work',reward:2.5,rewardMinor:250,status:'approved',rewardCredited:true},
+ {id:'legacy',reward:999,status:'approved'}, {id:'pending',schemaVersion:2,reward:2.5,rewardMinor:250,status:'pending'}];
+ const rows=A.normalize({tasks:receipts},null,[]);assert.equal(rows.find(x=>x.id==='v2').effect,'credit');assert.equal(rows.find(x=>x.id==='legacy').effect,'none');
+ assert.equal(N.events(rows).length,1);assert(N.events(rows)[0].title.includes('reward'));
+});
