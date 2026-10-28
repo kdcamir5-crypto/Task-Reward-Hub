@@ -1,0 +1,29 @@
+name: Prepare activity history indexes
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - firestore.activity-indexes.json
+      - scripts/prepare-activity-indexes.cjs
+      - .github/workflows/prepare-activity-indexes.yml
+permissions:
+  contents: read
+concurrency:
+  group: activity-history-indexes
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install --prefix "$RUNNER_TEMP/activity-indexes" --ignore-scripts --no-audit --no-fund firebase-admin@13.6.0
+      - name: Add required indexes and wait until ready
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_PATH: ${{ runner.temp }}/activity-indexes/node_modules
+        run: node scripts/prepare-activity-indexes.cjs
