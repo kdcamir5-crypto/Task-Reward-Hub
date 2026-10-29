@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="../css/typography.css?v=20261029-type-tune1">
   <link rel="stylesheet" href="../css/header-compact.css?v=20261029-header1">
   <link rel="stylesheet" href="../css/home-fit.css?v=20261029-claim-dialog1">
+  <link rel="stylesheet" href="../css/profile-fit.css?v=20261029-profile1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -402,28 +403,54 @@
         <button id="feed-load-more" type="button" hidden>আরও নিজের পোস্ট দেখুন</button>
       </section>
 
-      <section class="tab-panel panel profile-page" id="panel-profile" data-panel="profile" aria-labelledby="profile-panel-title" hidden>
-        <div class="profile-section-header">
-          <button class="profile-back-button" id="profile-back-home" type="button" aria-label="হোমে ফিরে যান">←</button>
-          <div class="profile-heading-copy"><p class="profile-kicker">YOUR ACCOUNT</p><h2 id="profile-panel-title">Profile &amp; Settings</h2></div>
-        </div>
-
-        <article class="profile-identity-card">
-          <div class="profile-identity-avatar" id="profile-identity-avatar">
-            <span id="profile-avatar">U</span><img id="profile-photo" alt="Profile picture" hidden>
-            <label class="profile-camera-edit" for="profile-photo-input" title="Change profile picture" aria-label="Change profile picture">📷</label>
-            <input id="profile-photo-input" type="file" accept="image/*" hidden>
+      <section class="tab-panel panel profile-page" id="panel-profile" data-panel="profile" aria-label="Profile" hidden>
+        <div class="profile-fit-viewport">
+          <div class="profile-fit-content" data-profile-view="main">
+<form id="profile-information-form" class="profile-form-card" novalidate>
+          <div class="profile-form-heading"><span>👤</span><div><h3>Personal Information</h3><p>Keep your account details up to date</p></div></div>
+          <label class="profile-field"><span>Full Name <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">♙</span><input id="profile-full-name-input" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required></span></label>
+          <label class="profile-field"><span>Email Address <small>(Read-Only)</small></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-email-input" name="email" type="email" readonly aria-readonly="true"></span></label>
+          <label class="profile-field"><span>Phone Number</span><span class="profile-input-wrap"><span aria-hidden="true">☎</span><input id="profile-phone-input" name="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="Enter phone number"></span></label>
+          <label class="profile-field"><span>Telegram Account <small>(@username / Link)</small></span><span class="profile-input-wrap"><span class="profile-telegram-field-icon" aria-hidden="true">➤</span><input id="profile-telegram-input" name="telegramUsername" type="text" autocomplete="off" maxlength="120" placeholder="@yourusername or Telegram link"></span></label>
+          <p id="profile-save-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <button class="profile-save-button" id="profile-save-button" type="submit">💾 Save Profile Changes</button>
+        </form>
+<section class="profile-shortcuts-card" aria-label="Account options">
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-deposit"><span class="profile-shortcut-icon shortcut-deposit">＋</span><span><strong>Deposit Money</strong><small>Add funds with bKash Personal</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="profile-shortcut-ledger"><span class="profile-shortcut-icon shortcut-ledger">▤</span><span><strong>Collection Ledger History</strong><small>আপনার লেনদেনের হিসাব</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="profile-recovery-open"><span class="profile-shortcut-icon">✉</span><span><strong>Profile Recovery</strong><small>Recovery email ও password</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row" id="telegram-login-link"><span class="profile-shortcut-icon">➤</span><span><strong>Telegram Login</strong><small id="telegram-login-linked-id">এই account-এর সাথে Telegram যুক্ত করুন</small></span><b>›</b></button>
+          <button type="button" class="profile-shortcut-row profile-shortcut-signout" id="profile-sign-out"><span class="profile-shortcut-icon shortcut-signout">↪</span><span><strong>Sign Out Account</strong><small>Safely sign out of this account</small></span><b>›</b></button>
+          <p id="telegram-login-link-message" class="profile-form-message" role="status" aria-live="polite"></p>
+        </section>
           </div>
-          <div class="profile-identity-copy">
-            <strong id="profile-name">Loading profile…</strong>
-            <p id="profile-email">—</p>
-            <div class="profile-status-badges"><span id="profile-role-badge">🛡 USER</span><span class="is-active-badge">○ যাচাই হচ্ছে…</span><span class="is-level-badge">Level যাচাই হচ্ছে…</span></div>
+          <div class="profile-fit-content" data-profile-view="recovery" hidden>
+            <div class="profile-view-heading"><button type="button" data-profile-back aria-label="Back to Profile">←</button><h2>Profile Recovery</h2></div>
+            <div class="profile-recovery-tabs" role="tablist" aria-label="Recovery options"><button id="profile-recovery-email-tab" type="button" role="tab" data-recovery-tab="email" aria-selected="true">Recovery Email</button><button id="profile-recovery-password-tab" type="button" role="tab" data-recovery-tab="password" aria-selected="false">Change Password</button></div>
+<form id="recovery-form" class="profile-form-card" role="tabpanel" aria-labelledby="profile-recovery-email-tab">
+          <div class="profile-form-heading"><span>✉</span><div><h3>Recovery Email</h3><p>Password ভুলে গেলে এই email দিয়ে account ফেরত পাবেন।</p></div></div>
+          <p id="recovery-current" class="profile-form-message" role="status"></p>
+          <label class="profile-field"><span>আপনার আসল email</span><span class="profile-input-wrap"><input id="recovery-email" type="email" autocomplete="email" maxlength="254" required></span></label>
+          <label class="profile-field"><span>বর্তমান password <small>(পুরোনো session হলে প্রয়োজন)</small></span><span class="profile-input-wrap"><input id="recovery-password" type="password" autocomplete="current-password"></span></label>
+          <button id="recovery-send" class="profile-save-button" type="submit">Verification Email পাঠান</button>
+          <button id="recovery-refresh" class="profile-avatar-save" type="button">Email যাচাই করেছি — পরীক্ষা করুন</button>
+          <p id="recovery-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <p>Inbox/Spam থেকে Firebase-এর link নিশ্চিত করুন। তবেই email যুক্ত হবে; একই account ID, balance ও bot থাকবে।</p>
+        </form>
+<form id="profile-password-form" class="profile-form-card profile-password-card" role="tabpanel" aria-labelledby="profile-recovery-password-tab" hidden novalidate>
+          <div class="profile-form-heading"><span>🔑</span><div><h3>Change Password</h3><p>Use a strong password to protect your account</p></div></div>
+          <label class="profile-field"><span>Current Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🛡</span><input id="profile-current-password" type="password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-current-password" aria-label="Show current password">◉</button></span></label>
+          <label class="profile-field"><span>New Password <small>(Min. 6 chars)</small> <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-new-password" type="password" autocomplete="new-password" minlength="6" placeholder="Min. 6 characters" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-new-password" aria-label="Show new password">◉</button></span></label>
+          <label class="profile-field"><span>Confirm New Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">✓</span><input id="profile-confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter new password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-confirm-password" aria-label="Show confirm password">◉</button></span></label>
+          <p id="profile-password-message" class="profile-form-message" role="status" aria-live="polite"></p>
+          <button class="profile-password-button" id="profile-password-button" type="submit">🔒 Update Password</button>
+        </form>
           </div>
-          <div class="profile-referral-code"><small>MY REFERRAL CODE</small><strong id="profile-referral-code">—</strong><button type="button" id="profile-copy-referral">▣ Copy</button><span id="profile-referral-reward">১ verified referral = ১ free bot</span></div>
-        </article>
-
-
-        <section class="profile-avatar-picker" aria-labelledby="profile-avatar-picker-title">
+          <div class="profile-fit-content" data-profile-view="avatar" hidden>
+            <div class="profile-view-heading"><button type="button" data-profile-back aria-label="Back to Profile">←</button><h2>Profile Picture</h2></div>
+<div class="profile-identity-avatar" id="profile-identity-avatar"><span id="profile-avatar">U</span><img id="profile-photo" alt="Profile picture" hidden></div>
+          <label class="profile-upload-button" for="profile-photo-input">📷 Upload Profile Picture</label><input id="profile-photo-input" type="file" accept="image/*" hidden>
+<section class="profile-avatar-picker" aria-labelledby="profile-avatar-picker-title">
           <div class="profile-avatar-picker-heading"><strong id="profile-avatar-picker-title">Choose a Profile Avatar</strong><span>Pick one or upload your own photo</span></div>
           <div class="profile-avatar-options" role="group" aria-label="Available profile avatars">
             <button type="button" class="profile-avatar-option" data-profile-avatar="👨🏻‍💻" aria-label="Male avatar 1">👨🏻‍💻</button>
@@ -435,59 +462,12 @@
             <button type="button" class="profile-avatar-option" data-profile-avatar="🧑🏾‍🚀" aria-label="Avatar 7">🧑🏾‍🚀</button>
             <button type="button" class="profile-avatar-option" data-profile-avatar="🦸🏻‍♂️" aria-label="Hero avatar">🦸🏻‍♂️</button>
           </div>
-          <p id="profile-avatar-message" role="status" aria-live="polite">Choose an avatar, then tap Save Avatar.</p>
-          <button type="button" id="profile-avatar-save" class="profile-avatar-save">Save Avatar</button>
+          <p id="profile-avatar-message" role="status" aria-live="polite">Avatar বাছুন অথবা ছবি upload করে Save Picture / Avatar চাপুন।</p>
+          <button type="button" id="profile-avatar-save" class="profile-avatar-save">Save Picture / Avatar</button>
         </section>
-
-        <form id="profile-information-form" class="profile-form-card" novalidate>
-          <div class="profile-form-heading"><span>👤</span><div><h3>Personal Information</h3><p>Keep your account details up to date</p></div></div>
-          <label class="profile-field"><span>Full Name <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">♙</span><input id="profile-full-name-input" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required></span></label>
-          <label class="profile-field"><span>Email Address <small>(Read-Only)</small></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-email-input" name="email" type="email" readonly aria-readonly="true"></span></label>
-          <label class="profile-field"><span>Phone Number</span><span class="profile-input-wrap"><span aria-hidden="true">☎</span><input id="profile-phone-input" name="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="Enter phone number"></span></label>
-          <label class="profile-field"><span>Telegram Account <small>(@username / Link)</small></span><span class="profile-input-wrap"><span class="profile-telegram-field-icon" aria-hidden="true">➤</span><input id="profile-telegram-input" name="telegramUsername" type="text" autocomplete="off" maxlength="120" placeholder="@yourusername or Telegram link"></span></label>
-          <p id="profile-save-message" class="profile-form-message" role="status" aria-live="polite"></p>
-          <button class="profile-save-button" id="profile-save-button" type="submit">💾 Save Profile Changes</button>
-        </form>
-
-        <section class="profile-form-card" id="telegram-login-link-card" aria-labelledby="telegram-login-link-title">
-          <div class="profile-form-heading"><span>➤</span><div><h3 id="telegram-login-link-title">Telegram Login</h3><p>Telegram Mini App থেকে এই account-এর সাথে Telegram যুক্ত করুন।</p></div></div>
-          <p id="telegram-login-linked-id" class="profile-form-message"></p>
-          <label class="profile-field" id="telegram-link-password-wrap" hidden><span>বর্তমান password দিয়ে একবার নিশ্চিত করুন</span><span class="profile-input-wrap"><input id="telegram-link-password" type="password" autocomplete="current-password" placeholder="Current password"></span></label>
-          <button class="profile-save-button" id="telegram-login-link" type="button">➤ Telegram Login যুক্ত করুন</button>
-          <p id="telegram-login-link-message" class="profile-form-message" role="status" aria-live="polite"></p>
-        </section>
-
-        <form id="recovery-form" class="profile-form-card">
-          <div class="profile-form-heading"><span>✉</span><div><h3>Recovery Email</h3><p>Password ভুলে গেলে এই email দিয়ে account ফেরত পাবেন।</p></div></div>
-          <p id="recovery-current" class="profile-form-message" role="status"></p>
-          <label class="profile-field"><span>আপনার আসল email</span><span class="profile-input-wrap"><input id="recovery-email" type="email" autocomplete="email" maxlength="254" required></span></label>
-          <label class="profile-field"><span>বর্তমান password <small>(পুরোনো session হলে প্রয়োজন)</small></span><span class="profile-input-wrap"><input id="recovery-password" type="password" autocomplete="current-password"></span></label>
-          <button id="recovery-send" class="profile-save-button" type="submit">Verification Email পাঠান</button>
-          <button id="recovery-refresh" class="profile-avatar-save" type="button">Email যাচাই করেছি — পরীক্ষা করুন</button>
-          <p id="recovery-message" class="profile-form-message" role="status" aria-live="polite"></p>
-          <p>Inbox/Spam থেকে Firebase-এর link নিশ্চিত করুন। তবেই email যুক্ত হবে; একই account ID, balance ও bot থাকবে।</p>
-        </form>
-
-        <form id="profile-password-form" class="profile-form-card profile-password-card" novalidate>
-          <div class="profile-form-heading"><span>🔑</span><div><h3>Change Password</h3><p>Use a strong password to protect your account</p></div></div>
-          <label class="profile-field"><span>Current Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🛡</span><input id="profile-current-password" type="password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-current-password" aria-label="Show current password">◉</button></span></label>
-          <label class="profile-field"><span>New Password <small>(Min. 6 chars)</small> <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">🔒</span><input id="profile-new-password" type="password" autocomplete="new-password" minlength="6" placeholder="Min. 6 characters" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-new-password" aria-label="Show new password">◉</button></span></label>
-          <label class="profile-field"><span>Confirm New Password <b>*</b></span><span class="profile-input-wrap"><span aria-hidden="true">✓</span><input id="profile-confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter new password" required><button type="button" class="profile-password-toggle" data-password-toggle="profile-confirm-password" aria-label="Show confirm password">◉</button></span></label>
-          <p id="profile-password-message" class="profile-form-message" role="status" aria-live="polite"></p>
-          <button class="profile-password-button" id="profile-password-button" type="submit">🔒 Update Password</button>
-        </form>
-
-        <section class="profile-shortcuts-card" aria-labelledby="profile-shortcuts-title">
-          <div class="profile-form-heading"><span>🧭</span><div><h3 id="profile-shortcuts-title">Quick Shortcuts</h3><p>Jump to your account services</p></div></div>
-          <button type="button" class="profile-shortcut-row" id="profile-shortcut-dashboard"><span class="profile-shortcut-icon shortcut-dashboard">🌐</span><span><strong>Collector Dashboard</strong><small>Return to your home dashboard</small></span><b>›</b></button>
-          <button type="button" class="profile-shortcut-row" id="profile-shortcut-deposit"><span class="profile-shortcut-icon shortcut-deposit">＋</span><span><strong>Deposit Money</strong><small>Add funds with bKash Personal</small></span><b>›</b></button>
-          <button type="button" class="profile-shortcut-row" id="profile-shortcut-ledger"><span class="profile-shortcut-icon shortcut-ledger">▤</span><span><strong>Collection Ledger History</strong><small>Review your available transaction records</small></span><b>›</b></button>
-          <button type="button" class="profile-shortcut-row profile-shortcut-signout" id="profile-sign-out"><span class="profile-shortcut-icon shortcut-signout">↪</span><span><strong>Sign Out Account</strong><small>Safely sign out of this account</small></span><b>›</b></button>
-        </section>
-
-        <aside class="profile-security-notice"><span>🛡️</span><div><strong>Account Security Notice</strong><p>Never share your password, PIN, or one-time verification codes. Your email address is read-only here. Password changes are handled securely by Firebase Authentication.</p></div></aside>
+          </div>
+        </div>
       </section>
-
 
       <section class="spin-wheel-page" id="spin-wheel-page" data-theme="cyber" aria-labelledby="spin-page-title" hidden>
         <div class="spin-page-topline">
@@ -576,6 +556,11 @@
       <button class="nav-item" type="button" data-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button>
     </nav>
   </div>
+  <dialog id="telegram-confirm-dialog" class="telegram-confirm-dialog" aria-labelledby="telegram-confirm-title">
+    <div class="telegram-confirm-heading"><h2 id="telegram-confirm-title">Telegram Login নিশ্চিত করুন</h2><button id="telegram-confirm-close" type="button" aria-label="Close">×</button></div>
+    <label id="telegram-link-password-wrap" hidden><span>বর্তমান password দিয়ে একবার নিশ্চিত করুন</span><input id="telegram-link-password" type="password" autocomplete="current-password" placeholder="Current password"></label>
+    <button id="telegram-confirm-submit" type="button">নিশ্চিত করুন</button><p id="telegram-confirm-message" role="status"></p>
+  </dialog>
   <dialog id="code-claim-dialog" class="code-claim-dialog" aria-labelledby="code-claim-title">
     <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2 id="code-claim-title">Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div><button id="code-claim-close" type="button" aria-label="Close Claim Code">×</button></div><form id="home-claim-form"><input id="home-claim-code" type="text" maxlength="64" autocomplete="off" autocapitalize="characters" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
   </dialog>
@@ -619,9 +604,10 @@
   <script src="../js/daily-tasks-core.js?v=20261028-tasks1"></script>
   <script src="../js/daily-tasks.js?v=20261028-task-realtime1"></script>
   <script src="../js/spin-sound.js?v=20261028-sound1"></script>
-  <script src="../js/dashboard.js?v=20261029-claim-dialog1"></script>
+  <script src="../js/dashboard.js?v=20261029-profile1"></script>
   <script src="../js/home-fit.js?v=20261029-home1"></script>
   <script src="../js/code-claim-dialog.js?v=20261029-claim-dialog1"></script>
+  <script src="../js/profile-fit.js?v=20261029-profile1"></script>
 </body>
 </html>
 

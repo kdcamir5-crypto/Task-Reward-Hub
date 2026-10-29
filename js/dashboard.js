@@ -283,10 +283,7 @@
     const homeLayout = document.querySelector(".home-reference-layout");
     if (homeLayout) homeLayout.hidden = tab !== "home";
     document.title = titleByTab[tab] + " · Task Reward Hub";
-    if (tab === "profile") {
-      const panel = document.getElementById("panel-profile");
-      if (panel) panel.scrollIntoView({ block:"nearest", behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-    }
+    if (tab === "profile") window.HubProfileViews?.reset();
   }
 
 
@@ -1666,14 +1663,30 @@
   }
   document.getElementById("sign-out")?.addEventListener("click", signOut);
   document.getElementById("profile-sign-out")?.addEventListener("click", signOut);
+  window.addEventListener('hub-profile-open', () => showTab('profile'));
   let linkingTelegramLogin = false;
   document.getElementById('telegram-login-link')?.addEventListener('click', async () => {
-    if(linkingTelegramLogin)return;const button=document.getElementById('telegram-login-link'),password=document.getElementById('telegram-link-password'),message=document.getElementById('telegram-login-link-message');
-    if(!auth?.currentUser||!window.HubTelegramLogin){message.textContent='Account অথবা login module লোড হয়নি।';return;}
-    const uid=auth.currentUser.uid;linkingTelegramLogin=true;button.disabled=true;message.textContent='Telegram ও account যাচাই হচ্ছে…';
-    try{await window.HubTelegramLogin.link(auth,password.value);if(auth.currentUser?.uid!==uid)return;message.textContent='Telegram Login যুক্ত হয়েছে। আগের balance ও bot একই account-এ থাকবে।';document.getElementById('telegram-link-password-wrap').hidden=true;}
-    catch(error){if(auth.currentUser?.uid!==uid)return;if(error.code==='RECENT_LOGIN_REQUIRED'){document.getElementById('telegram-link-password-wrap').hidden=false;password.focus();}message.textContent=error.code?.startsWith('auth/')?'Password যাচাই হয়নি। সঠিক password দিয়ে আবার চেষ্টা করুন।':error.message;}
-    finally{password.value='';linkingTelegramLogin=false;button.disabled=false;}
+    if(linkingTelegramLogin)return;
+    const button=document.getElementById('telegram-login-link'),password=document.getElementById('telegram-link-password'),message=document.getElementById('telegram-login-link-message'),dialog=document.getElementById('telegram-confirm-dialog');
+    const say=text=>{message.textContent=text;setText('telegram-confirm-message',text);};
+    if(!auth?.currentUser||!window.HubTelegramLogin){say('Account অথবা login module লোড হয়নি।');return;}
+    if(currentReferralProfile?.telegramUserId){say('✓ এই account-এ Telegram Login আগে থেকেই যুক্ত আছে।');return;}
+    const uid=auth.currentUser.uid;linkingTelegramLogin=true;button.disabled=true;
+    const confirm=document.getElementById('telegram-confirm-submit');if(confirm)confirm.disabled=true;
+    say('Telegram ও account যাচাই হচ্ছে…');
+    try{
+      await window.HubTelegramLogin.link(auth,password.value);
+      if(auth.currentUser?.uid!==uid)return;
+      say('✓ Telegram Login যুক্ত হয়েছে। আগের balance ও bot একই account-এ থাকবে।');
+      document.getElementById('telegram-link-password-wrap').hidden=true;dialog?.close();
+    }catch(error){
+      if(auth.currentUser?.uid!==uid)return;
+      if(error.code==='RECENT_LOGIN_REQUIRED'){
+        document.getElementById('telegram-link-password-wrap').hidden=false;
+        if(dialog&&!dialog.open)dialog.showModal();password.focus({preventScroll:true});
+      }
+      say(error.code?.startsWith('auth/')?'Password যাচাই হয়নি। সঠিক password দিয়ে আবার চেষ্টা করুন।':error.message);
+    }finally{password.value='';linkingTelegramLogin=false;button.disabled=false;if(confirm)confirm.disabled=false;}
   });
   let pendingProfilePhotoData = null;
   function setProfileFormMessage(id, message, type) {
@@ -1725,7 +1738,7 @@
         if (dot) header.appendChild(dot);
       }
       const message = document.getElementById("profile-avatar-message");
-      if (message) message.textContent = "Avatar selected. Tap Save Avatar to keep it on your account.";
+      if (message) message.textContent = "Avatar বাছা হয়েছে। Save Picture / Avatar চাপুন।";
     });
   });
   document.getElementById("profile-avatar-save")?.addEventListener("click", async () => {
@@ -1733,18 +1746,19 @@
     const button = document.getElementById("profile-avatar-save");
     const message = document.getElementById("profile-avatar-message");
     if (!user || !db) { if (message) message.textContent = "Please sign in again before saving your avatar."; return; }
-    if (!pendingProfileAvatar) { if (message) message.textContent = "Choose an avatar first."; return; }
+    if (!pendingProfileAvatar && !pendingProfilePhotoData) { if (message) message.textContent = "Avatar বাছুন অথবা ছবি upload করুন।"; return; }
     if (button) { button.disabled = true; button.textContent = "Saving…"; }
     try {
-      await db.collection("users").doc(user.uid).update({ profileAvatar: pendingProfileAvatar, profilePhotoData: "" });
-      if (message) message.textContent = "Avatar saved successfully!";
+      await db.collection("users").doc(user.uid).update({ profileAvatar: pendingProfilePhotoData ? "" : pendingProfileAvatar, profilePhotoData: pendingProfilePhotoData || "" });
+      if (message) message.textContent = "Profile picture saved successfully!";
       pendingProfileAvatar = null;
+      pendingProfilePhotoData = null;
     } catch (error) {
       console.error("Profile avatar save failed:", error);
       if (message) message.textContent = "Avatar could not be saved. Please check Firebase Rules.";
       showToast("Avatar could not be saved. Please check Firebase Rules.");
     } finally {
-      if (button) { button.disabled = false; button.textContent = "Save Avatar"; }
+      if (button) { button.disabled = false; button.textContent = "Save Picture / Avatar"; }
     }
   });
 
@@ -1782,7 +1796,7 @@
         if (photo) { photo.src = data; photo.hidden = false; }
         const initialsNode = document.getElementById("profile-avatar");
         if (initialsNode) initialsNode.hidden = true;
-        setProfileFormMessage("profile-save-message", "Profile picture selected. Save your profile to keep it.", "");
+        setProfileFormMessage("profile-avatar-message", "ছবি বাছা হয়েছে। Save Picture / Avatar চাপুন।", "");
       };
       image.src = String(reader.result || "");
     };
@@ -2105,7 +2119,7 @@
     setInputValueUnlessFocused("profile-phone-input", profile.phoneNumber || profile.phone_number || profile.phone || "");
     setInputValueUnlessFocused("profile-telegram-input", telegramName);
     setText("profile-referral-code", referralCodeFor(user, profile));
-    setText('telegram-login-linked-id', profile.telegramUserId ? 'যাচাইকৃত Telegram ID: ' + profile.telegramUserId : 'আগের account-এ Telegram Login যুক্ত করতে নিচের button ব্যবহার করুন।');
+    setText('telegram-login-linked-id', profile.telegramUserId ? '✓ Telegram যুক্ত আছে' : 'এই account-এর সাথে Telegram যুক্ত করুন');
     setText("profile-role-badge", profile.role === "admin" ? "🛡 ADMIN" : "🛡 USER");
     setText("profile-referral-reward", "১ verified referral = ১ free bot");
     const profilePhoto = document.getElementById("profile-photo");

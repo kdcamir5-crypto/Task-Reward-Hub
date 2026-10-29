@@ -6,6 +6,11 @@ on:
     paths:
       - .github/workflows/verify-home-fit.yml
       - tests/home-fit.browser.cjs
+      - tests/profile-fit.browser.cjs
+      - css/profile-fit.css
+      - js/profile-fit.js
+      - js/dashboard.js
+      - js/recovery-ui.js
       - pages/dashboard.html
       - css/home-fit.css
       - css/header-compact.css
@@ -32,3 +37,8 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/home-fit/node_modules
         run: node tests/home-fit.browser.cjs
+
+      - name: Check Profile, recovery, avatar and retained actions
+        env:
+          NODE_PATH: ${{ runner.temp }}/home-fit/node_modules
+        run: node tests/profile-fit.browser.cjs

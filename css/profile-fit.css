@@ -1,0 +1,61 @@
+/* Profile-only viewport. Header and bottom navigation styles are unchanged. */
+body.profile-fit-active{height:var(--profile-viewport-height,100dvh);min-height:0;padding:0;overflow:hidden;overscroll-behavior:none;background:#f4f7fc}
+body.profile-fit-active .app-shell{height:100%;min-height:0;display:flex;flex-direction:column;background:#f4f7fc}
+body.profile-fit-active .app-shell>.topbar{flex-shrink:0}
+body.profile-fit-active .app-shell>main{flex:1;min-height:0;padding:0 10px 5px;margin-bottom:var(--profile-nav-space,70px);overflow:hidden}
+body.profile-fit-active #panel-profile{height:100%;min-height:0;width:100%;padding:0;margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;overflow:hidden}
+#panel-profile .profile-fit-viewport{position:relative;width:100%;height:100%;overflow:hidden}
+#panel-profile .profile-fit-content{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0}
+body.profile-fit-active #panel-profile .profile-fit-content{position:absolute;left:50%;top:0;min-height:100%;transform:translateX(-50%) scale(var(--profile-fit-scale,1));transform-origin:top center}
+#panel-profile [data-profile-view][hidden],#panel-profile #recovery-form[hidden],#panel-profile #profile-password-form[hidden]{display:none!important}
+#panel-profile .profile-fit-content .profile-form-card,#panel-profile .profile-fit-content .profile-shortcuts-card{flex:none;margin:0;padding:9px;border-radius:13px;box-shadow:none}
+#panel-profile .profile-fit-content .profile-form-heading{gap:6px;margin:0 0 7px}
+#panel-profile .profile-fit-content .profile-form-heading>span{width:25px;height:25px;flex-basis:25px;border-radius:8px;font-size:15px}
+#panel-profile .profile-fit-content .profile-form-heading h3{font-size:15px!important;line-height:1.25}
+#panel-profile .profile-fit-content .profile-form-heading p{font-size:11px;line-height:1.3;margin:2px 0 0}
+#panel-profile .profile-fit-content .profile-field{margin:5px 0 0;min-width:0}
+#panel-profile .profile-fit-content .profile-field>span:first-child{margin:0 0 3px;font-size:11px;line-height:1.3}
+#panel-profile .profile-fit-content .profile-field small{font-size:10px}
+#panel-profile .profile-fit-content .profile-input-wrap{min-height:34px;padding:0 7px;gap:5px;border-radius:8px}
+#panel-profile .profile-fit-content .profile-input-wrap input{height:32px;min-width:0}
+#panel-profile .profile-fit-content .profile-input-wrap>span{flex-basis:14px;font-size:13px}
+#panel-profile .profile-fit-content .profile-form-message{margin:4px 0 0;font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+#panel-profile .profile-fit-content .profile-form-message:empty{display:none}
+#panel-profile .profile-fit-content .profile-save-button,#panel-profile .profile-fit-content .profile-password-button,#panel-profile .profile-fit-content .profile-avatar-save{min-height:34px;margin-top:7px;padding:6px 8px;font-size:13px;border-radius:9px}
+#panel-profile #profile-information-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 7px}
+#panel-profile #profile-information-form .profile-form-heading,#panel-profile #profile-save-message,#panel-profile #profile-save-button{grid-column:1/-1}
+#panel-profile #profile-information-form .profile-form-heading p{display:none}
+#panel-profile [data-profile-view=main] .profile-shortcuts-card{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
+#panel-profile .profile-fit-content .profile-shortcut-row{min-height:39px;padding:5px 0;gap:7px}
+#panel-profile .profile-fit-content .profile-shortcut-row:first-child{border-top:0}
+#panel-profile .profile-fit-content .profile-shortcut-row strong{font-size:13px;line-height:1.25}
+#panel-profile .profile-fit-content .profile-shortcut-row small{font-size:10px;line-height:1.25}
+#panel-profile .profile-fit-content .profile-shortcut-icon{width:27px;height:27px;flex-basis:27px;border-radius:9px;font-size:16px}
+#panel-profile .profile-fit-content .profile-shortcut-row>span:nth-child(2){gap:2px}
+#panel-profile .profile-view-heading{display:flex;align-items:center;gap:8px;flex:none;color:#172b49}
+#panel-profile .profile-view-heading h2{margin:0;font-size:18px!important}
+#panel-profile [data-profile-back]{width:32px;height:32px;border:1px solid #dce4ef;border-radius:10px;background:#fff;color:#1764bf;font-size:22px;cursor:pointer}
+#panel-profile .profile-recovery-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:none}
+#panel-profile .profile-recovery-tabs button{min-height:34px;padding:6px;border:1px solid #dce4ef;border-radius:9px;background:#fff;color:#315575;font-size:12px;font-weight:700;cursor:pointer}
+#panel-profile .profile-recovery-tabs button[aria-selected=true]{background:#1769d7;border-color:#1769d7;color:#fff}
+#panel-profile #recovery-form>p:last-child{margin:7px 0 0;color:#65778e;font-size:11px;line-height:1.4}
+#panel-profile [data-profile-view=avatar]{align-items:stretch}
+#panel-profile .profile-fit-content .profile-identity-avatar{align-self:center;width:70px;height:70px;flex-basis:70px;margin:3px 0;font-size:30px}
+#panel-profile .profile-upload-button{display:block;min-height:34px;padding:7px;text-align:center;border:1px solid #b9d7fa;border-radius:10px;background:#eaf3ff;color:#1661ba;font-size:13px;font-weight:700;cursor:pointer}
+#panel-profile .profile-fit-content .profile-avatar-picker{margin:0;padding:10px;border-radius:13px}
+#panel-profile .profile-fit-content .profile-avatar-picker-heading{gap:3px;margin-bottom:8px}
+#panel-profile .profile-fit-content .profile-avatar-picker-heading strong{font-size:14px}
+#panel-profile .profile-fit-content .profile-avatar-picker-heading span{font-size:11px}
+#panel-profile .profile-fit-content .profile-avatar-options{gap:6px;grid-template-columns:repeat(4,minmax(0,1fr))}
+#panel-profile .profile-fit-content .profile-avatar-option{height:44px;aspect-ratio:auto;font-size:27px}
+#panel-profile .profile-fit-content #profile-avatar-message{margin:6px 0;font-size:11px;line-height:1.4}
+.telegram-confirm-dialog{width:min(380px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow-y:auto;padding:16px;border:1px solid #dbe7f8;border-radius:16px;background:#fff;color:#172b49;box-shadow:0 20px 60px #06152b55}
+.telegram-confirm-dialog::backdrop{background:#07152dbb;backdrop-filter:blur(5px)}
+.telegram-confirm-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.telegram-confirm-heading h2{font-size:17px;margin:0}
+#telegram-confirm-close{width:30px;height:30px;flex-shrink:0;border:0;border-radius:8px;background:#edf3fb;font-size:23px;cursor:pointer}
+#telegram-link-password-wrap{display:block;font-size:13px}
+#telegram-link-password{display:block;width:100%;height:40px;margin-top:7px;padding:8px;border:1px solid #ccd9eb;border-radius:9px;background:#f8fbff;color:#172b49}
+#telegram-confirm-submit{width:100%;min-height:38px;margin-top:12px;border:0;border-radius:9px;background:#1769d7;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+#telegram-confirm-message{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#user-avatar[role=button]{cursor:pointer}
