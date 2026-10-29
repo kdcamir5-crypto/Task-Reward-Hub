@@ -314,7 +314,7 @@
     const list = document.getElementById("wallet-linked-list");
     if (!list) return;
     if (!saved.length) {
-      list.innerHTML = '<div class="wlt-empty"><span>▣</span><strong>No linked wallets yet</strong><p>Bind a payment wallet below. No sample account is displayed.</p></div>';
+      list.innerHTML = '<div class="wlt-empty"><span>▣</span><strong>No linked wallets yet</strong><p>আপনার নিজের payment wallet নিচে যুক্ত করুন।</p></div>';
       return;
     }
     list.innerHTML = saved.slice(0, 5).map(item => {
@@ -1510,9 +1510,6 @@
       if (action === "withdraw") { openWalletPage(); return; }
       if (action === "ads") { launchRewardedAd(button); return; }
       if (action === "invite") { openReferralPage(); return; }
-      const messages = {
-      };
-      showToast(messages[action] || "This Tap Earning action is not connected yet.");
     });
   });
 
@@ -1832,16 +1829,6 @@
 
 
   document.getElementById("profile-back-home")?.addEventListener("click", () => showTab("home"));
-  document.querySelectorAll("[data-profile-action]").forEach(button => {
-    button.addEventListener("click", () => {
-      const action = button.dataset.profileAction;
-      if (action === "wallet") { openWalletPage(); return; }
-      if (action === "referrals") { openReferralPage(); return; }
-      if (action === "support") { openSupportPage(); return; }
-      if (action === "ledger") { openFullLedgerDrawer(); return; }
-      showToast("This setting is not available yet.");
-    });
-  });
   document.getElementById("profile-telegram-open")?.addEventListener("click", () => {
     const raw = document.getElementById("profile-telegram-username")?.textContent.trim() || "";
     const username = raw.replace(/^https:\/\/(?:www\.)?(?:t\.me|telegram\.me)\//i, "").replace(/^@/, "").replace(/\/$/, "");
@@ -1850,9 +1837,6 @@
     } else {
       showToast("Telegram username is not configured for this account.");
     }
-  });
-  document.getElementById("profile-vip-join")?.addEventListener("click", () => {
-    showToast("Official VIP community link has not been configured yet.");
   });
   const rankSearch = document.getElementById("rank-search");
   const rankRefresh = document.getElementById("rank-refresh");
