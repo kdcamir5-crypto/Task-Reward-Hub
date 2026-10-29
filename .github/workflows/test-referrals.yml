@@ -1,0 +1,33 @@
+name: Test two-condition referrals
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/test-referrals.yml
+      - scripts/verify-referrals.cjs
+      - scripts/auto-mining.js
+      - js/referrals.js
+      - tests/referrals.test.cjs
+      - tests/referrals-ui.test.cjs
+      - firebase.rules
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Referral verification interface
+        run: node --test tests/referrals-ui.test.cjs
+      - name: Referral eligibility, one-time awards, mining and security
+        run: npm run test:referrals

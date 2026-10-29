@@ -3,7 +3,6 @@ const CHANNEL='@freelancing_incom';
 const PACKAGES={pulse:{price:50,target:80,name:'AI Pulse Bot v2'},quantum:{price:100,target:160,name:'Quantum Core Pro'},neural:{price:200,target:320,name:'Neural Matrix Bot'},cyber:{price:300,target:480,name:'Cyber Forge Titan'},apex:{price:500,target:800,name:'Apex Sentinel AI'}};
 function botForOrdinal(n){if(!Number.isSafeInteger(n)||n<1)throw Error('INVALID_ORDINAL');return Object.keys(PACKAGES)[Math.floor(((n-1)%100)/20)];}
 function isMember(member){return !!member&&(['creator','administrator','member'].includes(member.status)||(member.status==='restricted'&&member.is_member===true));}
-function validPurchase(d,uid){return d&&d.uid===uid&&d.status==='approved'&&['wallet','bKash'].includes(d.paymentMethod)&&PACKAGES[d.botId]?.price===d.amount;}
 async function linkIdentity(db,F,nonce,telegramId,now=Date.now()){
  if(!/^[a-f0-9]{48}$/.test(nonce)||!/^\d{1,20}$/.test(telegramId))return false;
  const requests=await db.collection('telegramLinkRequests').where('token','==',nonce).limit(2).get();if(requests.size!==1)return false;
@@ -20,7 +19,7 @@ async function linkIdentity(db,F,nonce,telegramId,now=Date.now()){
   return true;
  });
 }
-async function verifyAndAward(db,F,uid,orderId,membership,now=Date.now()){
+async function verifyAndAward(db,F,uid,membership,now=Date.now()){
  const referralRef=db.collection('referrals').doc(uid),userRef=db.collection('users').doc(uid),awardRef=db.collection('referralAwards').doc(uid);
  return db.runTransaction(async tx=>{
   const [referral,user,award]=await Promise.all([tx.get(referralRef),tx.get(userRef),tx.get(awardRef)]);
@@ -28,11 +27,10 @@ async function verifyAndAward(db,F,uid,orderId,membership,now=Date.now()){
   const d=referral.data(),u=user.data();if(d.status==='verified'||award.exists)return 'already';
   if(d.inviteeUid!==uid||!d.referrerUid||d.referrerUid===uid||u.referrerUid!==d.referrerUid)return 'invalid';
   const referrerRef=db.collection('users').doc(d.referrerUid),identityRef=u.telegramUserId?db.collection('telegramIdentities').doc(u.telegramUserId):null;
-  const orderRef=orderId?db.collection('botPurchaseRequests').doc(orderId):null;
-  const [referrer,identity,order]=await Promise.all([tx.get(referrerRef),identityRef?tx.get(identityRef):null,orderRef?tx.get(orderRef):null]);
-  const bought=!!order?.exists&&validPurchase(order.data(),uid),linked=!!identity?.exists&&identity.data().uid===uid;
-  const flags={purchaseVerified:bought,telegramLinked:linked,channelVerified:linked&&membership===true,updatedAt:F.FieldValue.serverTimestamp()};
-  if(!referrer.exists||!bought||!linked||membership!==true){tx.update(referralRef,flags);return 'pending';}
+  const [referrer,identity]=await Promise.all([tx.get(referrerRef),identityRef?tx.get(identityRef):null]);
+  const linked=!!identity?.exists&&identity.data().uid===uid&&identity.data().telegramUserId===u.telegramUserId;
+  const flags={verificationVersion:2,telegramLinked:linked,channelVerified:linked&&membership===true,updatedAt:F.FieldValue.serverTimestamp()};
+  if(!referrer.exists||!linked||membership!==true){tx.update(referralRef,flags);return 'pending';}
   const previous=referrer.data().verifiedReferralCount??0;if(!Number.isSafeInteger(previous)||previous<0)return 'invalid';
   const ordinal=previous+1,botId=botForOrdinal(ordinal),pkg=PACKAGES[botId],instanceId='referral_'+uid;
   const mineRef=referrerRef.collection('botMining').doc(instanceId),existingMine=await tx.get(mineRef);
@@ -53,7 +51,7 @@ function telegramApi(token){return async(method,body={})=>{
 async function run(db,F,api,{now=Date.now()}={}){
  const me=await api('getMe'),hook=await api('getWebhookInfo');if(hook.url)throw Error('TELEGRAM_WEBHOOK_PRESENT_USE_DEDICATED_VERIFICATION_BOT');
  const self=await api('getChatMember',{chat_id:CHANNEL,user_id:me.id});if(!['administrator','creator'].includes(self.status))throw Error('VERIFICATION_BOT_MUST_BE_CHANNEL_ADMIN');
- await db.collection('appSettings').doc('referralSettings').set({channel:CHANNEL,botUsername:me.username,active:true,updatedAt:F.FieldValue.serverTimestamp()});
+ await db.collection('appSettings').doc('referralSettings').set({channel:CHANNEL,botUsername:me.username,active:true,verificationVersion:2,purchaseRequired:false,updatedAt:F.FieldValue.serverTimestamp()});
  const stateRef=db.collection('systemState').doc('telegramReferralPolling'),state=await stateRef.get();let offset=state.exists?state.data().offset||0:0;
  const summary={linked:0,pending:0,awarded:0,already:0,invalid:0};
  for(let page=0;page<10;page++){
@@ -68,10 +66,9 @@ async function run(db,F,api,{now=Date.now()}={}){
  const referrals=await db.collection('referrals').where('status','==','pending').get();
  for(const referral of referrals.docs){
   const uid=referral.id,user=await db.collection('users').doc(uid).get();if(!user.exists){summary.invalid++;continue;}
-  const orders=await db.collection('botPurchaseRequests').where('uid','==',uid).get();
-  const order=orders.docs.find(doc=>validPurchase(doc.data(),uid));let member=false;
+  let member=false;
   if(user.data().telegramUserId){try{member=isMember(await api('getChatMember',{chat_id:CHANNEL,user_id:user.data().telegramUserId}));}catch(_){member=false;}}
-  const result=await verifyAndAward(db,F,uid,order?.id||'',member,now);summary[result==='missing'?'invalid':result]++;
+  const result=await verifyAndAward(db,F,uid,member,now);summary[result==='missing'?'invalid':result]++;
  }
  return summary;
 }
@@ -83,4 +80,4 @@ async function main(){
  const summary=await run(admin.firestore(),admin.firestore,telegramApi(process.env.TELEGRAM_VERIFICATION_BOT_TOKEN));console.log('REFERRAL_SUMMARY '+JSON.stringify(summary));
 }
 if(require.main===module)main().catch(error=>{const allowed=/^(TELEGRAM_[A-Z_0-9]+|VERIFICATION_BOT_MUST_BE_CHANNEL_ADMIN|FIREBASE_[A-Z_]+)$/;console.error(allowed.test(error.message)?error.message:'Referral verification failed; no unchecked membership is accepted.');process.exitCode=1;});
-module.exports={CHANNEL,PACKAGES,botForOrdinal,isMember,validPurchase,linkIdentity,verifyAndAward,run};
+module.exports={CHANNEL,PACKAGES,botForOrdinal,isMember,linkIdentity,verifyAndAward,run};

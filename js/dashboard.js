@@ -2051,7 +2051,7 @@
     const level = "Level " + view.level + ": " + view.name;
     document.querySelectorAll(".verified-badge, .tap-member-badge").forEach(el => {
       el.textContent = verification;
-      el.title = "Referral signup, প্রথম bot purchase ও Telegram channel verification সফল হলে Verified।";
+      el.title = "Referral link দিয়ে signup ও Telegram channel membership যাচাই সফল হলে Verified।";
       el.classList.toggle("is-verified", view.verified);
     });
     document.querySelectorAll(".level-badge, .is-level-badge, .rf-level b, .tap-member-copy small").forEach(el => { el.textContent = level; });

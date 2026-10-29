@@ -5,18 +5,17 @@ const el=id=>document.getElementById(id);
 function mount(){
  if(el('referral-verification'))return;const host=el('referral-page');if(!host)return;
  const panel=document.createElement('section');panel.id='referral-verification';panel.className='rv-panel';
- panel.innerHTML='<h3>আমার Referral Verification</h3><p>তিনটি শর্ত পূরণ হলে আপনার রেফারার একটি বট পাবেন।</p><ul><li id="rv-registration"></li><li id="rv-purchase"></li><li id="rv-channel"></li></ul><div class="rv-actions"><a href="https://t.me/freelancing_incom" target="_blank" rel="noopener noreferrer">➤ Channel-এ Join করুন</a><button id="rv-link" type="button">Telegram account যাচাই করুন</button></div><p id="rv-status" role="status"></p><small>যাচাইকারী bot-এ Start চাপার পর অ্যাপে ফিরুন। যাচাই স্বয়ংক্রিয়ভাবে চলে; ফলাফল আসতে কয়েক মিনিট লাগতে পারে।</small>';
+ panel.innerHTML='<h3>আমার Referral Verification</h3><p>দুটি শর্ত পূরণ হলে আপনার রেফারার একটি বট পাবেন।</p><ul><li id="rv-registration"></li><li id="rv-channel"></li></ul><div class="rv-actions"><a href="https://t.me/freelancing_incom" target="_blank" rel="noopener noreferrer">➤ Channel-এ Join করুন</a><button id="rv-link" type="button">Telegram account যাচাই করুন</button></div><p id="rv-status" role="status"></p><small>যাচাইকারী bot-এ Start চাপার পর অ্যাপে ফিরুন। যাচাই স্বয়ংক্রিয়ভাবে চলে; ফলাফল আসতে কয়েক মিনিট লাগতে পারে।</small>';
  host.insertBefore(panel,host.querySelector('.rf-members'));
  el('rv-link').onclick=linkTelegram;
 }
 function render(){
  mount();if(!el('rv-status'))return;
  el('rv-registration').textContent=incoming?'✓ Referral link দিয়ে account তৈরি হয়েছে':'— এই account-এ signup referral সংরক্ষিত নেই';
- el('rv-purchase').textContent=incoming?.purchaseVerified?'✓ প্রথম বট কেনা সফল':'○ প্রথম বট কেনা সফল হতে হবে';
  el('rv-channel').textContent=incoming?.channelVerified?'✓ @freelancing_incom-এ membership যাচাই হয়েছে':'○ @freelancing_incom-এ join ও Telegram account যাচাই করুন';
  el('rv-link').disabled=!!profile.telegramUserId||!settings?.active;
  el('rv-link').textContent=profile.telegramUserId?'✓ Telegram account যুক্ত আছে':'Telegram account যাচাই করুন';
- el('rv-status').textContent=incoming?.status==='verified'?'✓ Verified referral — আপনার রেফারার বট পেয়েছেন।':!settings?.active?'Telegram verification service এখনো প্রস্তুত হয়নি। Channel-এ join করে রাখতে পারেন।':profile.telegramUserId?'Telegram account যুক্ত আছে। তিনটি শর্তের স্বয়ংক্রিয় যাচাইয়ের অপেক্ষায়।':'Telegram account যুক্ত করুন, bot-এ Start চাপুন, তারপর অ্যাপে ফিরুন।';
+ el('rv-status').textContent=incoming?.status==='verified'?'✓ Verified referral — আপনার রেফারার বট পেয়েছেন।':!settings?.active?'Telegram verification service এখনো প্রস্তুত হয়নি। Channel-এ join করে রাখতে পারেন।':profile.telegramUserId?'Telegram account যুক্ত আছে। দুটি শর্তের স্বয়ংক্রিয় যাচাইয়ের অপেক্ষায়।':'Telegram account যুক্ত করুন, bot-এ Start চাপুন, তারপর অ্যাপে ফিরুন।';
 }
 async function linkTelegram(){
  if(!settings?.active||!settings.botUsername||profile.telegramUserId)return;

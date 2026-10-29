@@ -329,12 +329,12 @@ Before changing a file:
 
 Requirements implemented in this checkpoint:
 - A referral starts only when a NEW account signs up through the referrer's link. The signup batch binds the actual public Collector ID/UID and creates `referrals/{inviteeUid}` as pending. Existing accounts are not silently reassigned or retroactively counted.
-- Verification requires ALL THREE: attributed signup, a first successfully purchased bot (wallet purchase or approved bKash), and a verified Telegram identity that is a member of **@freelancing_incom**. No manual admin referral approval is used. A referral link click or client-side join button is not proof.
+- Current verification (updated 2026-10-29) requires BOTH: attributed signup and a verified Telegram identity that is a member of **@freelancing_incom**. No manual admin referral approval is used. A referral link click or client-side join button is not proof.
 - Each verified person awards ONE independently mining bot. Ordinals 1–20: Pulse (50); 21–40: Quantum (100); 41–60: Neural (200); 61–80: Cyber (300); 81–100: Apex (500). Ordinals 101–120 start again at Pulse; the cycle repeats every 100, not every 20 referrals.
 - `referralAwards/{inviteeUid}` is the immutable one-time award ledger. Award creation, the verified counter, referral bot count and new mining instance are one Firestore transaction. Retry and concurrent workers cannot duplicate the award. These are zero-cost referral rewards, not purchase requests or wallet cash credits.
 - Referral bots use distinct `users/{referrerUid}/botMining/referral_{inviteeUid}` records with source and ledger references. They do not consume the one-owned-package purchase slot in `unlockedBots`; twenty Pulse instances can mine independently. Mining validates each referral award ledger. Rank counts purchased bots plus server-maintained `referralBotsCount`.
 - New purchases atomically add their package USD bonus to `usdBalance` once: 0.10/0.20/0.40/0.60/1.00 for the five packages. Direct bKash credits only on approval. The receipt stores `usdBonus` and `usdBonusCredited`. A pending request, rejection, retry or free referral award does not credit USD. Previously approved old purchases are not silently backfilled.
-- Referral page shows real pending/verified members and the invitee's three verification conditions. Main header/navigation markup is retained. Home mining status reflects saved mining records; rank no longer resets itself to an obsolete placeholder.
+- Referral page shows real pending/verified members and the invitee's two verification conditions. Main header/navigation markup is retained. Home mining status reflects saved mining records; rank no longer resets itself to an obsolete placeholder.
 
 ### Telegram verification deployment
 
@@ -352,7 +352,7 @@ Outstanding from the broader demo audit: full in-app Support chat/calls, Communi
 
 ### Live membership displays
 - Header, Home Active Tier, Tap, Referral and Profile badges now share the same live profile/mining data.
-- Verified Member requires the trusted worker's `referralStatus: verified` (all three referral verification conditions). Firebase login or owning a bot alone does not verify membership. Unverified accounts display Verification Pending.
+- Verified Member requires the trusted worker's `referralStatus: verified` (both referral verification conditions). Firebase login or owning a bot alone does not verify membership. Unverified accounts display Verification Pending.
 - Display Level 0 = Starter Novice with no owned package; Levels 1–5 follow the highest owned package: Pulse, Quantum, Neural, Cyber, Apex. Referral-awarded mining instances are included; level is a display only and does not change rewards. Completed owned bots still count toward level.
 - Active Tier uses the highest owned package with a running mining record; otherwise it shows no active bot. Bot ownership without a running record does not claim active mining.
 
@@ -417,7 +417,7 @@ Outstanding from the broader demo audit: full in-app Support chat/calls, Communi
 - Frontend Telegram Login is connected to the dedicated backend defined in `js/telegram-auth-config.js`. Worker source: [`workers/telegram-auth.mjs`](workers/telegram-auth.mjs). **Deployment is still required in Cloudflare; this repository commit alone does not make the backend live.** See the complete [setup guide](docs/telegram-login-setup.md).
 - The Worker accepts only signed, fresh Telegram Mini App initData, verifies Firebase ID-token signatures/project/expiry and live account state for linking, and signs short-lived Firebase custom tokens for the existing bound UID. No username/email guessing, automatic new Telegram accounts, client-selected UID, reward/role grants, or unsafe identity fallback.
 - Profile now has a Telegram Login linking card. Both identities must be proven. Linking an older session may require one password reauthentication, without signing out; passwords go only to Firebase and are not sent to the Worker. Existing verified Telegram mappings from the referral worker are compatible.
-- Identity mapping/back-reference updates are transactional and preserve all balance, bot, role, referral and Collector ID fields. One Telegram account cannot hijack another Firebase account or silently replace an existing Telegram identity. A Telegram link does not satisfy channel membership or paid-purchase requirements on its own.
+- Identity mapping/back-reference updates are transactional and preserve all balance, bot, role, referral and Collector ID fields. One Telegram account cannot hijack another Firebase account or silently replace an existing Telegram identity. A Telegram link does not satisfy attributed referral signup and channel membership requirements on its own.
 - Email/username signup/login remains unchanged and can be used while Worker setup is pending. Firebase LOCAL persistence stays enabled; no forced logout is introduced. Ordinary-browser pages without signed Mini App data instruct users to launch the Telegram Mini App.
 - New secrets are only on the **new** Cloudflare Worker: TELEGRAM_BOT_TOKEN (the Mini App bot) and FIREBASE_SERVICE_ACCOUNT (existing reward-hub-bd JSON). Existing Monetag Worker, GitHub secrets, bot polling/webhooks, Firebase rules and admin panel are unchanged.
 - Validation: 13 backend crypto/API tests + 4 client/persistence tests + 8 real isolated Firestore REST transaction tests (25 total), plus mobile browser tests for the Profile linking/reauth flow, setup-error fallback and 320/390/420px layouts. Real Telegram/Firebase live login remains unverified until the Worker is published/configured and a real signed Mini App launch is used.
@@ -466,3 +466,10 @@ Firestore rules restrict updates to one tap per write and enforce the Bangladesh
 ## Daily Tasks — 2026-10-28
 
 Home → Explore Services → Daily Tasks supports admin-published text-proof tasks. Tasks end at Bangladesh midnight; each user can submit once per task. Admin deletion preserves all proof and payment receipts. Approved v2 proofs credit main balance once through a transaction. Expired definitions are cleaned by the existing auto-mining job; server expiry is enforced independently of cleanup scheduling. Publish the updated `firebase.rules` before using this flow. See [daily-tasks.md](docs/daily-tasks.md) for deployment, tests and limitations.
+
+
+## 2026-10-29 — Referral purchase requirement removed
+- Two conditions only: a new account attributed to a real referrer at signup, and a linked Telegram identity verified as a current member of @freelancing_incom. A paid bot purchase is not required.
+- The trusted verification worker no longer reads botPurchaseRequests to decide eligibility. Existing pending referrals are automatically reconsidered by the next successful run; existing awards are preserved and never granted twice.
+- One verified referral still grants one active 30-day mining bot to its referrer. The 20-per-tier, 100-referral cycle is unchanged. No manual referral approval is needed.
+- Paid purchase 5% commission and purchase USD bonuses remain separate. Old purchaseVerified fields are historical metadata and no longer affect eligibility. No Firebase rules or Cloudflare Worker deployment change is required.
