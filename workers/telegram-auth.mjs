@@ -79,6 +79,30 @@ export class IdentityStore{
   }
  }
 }
+// Server-only, idempotent daily ticket creation. Clients never supply prize or UID.
+export const SPIN_PRIZES=Object.freeze([['BDT',1000],['USD',20],['BDT',30000],['BDT',50],['BDT',5000],['USD',100],['BDT',2000],['USD',10]].map(Object.freeze));
+export async function prepareDailySpins(store,uid,now=Date.now(),randomIndex=()=>crypto.getRandomValues(new Uint32Array(1))[0]%8){
+ const day=Math.floor((now+21600000)/86400000),userPath='users/'+encodeURIComponent(uid);
+ const paths=[userPath,...[1,2].map(slot=>userPath+'/spinTickets/'+day+'_'+slot)];
+ for(let attempt=0;attempt<4;attempt++){
+  const {transaction}=await store.call(':beginTransaction',{options:{readWrite:{}}});let committed=false;
+  try{
+   const [profile,...tickets]=await store.read(paths,transaction);
+   if(!profile)fail('PROFILE_MISSING',409);
+   if(tickets.every(Boolean))return {day,prepared:0};
+   const name=store.root.replace(/^https?:\/\/[^/]+\/v1\//,'');
+   const writes=[];
+   tickets.forEach((ticket,index)=>{
+    if(ticket)return;
+    const rewardIndex=randomIndex(),prize=SPIN_PRIZES[rewardIndex];
+    if(!Number.isInteger(rewardIndex)||!prize)fail('SERVER_UNAVAILABLE',503);
+    writes.push({update:{name:name+'/'+paths[index+1],fields:{uid:{stringValue:uid},day:{integerValue:String(day)},slot:{integerValue:String(index+1)},rewardIndex:{integerValue:String(rewardIndex)},currency:{stringValue:prize[0]},amountMinor:{integerValue:String(prize[1])},claimed:{booleanValue:false},claimedAt:{nullValue:null}}},currentDocument:{exists:false},updateTransforms:[{fieldPath:'createdAt',setToServerValue:'REQUEST_TIME'}]});
+   });
+   await store.call(':commit',{transaction,writes});committed=true;return {day,prepared:writes.length};
+  }catch(e){if(attempt===3||!['ABORTED','FAILED_PRECONDITION','ALREADY_EXISTS'].includes(e.upstream))throw e;}
+  finally{if(!committed)try{await store.call(':rollback',{transaction});}catch(_){}}
+ }
+}
 export async function checkAccount(uid,accessToken,fetcher=fetch){
  const data=await requestJson('https://identitytoolkit.googleapis.com/v1/projects/'+PROJECT+'/accounts:lookup',{method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({localId:[uid]})},fetcher);
  const account=data.users?.find(u=>u.localId===uid);if(!account||account.disabled)fail('ACCOUNT_UNAVAILABLE',403);return account;
@@ -124,15 +148,23 @@ export function createHandler(dependencies={}){return async(request,env)=>{
  const origin=request.headers.get('Origin'),url=new URL(request.url),headers={'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',Vary:'Origin'};
  if(origin===ORIGIN){headers['Access-Control-Allow-Origin']=ORIGIN;headers['Access-Control-Allow-Headers']='Content-Type, Authorization';headers['Access-Control-Allow-Methods']='POST, GET, OPTIONS';}
  const reply=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
- if(request.method==='GET'&&url.pathname==='/health'){let configured=true;try{serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))configured=false;}catch(_){configured=false;}return reply({ok:true,service:'telegram-auth',configured,version:2,passwordRecovery:true});}
+ if(request.method==='GET'&&url.pathname==='/health'){let configured=true;try{serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))configured=false;}catch(_){configured=false;}return reply({ok:true,service:'telegram-auth',configured,version:3,passwordRecovery:true,instantSpinPreparation:true});}
  if(origin!==ORIGIN)return reply({ok:false,code:'ORIGIN_DENIED'},403);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
- if(request.method!=='POST'||!['/login','/link','/password-login'].includes(url.pathname))return reply({ok:false,code:'NOT_FOUND'},404);
+ if(request.method!=='POST'||!['/login','/link','/password-login','/spin/prepare'].includes(url.pathname))return reply({ok:false,code:'NOT_FOUND'},404);
  try{
   const sa=serviceAccount(env);if(!/^\d+:[A-Za-z0-9_-]+$/.test(env.TELEGRAM_BOT_TOKEN||''))fail('SETUP_REQUIRED',503);
   const body=await bodyJson(request);if(!body||typeof body!=='object'||Array.isArray(body))fail('INVALID_REQUEST',400);
   const fetcher=dependencies.fetcher||fetch,access=dependencies.accessToken||(()=>oauth(sa,fetcher));
   const store=dependencies.store||new IdentityStore(PROJECT,access,fetcher);
+  if(url.pathname==='/spin/prepare'){
+   const bearer=request.headers.get('Authorization')?.match(/^Bearer (\S+)$/)?.[1];
+   const claims=await (dependencies.verifyFirebase||verifyFirebase)(bearer,fetcher);
+   const account=await (dependencies.checkAccount||checkAccount)(claims.sub,await access(),fetcher);
+   if(claims.auth_time<Number(account.validSince||0))fail('INVALID_TOKEN');
+   const prepared=await (dependencies.prepareDailySpins||prepareDailySpins)(store,claims.sub);
+   return reply({ok:true,...prepared});
+  }
   if(url.pathname==='/password-login')return reply(await passwordLogin(body,store,access,sa,fetcher,dependencies));
   const telegram=await verifyTelegram(body.initData,env.TELEGRAM_BOT_TOKEN);
   if(url.pathname==='/link'){
@@ -150,3 +182,4 @@ export function createHandler(dependencies={}){return async(request,env)=>{
  }catch(e){return reply({ok:false,code:e instanceof AuthError?e.code:'SERVER_UNAVAILABLE'},e instanceof AuthError?e.status:503);}
 };}
 export default {fetch:createHandler()};
+

@@ -7,6 +7,10 @@ on:
       - .github/workflows/verify-daily-tasks.yml
       - js/daily-tasks*.js
       - js/dashboard.js
+      - js/spin-core.js
+      - workers/telegram-auth.mjs
+      - scripts/prepare-spin-rewards.cjs
+      - tests/spin*
       - js/spin-sound.js
       - tests/spin-sound.test.cjs
       - pages/dashboard.html
@@ -39,6 +43,10 @@ jobs:
           distribution: temurin
           java-version: '21'
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Instant spin and authentication regression
+        run: node --test tests/spin-instant.test.mjs tests/spin-ui.test.cjs tests/telegram-auth.test.mjs tests/recovery-auth.test.mjs
+      - name: Secure spin transactions and provisioning
+        run: npm run test:spin
       - name: Spin sound
         run: node --test tests/spin-sound.test.cjs
       - name: Tap input and daily goal
@@ -53,3 +61,4 @@ jobs:
         run: |
           npm run test:purchases
           npm run test:withdrawals
+

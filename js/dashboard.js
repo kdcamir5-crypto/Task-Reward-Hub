@@ -980,17 +980,23 @@
   let spinInProgress = false, spinRotation = 0, spinTickets = [], spinHistory = [];
   let spinTicketsReady = false, spinLoadError = '', spinDay = null;
   let spinTicketsUnsubscribe = null, spinHistoryUnsubscribe = null;
+  let spinPreparing = false, spinPreparationAttempt = '', spinSubscription = 0;
+  let refreshSpinProfile = null;
 
   function subscribeSpinRewards(user) {
     if (spinTicketsUnsubscribe) spinTicketsUnsubscribe();
     if (spinHistoryUnsubscribe) spinHistoryUnsubscribe();
+    const subscription = ++spinSubscription;
+    spinPreparing = false; spinPreparationAttempt = '';
     spinDay = window.HubSpin.dayKey();
     spinTicketsReady = false; spinLoadError = ''; spinTickets = []; spinHistory = [];
     updateSpinCount();
     const tickets = db.collection('users').doc(user.uid).collection('spinTickets');
     spinTicketsUnsubscribe = tickets.where('day', '==', spinDay).onSnapshot(snapshot => {
+      if (subscription !== spinSubscription || walletUser?.uid !== user.uid) return;
       spinTickets = snapshot.docs.map(doc => ({id:doc.id, ...doc.data()})).sort((a,b) => a.slot-b.slot);
       spinTicketsReady = true; spinLoadError = ''; updateSpinCount();
+      if (spinTickets.length < 2 && !spinPreparationAttempt) prepareSpinTickets();
     }, error => {
       spinTicketsReady = false;
       spinLoadError = 'Spin লোড করা যায়নি। সংযোগ পরীক্ষা করুন অথবা support-এ যোগাযোগ করুন।';
@@ -1006,18 +1012,38 @@
     });
   }
 
+  async function prepareSpinTickets() {
+    if (spinPreparing || !walletUser || spinTickets.length >= 2) return;
+    const user = walletUser, subscription = spinSubscription;
+    spinPreparing = true; spinPreparationAttempt = user.uid + ':' + spinDay;
+    spinLoadError = ''; updateSpinCount();
+    try {
+      await window.HubSpin.prepare(user, window.TASK_REWARD_HUB_TELEGRAM_AUTH?.endpoint);
+      // Server read makes the new tickets usable without waiting for another snapshot.
+      const snapshot = await db.collection('users').doc(user.uid).collection('spinTickets').where('day','==',spinDay).get({source:'server'});
+      if (subscription !== spinSubscription || walletUser?.uid !== user.uid) return;
+      spinTickets = snapshot.docs.map(doc => ({id:doc.id,...doc.data()})).sort((a,b)=>a.slot-b.slot);
+      spinTicketsReady = true;
+    } catch (_) {
+      if (subscription !== spinSubscription || walletUser?.uid !== user.uid) return;
+      spinLoadError = 'Spin প্রস্তুত করা যায়নি। আবার চেষ্টা করুন বাটনে চাপ দিন।';
+    } finally {
+      if (subscription === spinSubscription && walletUser?.uid === user.uid) { spinPreparing = false; updateSpinCount(); }
+    }
+  }
+
   function updateSpinCount() {
     const remaining = spinTickets.filter(ticket => ticket.claimed === false).length;
     const count = document.getElementById('spin-count'), button = document.getElementById('spin-now-button');
     if (count) count.textContent = spinTicketsReady ? String(remaining) : '—';
     if (button) {
-      button.disabled = !spinTicketsReady || remaining === 0 || spinInProgress || !walletProfileAvailable;
-      button.innerHTML = spinInProgress ? 'স্পিন চলছে…' : !spinTicketsReady ? 'SPINS LOADING…' : remaining > 0 ? '<span>▶</span> SPIN &amp; WIN NOW' : spinTickets.length >= 2 ? "✓ TODAY'S SPINS USED" : 'SPINS PREPARING…';
+      button.disabled = !spinTicketsReady || spinPreparing || (remaining === 0 && spinTickets.length >= 2) || spinInProgress || !walletProfileAvailable;
+      button.innerHTML = spinInProgress ? 'স্পিন চলছে…' : !spinTicketsReady ? 'SPINS LOADING…' : spinPreparing ? 'SPIN প্রস্তুত হচ্ছে…' : remaining > 0 ? '<span>▶</span> SPIN &amp; WIN NOW' : spinTickets.length >= 2 ? "✓ TODAY'S SPINS USED" : '↻ আবার চেষ্টা করুন';
     }
     if (!spinInProgress) {
       const result = document.getElementById('spin-result-message');
       if (result && spinLoadError) result.textContent = spinLoadError;
-      else if (result && spinTicketsReady && spinTickets.length === 0) result.textContent = 'আজকের ফ্রি Spin প্রস্তুত হচ্ছে। কিছুক্ষণ পর আবার দেখুন।';
+      else if (result && spinTicketsReady && spinTickets.length === 0) result.textContent = spinPreparing ? 'আপনার ফ্রি Spin প্রস্তুত হচ্ছে…' : 'আজকের Spin চালু করতে আবার চেষ্টা করুন বাটনে চাপ দিন।';
       else if (result && result.textContent.includes('প্রস্তুত হচ্ছে')) result.textContent = 'স্পিন শুরু করতে উপরের বাটনে চাপ দিন।';
     }
   }
@@ -1045,14 +1071,18 @@
     if (spinInProgress || !walletUser || !db || !walletProfileAvailable) return;
     if (spinDay !== window.HubSpin.dayKey()) { subscribeSpinRewards(walletUser); return; }
     const ticket = spinTickets.find(item => item.claimed === false);
-    if (!ticket) { updateSpinCount(); return; }
+    if (!ticket) { await prepareSpinTickets(); return; }
     const disc = document.getElementById('spin-wheel-disc'), result = document.getElementById('spin-result-message');
     if (!disc) return;
     window.HubSpinSound?.unlock();
     spinInProgress = true; updateSpinCount();
     if (result) result.textContent = 'আপনার স্পিন যাচাই হচ্ছে…';
+    const spinningUser = walletUser;
     try {
       const outcome = await window.HubSpin.claim(db, window.firebase.firestore.FieldValue, walletUser, ticket.id);
+      if (walletUser?.uid !== spinningUser.uid) { spinInProgress = false; return; }
+      spinTickets = spinTickets.map(item => item.id === ticket.id ? {...item,claimed:true} : item);
+      refreshSpinProfile?.();
       const selected = outcome.rewardIndex, finalAngle = (360-selected*45)%360;
       // Align the selected label with the pointer on every consecutive spin.
       const delta = (finalAngle-(spinRotation%360)+360)%360;
@@ -1070,8 +1100,9 @@
       disc.addEventListener('transitionend', onTransition);
       window.HubSpinSound?.start();
       if (result) result.textContent = 'চাকা ঘুরছে… শুভকামনা!';
+      disc.style.transitionDuration = '2s';
       disc.style.transform = 'rotate('+spinRotation+'deg)';
-      window.setTimeout(finish, 5600);
+      window.setTimeout(finish, 2200);
     } catch (error) {
       window.HubSpinSound?.stop();
       spinInProgress = false; updateSpinCount();
@@ -2162,7 +2193,10 @@
     });
     const userRef = db.collection("users").doc(user.uid);
     walletDocRef = userRef;
-    profileUnsubscribe = userRef.onSnapshot(snapshot => {
+    let profileRevision = 0;
+    const applyProfileSnapshot = snapshot => {
+      if (walletUser?.uid !== user.uid) return;
+      profileRevision++;
       if (!snapshot.exists) {
         const basic = { name:user.displayName || (user.email ? user.email.split("@")[0] : "Member"), role:"member", balance:0 };
         currentReferralProfile=basic;
@@ -2200,7 +2234,15 @@
       updateSpinCount();
       renderDepositSettings(depositSettings);
       renderReferralPage();
-    }, error => {
+    };
+    refreshSpinProfile = async () => {
+      const revision = profileRevision;
+      try {
+        const snapshot = await userRef.get({source:'server'});
+        if (walletUser?.uid === user.uid && profileRevision === revision) applyProfileSnapshot(snapshot);
+      } catch (_) { /* The live listener remains active; never invent or re-credit a balance. */ }
+    };
+    profileUnsubscribe = userRef.onSnapshot(applyProfileSnapshot, error => {
       activityController?.reportError('profile');
       console.error("Task Reward Hub profile listener failed:", error);
       setText("dashboard-message", "Signed in, but Firebase could not read your profile. Check Firestore rules and your connection.");

@@ -26,6 +26,17 @@ function wrap(db){function ref(path){return {raw:S.doc(db,path),get:async()=>{co
  await test('another user and unauthenticated callers cannot read or claim these spins',async()=>{await reset();const id=await ticket(0);await assertFails(S.getDoc(S.doc(env.authenticatedContext('other').firestore(),'users/buyer/spinTickets/'+id)));await assertFails(S.getDoc(S.doc(env.unauthenticatedContext().firestore(),'users/buyer/spinTickets/'+id)));});
  await test('claim preserves an existing dollar balance without converting BDT',async()=>{await reset();await seed('users/buyer',{role:'user',balance:100,usdBalance:1.3});await Spin.claim(wrap(db),F,user,await ticket(1));assert.equal((await read('users/buyer')).usdBalance,1.5);assert.equal((await read('users/buyer')).balance,100);});
  await test('Bangladesh daily rollover occurs at UTC 18:00',async()=>{assert.equal(Spin.dayKey(Date.parse('2026-10-24T17:59:59Z'))+1,Spin.dayKey(Date.parse('2026-10-24T18:00:00Z')));});
+ await test('instant server prepares new account, concurrent requests preserve prizes and USD credits immediately',async()=>{
+  await reset();const {IdentityStore,prepareDailySpins}=await import('../workers/telegram-auth.mjs');
+  const store=new IdentityStore('demo-trh-spin',async()=>'owner',fetch,'http://127.0.0.1:8088/v1');
+  const result=await Promise.all([prepareDailySpins(store,'buyer',Date.now(),()=>1),prepareDailySpins(store,'buyer',Date.now(),()=>5)]);
+  assert.equal(result.reduce((n,r)=>n+r.prepared,0),2);
+  const id=day+'_1',before=await read('users/buyer/spinTickets/'+id);
+  await Spin.claim(wrap(db),F,user,id);
+  assert.equal((await read('users/buyer')).usdBalance,before.amountMinor/100);
+  await prepareDailySpins(store,'buyer',Date.now(),()=>0);
+  const after=await read('users/buyer/spinTickets/'+id);assert.equal(after.claimed,true);assert.equal(after.rewardIndex,before.rewardIndex);
+ });
  await test('trusted worker prepares exactly two spins for three days and never rewrites them',async()=>{
   await reset();process.env.FIRESTORE_EMULATOR_HOST='127.0.0.1:8088';const app=admin.initializeApp({projectId:'demo-trh-spin'},'spin-test'),store=app.firestore(),now=Date.now();
   try{const first=await prepare(store,admin.firestore,{now,randomIndex:()=>1});assert.equal(first.ticketsPrepared,6);const id=Spin.dayKey(now)+'_1';await Spin.claim(wrap(db),F,user,id);const again=await prepare(store,admin.firestore,{now:now+1000,randomIndex:()=>2});assert.equal(again.ticketsPrepared,0);assert.equal((await read('users/buyer/spinTickets/'+id)).rewardIndex,1);assert.equal((await read('users/buyer/spinTickets/'+id)).claimed,true);
@@ -35,3 +46,4 @@ function wrap(db){function ref(path){return {raw:S.doc(db,path),get:async()=>{co
  console.log(`All ${passed} spin integration tests passed.`);
  }finally{await env.cleanup();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
+

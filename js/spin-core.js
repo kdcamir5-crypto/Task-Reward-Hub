@@ -45,6 +45,21 @@ async function claim(db,F,user,ticketId){
   throw error;
  }
 }
-root.HubSpin={rewards,dayKey,validate,claim};
+// Authenticated request to the trusted server; no money or prize is selected here.
+const preparing=new Map();
+function prepare(user,endpoint,fetcher=globalThis.fetch){
+ if(!user?.uid||!endpoint)return Promise.reject(new Error('Spin server পাওয়া যায়নি। পরে আবার চেষ্টা করুন।'));
+ const key=user.uid+':'+dayKey();if(preparing.has(key))return preparing.get(key);
+ const pending=(async()=>{
+  const token=await user.getIdToken();
+  const response=await fetcher(endpoint.replace(/\/$/,'')+'/spin/prepare',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:'{}',credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(20000)});
+  let data;try{data=await response.json();}catch(_){throw new Error('Spin প্রস্তুত করা যায়নি। আবার চাপ দিয়ে চেষ্টা করুন।');}
+  if(!response.ok||data.ok!==true)throw new Error('Spin প্রস্তুত করা যায়নি। আবার চাপ দিয়ে চেষ্টা করুন।');
+  return data;
+ })().finally(()=>preparing.delete(key));
+ preparing.set(key,pending);return pending;
+}
+root.HubSpin={rewards,dayKey,validate,claim,prepare};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.HubSpin;
 })(typeof window==='undefined'?globalThis:window);
+
