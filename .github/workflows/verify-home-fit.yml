@@ -12,6 +12,7 @@ on:
       - css/dashboard.css
       - css/typography.css
       - js/home-fit.js
+      - js/code-claim-dialog.js
 permissions:
   contents: read
 jobs:

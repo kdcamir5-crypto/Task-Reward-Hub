@@ -21,10 +21,10 @@ body.home-fit-active .home-fit-content{position:absolute;left:50%;top:0;width:10
 .home-fit-content .explore-card strong{font-size:12px;line-height:1.15}
 .home-fit-content .explore-card small{font-size:10px;line-height:1.15;text-align:center}
 .home-fit-content .explore-card em{font-size:8px;padding:1px 3px;top:3px;right:3px}
-.home-fit-content .bot-sleep-card{flex:1;min-height:140px;padding:6px 9px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.home-fit-content .bot-sleep-card{flex:1;min-height:200px;padding:8px 10px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .home-fit-content .bot-status-row{align-self:stretch;font-size:10px;line-height:1.2}
 .home-fit-content .bot-status-row>span,.home-fit-content .bot-status-row small{padding:2px 5px}
-.home-fit-content .sleeping-bot{width:41px;height:41px;margin:0 auto;border-radius:12px;font-size:29px}
+.home-fit-content .sleeping-bot{width:64px;height:64px;margin:2px auto;border-radius:16px;font-size:44px}
 .home-fit-content .sleeping-bot span{top:-4px;font-size:12px}
 .home-fit-content .bot-sleep-card>strong{font-size:13px;line-height:1.2}
 .home-fit-content .bot-sleep-card p{max-width:100%;margin:0;font-size:11px;line-height:1.35}
@@ -35,13 +35,17 @@ body.home-fit-active .home-fit-content{position:absolute;left:50%;top:0;width:10
 .home-fit-content .referral-link-card small{margin:1px 0 0;font-size:10px;line-height:1.2}
 .home-fit-content .telegram-mark{font-size:18px}
 .home-fit-content .referral-link-card>button{min-height:28px;padding:5px 8px;border-radius:8px;font-size:11px}
-.home-fit-content .claim-card{flex:none;padding:6px 8px;border-radius:12px;box-shadow:none}
-.home-fit-content .claim-heading{gap:5px;margin-bottom:4px}
-.home-fit-content .claim-heading>span{width:23px;height:23px;border-radius:7px;font-size:15px}
-.home-fit-content .claim-heading h2{font-size:14px!important;line-height:1.2}
-.home-fit-content .claim-heading small{margin:0;font-size:10px;line-height:1.2}
-.home-fit-content #home-claim-form{gap:5px}
-.home-fit-content #home-claim-form input{height:31px;padding:5px 7px;border-radius:8px}
-.home-fit-content #home-claim-form button{padding:0 10px;border-radius:8px;font-size:12px}
-.home-fit-content #home-claim-message{margin:3px 0 0;font-size:11px;line-height:1.3;overflow-wrap:anywhere}
-.home-fit-content #home-claim-message:empty{display:none}
+
+/* Code input is available only after opening the native modal. */
+.code-claim-dialog{width:min(400px,calc(100% - 24px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:19px;background:#6241e8;color:#fff;overflow-y:auto;box-shadow:0 20px 70px #08162b66}
+.code-claim-dialog:not([open]){display:none}
+.code-claim-dialog::backdrop{background:#07152dc4;backdrop-filter:blur(6px)}
+.code-claim-dialog .claim-card{margin:0;box-shadow:none}
+.code-claim-dialog .claim-heading{align-items:center}
+.code-claim-dialog .claim-heading>div{flex:1;min-width:0}
+.code-claim-dialog .claim-heading h2{font-size:18px;line-height:1.3}
+.code-claim-dialog .claim-heading small{font-size:12px}
+#code-claim-close{flex:0 0 32px;width:32px;height:32px;border:1px solid #ffffff55;border-radius:10px;background:#ffffff1a;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.code-claim-dialog #home-claim-form input{min-height:42px}
+.code-claim-dialog #home-claim-message{line-height:1.5;overflow-wrap:anywhere}
+.code-claim-dialog #home-claim-message:empty{display:none}

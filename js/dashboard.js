@@ -1639,7 +1639,7 @@
     }catch(error){message.textContent=error.code==='permission-denied'?'Claim অনুমোদিত হয়নি। Code-এর মেয়াদ/usage limit ও নতুন Firebase rules পরীক্ষা করুন।':error.message;}
     finally{claimingRewardCode=false;button.disabled=false;}
   });
-  document.querySelectorAll('[data-code-claim-open]').forEach(button=>button.addEventListener('click',()=>{showTab('home');if (!document.body.classList.contains('home-fit-active')) document.getElementById('home-claim-form')?.scrollIntoView({block:'center',behavior:'smooth'});document.getElementById('home-claim-code')?.focus({preventScroll:true});}));
+  // Claim Code opens in its own dialog; the existing form transaction stays above.
 
   async function signOut() {
     if (!auth) {
