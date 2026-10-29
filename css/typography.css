@@ -1,6 +1,6 @@
 /* Shared readable type scale. Loaded after feature styles. */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{font-size:14px;line-height:1.5}
+body{font-size:13px;line-height:1.5}
 button,input,select,textarea{font-family:inherit}
 input:not([type=radio]):not([type=checkbox]),select,textarea{font-size:16px!important}
 main h1{font-size:22px!important;font-weight:800;line-height:1.3}
@@ -9,7 +9,7 @@ main h3{font-size:16px!important;font-weight:750;line-height:1.4}
 main p,main label{line-height:1.6}
 main p,main small,main label{overflow-wrap:anywhere}
 .reference-service strong,.explore-card strong{font-size:14px;line-height:1.35}
-.reference-service small,.explore-card small{font-size:12px;line-height:1.4}
+.reference-service small,.explore-card small{font-size:11px;line-height:1.4}
 .reference-service{min-height:94px;padding:10px 3px}
 .explore-card{height:auto;min-height:115px}
 .reference-stats .stat-card{min-width:0;min-height:94px;padding:7px 3px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;border-radius:12px}
@@ -17,15 +17,15 @@ main p,main small,main label{overflow-wrap:anywhere}
 .reference-stats .stat-card strong{margin:0;font-size:16px;line-height:1.2}
 .reference-stats .stat-label{min-height:29px;display:flex;align-items:center;justify-content:center;text-align:center}
 .reference-stats .stat-card small,.reference-stats .stat-card a{display:none}
-.reference-stats .stat-label,.reference-stats .stat-card small,.reference-stats .stat-card a{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
-.reference-stats .stat-card .tier-value{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.reference-stats .stat-label,.reference-stats .stat-card small,.reference-stats .stat-card a{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.reference-stats .stat-card .tier-value{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
 .reference-section-title,.activity-heading,.wlt-section-heading,.dpt-section-heading{flex-wrap:wrap}
 #panel-profile .profile-menu-copy strong,#panel-profile .profile-shortcut-row strong{font-size:15px;line-height:1.45}
-#panel-profile .profile-menu-copy small,#panel-profile .profile-shortcut-row small{font-size:13px;line-height:1.5}
+#panel-profile .profile-menu-copy small,#panel-profile .profile-shortcut-row small{font-size:12px;line-height:1.5}
 #panel-profile .profile-identity-copy>strong{font-size:16px}
-#panel-profile .profile-identity-copy>p{font-size:13px}
+#panel-profile .profile-identity-copy>p{font-size:12px}
 #panel-profile .profile-status-badges{gap:6px}
-#panel-profile .profile-status-badges span{font-size:12px}
+#panel-profile .profile-status-badges span{font-size:11px}
 #panel-profile .profile-telegram-title,#panel-profile .profile-vip-copy{min-width:0}
 #panel-profile .profile-telegram-badges{flex-wrap:wrap}
 .bc-details>div,.bc-referral>label,.bc-number{flex-wrap:wrap}
@@ -37,15 +37,15 @@ main p,main small,main label{overflow-wrap:anywhere}
 .dt-card-title{flex-wrap:wrap}
 .topbar .collector-details{min-width:0}
 .topbar .collector-details>strong{font-size:16px;overflow-wrap:anywhere}
-.topbar .collector-id,.topbar .verified-badge,.topbar .level-badge{font-size:12px;line-height:1.35}
-.topbar .header-slogan{position:static;font-size:12px;line-height:1.35;white-space:normal}
+.topbar .collector-id,.topbar .verified-badge,.topbar .level-badge{font-size:11px;line-height:1.35}
+.topbar .header-slogan{position:static;font-size:11px;line-height:1.35;white-space:normal}
 .topbar .collector-profile{flex-wrap:wrap}
 .topbar .header-slogan{flex-basis:100%}
-.topbar .balance-split .balance-top>span:first-child{font-size:12px;line-height:1.35;letter-spacing:0}
-.topbar .balance-split .balance-foot,.topbar .balance-split .balance-status{font-size:12px;line-height:1.4}
+.topbar .balance-split .balance-top>span:first-child{font-size:11px;line-height:1.35;letter-spacing:0}
+.topbar .balance-split .balance-foot,.topbar .balance-split .balance-status{font-size:11px;line-height:1.4}
 .topbar .balance-foot{flex-wrap:wrap;gap:3px}
 .topbar .balance-split .balance-card{height:auto;min-width:0}
-.bottom-nav .nav-item span:last-child{font-size:12px;line-height:1.3}
+.bottom-nav .nav-item span:last-child{font-size:11px;line-height:1.3}
 @media(max-width:360px){
  .topbar-row{flex-wrap:wrap}
  .topbar .collector-profile{flex:1;min-width:0}

@@ -1,14 +1,14 @@
 /* Text-post content only; shared header/navigation are untouched. */
 #panel-feed .feed-compose-actions{display:flex;justify-content:flex-end}
 #panel-feed #feed-submit{min-width:135px}
-#panel-feed .cf-status{padding:0 12px;color:#6c7c92;font-size:13px;line-height:1.6}
+#panel-feed .cf-status{padding:0 12px;color:#6c7c92;font-size:12px;line-height:1.6}
 #panel-feed .cf-post{padding:14px;margin:10px 0;border:1px solid #e1e8f1;border-radius:16px;background:#fff;color:#25334a;box-shadow:0 7px 20px #1a37660a}
 #panel-feed .cf-post-head{display:flex;align-items:center;gap:8px}
 #panel-feed .cf-avatar{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:10px;background:#e8f1ff;color:#176bd5;font-weight:800}
 #panel-feed .cf-post-head>div{flex:1;min-width:0}
 #panel-feed .cf-post-head strong{display:block;font-size:14px;overflow-wrap:anywhere}
-#panel-feed .cf-post-head small{display:block;margin-top:4px;font-size:12px;color:#7b899d;overflow-wrap:anywhere}
-#panel-feed .cf-post-head button,#panel-feed #feed-load-more{border:1px solid #dce5f0;border-radius:9px;padding:7px 9px;background:#f5f8fc;color:#365c8e;font-size:13px;cursor:pointer}
-#panel-feed .cf-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:14px;margin:13px 0 0}
+#panel-feed .cf-post-head small{display:block;margin-top:4px;font-size:11px;color:#7b899d;overflow-wrap:anywhere}
+#panel-feed .cf-post-head button,#panel-feed #feed-load-more{border:1px solid #dce5f0;border-radius:9px;padding:7px 9px;background:#f5f8fc;color:#365c8e;font-size:12px;cursor:pointer}
+#panel-feed .cf-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:13px;margin:13px 0 0}
 #panel-feed #feed-load-more{display:block;margin:12px auto}
 #panel-feed #feed-load-more[hidden]{display:none!important}
