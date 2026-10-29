@@ -1137,6 +1137,7 @@
   document.getElementById("home-all-services")?.addEventListener("click", () => {
     const heading = document.getElementById("home-services-heading");
     if (!heading) return;
+    if (document.body.classList.contains("home-fit-active")) { heading.focus({preventScroll:true}); return; }
     const header = document.querySelector(".topbar");
     const offset = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
     heading.focus({ preventScroll:true });
@@ -1638,7 +1639,7 @@
     }catch(error){message.textContent=error.code==='permission-denied'?'Claim অনুমোদিত হয়নি। Code-এর মেয়াদ/usage limit ও নতুন Firebase rules পরীক্ষা করুন।':error.message;}
     finally{claimingRewardCode=false;button.disabled=false;}
   });
-  document.querySelectorAll('[data-code-claim-open]').forEach(button=>button.addEventListener('click',()=>{showTab('home');document.getElementById('home-claim-form')?.scrollIntoView({block:'center',behavior:'smooth'});document.getElementById('home-claim-code')?.focus({preventScroll:true});}));
+  document.querySelectorAll('[data-code-claim-open]').forEach(button=>button.addEventListener('click',()=>{showTab('home');if (!document.body.classList.contains('home-fit-active')) document.getElementById('home-claim-form')?.scrollIntoView({block:'center',behavior:'smooth'});document.getElementById('home-claim-code')?.focus({preventScroll:true});}));
 
   async function signOut() {
     if (!auth) {

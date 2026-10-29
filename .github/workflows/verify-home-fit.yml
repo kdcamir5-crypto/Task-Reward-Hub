@@ -1,0 +1,33 @@
+name: Verify Home fit to page
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-home-fit.yml
+      - tests/home-fit.browser.cjs
+      - pages/dashboard.html
+      - css/home-fit.css
+      - css/header-compact.css
+      - css/dashboard.css
+      - css/typography.css
+      - js/home-fit.js
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Install isolated browser test dependency
+        run: npm install --prefix "$RUNNER_TEMP/home-fit" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+      - name: Install Chromium
+        run: '"$RUNNER_TEMP/home-fit/node_modules/.bin/playwright" install --with-deps chromium'
+      - name: Check Home at mobile, desktop and landscape sizes
+        env:
+          NODE_PATH: ${{ runner.temp }}/home-fit/node_modules
+        run: node tests/home-fit.browser.cjs

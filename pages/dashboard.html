@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="../css/daily-tasks.css?v=20261029-type-tune1">
   <link rel="stylesheet" href="../css/typography.css?v=20261029-type-tune1">
   <link rel="stylesheet" href="../css/header-compact.css?v=20261029-header1">
+  <link rel="stylesheet" href="../css/home-fit.css?v=20261029-home1">
 </head>
 <body class="reference-home-active">
   <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
@@ -72,12 +73,7 @@
 
     <main>
       <section class="home-reference-layout" aria-label="Home dashboard">
-        <section class="stats-grid reference-stats" aria-label="Account overview">
-          <article class="stat-card panel" data-referral-card tabindex="0" role="link" aria-label="Open Referral Interface"><span class="stat-icon icon-ref">♟</span><span class="stat-label">TOTAL REFERRALS</span><strong id="referrals-value">—</strong><small id="home-total-referrals-note">লোড হচ্ছে…</small><a href="#referrals">Invite & Earn ›</a></article>
-          <article class="stat-card panel" data-referral-card tabindex="0" role="link" aria-label="Open Referral Interface"><span class="stat-icon icon-task">●</span><span class="stat-label">COMPLETED</span><strong id="tasks-value">—</strong><small id="home-verified-referrals-note">লোড হচ্ছে…</small><a href="#referrals">Quality Work ›</a></article>
-          <article class="stat-card panel" data-referral-card tabindex="0" role="link" aria-label="Open Referral Interface"><span class="stat-icon icon-gold">♛</span><span class="stat-label">ACTIVE TIER</span><strong class="tier-value">যাচাই হচ্ছে…</strong><small> </small><a href="#referrals">Upgrade ›</a></article>
-          <article class="stat-card panel" data-referral-card tabindex="0" role="link" aria-label="Open Referral Interface"><span class="stat-icon icon-ref">◷</span><span class="stat-label">PENDING REFERRALS</span><strong id="home-pending-referrals">—</strong><small id="home-pending-referrals-note">লোড হচ্ছে…</small><a href="#referrals">In Progress ›</a></article>
-        </section>
+        <div class="home-fit-content">
         <section class="reference-section">
           <div class="reference-section-title"><h2>⚡ Quick Access</h2><button type="button" id="home-all-services">All Services →</button></div>
           <div class="quick-grid reference-quick-grid">
@@ -109,8 +105,7 @@
         </section>
         <section class="referral-link-card"><span class="round-link-icon">↗</span><div><strong>Your Referral Link</strong><small>Share and earn rewards</small></div><span class="telegram-mark">➤</span><button type="button" id="home-copy-referral-link">Copy Link</button></section>
         <section class="claim-card"><div class="claim-heading"><span>🎁</span><div><h2>Claim The Code</h2><small>Daily Telegram VIP Voucher</small></div></div><form id="home-claim-form"><input id="home-claim-code" type="text" maxlength="64" autocomplete="off" autocapitalize="characters" placeholder="ENTER SECRET CODE" aria-label="Enter secret code"><button type="submit">ϟ Claim</button></form><p id="home-claim-message" role="status"></p></section>
-        <section class="commission-card"><div><h2>Refer & Earn Rewards</h2><p>১ verified referral = ১ free bot। বট কেনার ৫% referral commission আলাদাভাবে প্রযোজ্য।</p><button type="button" data-referral-open>View Program →</button></div><span>🎁</span></section>
-        <section class="activity-card"><div class="activity-heading"><h2>Recent Activity History</h2><button type="button" data-ledger-open>View Ledger</button></div><p id="recent-activity-status" class="activity-empty" role="status">লেনদেন লোড হচ্ছে…</p><div id="recent-activity-list" aria-live="polite"></div></section>
+        </div>
       </section>
 
       <section id="wallet-page" class="wallet-page" data-theme="cyber" aria-labelledby="wallet-page-title" hidden>
@@ -622,7 +617,8 @@
   <script src="../js/daily-tasks-core.js?v=20261028-tasks1"></script>
   <script src="../js/daily-tasks.js?v=20261028-task-realtime1"></script>
   <script src="../js/spin-sound.js?v=20261028-sound1"></script>
-  <script src="../js/dashboard.js?v=20261029-referral2"></script>
+  <script src="../js/dashboard.js?v=20261029-home1"></script>
+  <script src="../js/home-fit.js?v=20261029-home1"></script>
 </body>
 </html>
 
