@@ -12,9 +12,13 @@ main p,main small,main label{overflow-wrap:anywhere}
 .reference-service small,.explore-card small{font-size:12px;line-height:1.4}
 .reference-service{min-height:94px;padding:10px 3px}
 .explore-card{height:auto;min-height:115px}
-.reference-stats .stat-card{min-width:0;padding:12px 4px}
+.reference-stats .stat-card{min-width:0;min-height:94px;padding:7px 3px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;border-radius:12px}
+.reference-stats .stat-icon{width:24px;height:24px;flex:0 0 24px;margin:0;font-size:14px}
+.reference-stats .stat-card strong{margin:0;font-size:16px;line-height:1.2}
+.reference-stats .stat-label{min-height:29px;display:flex;align-items:center;justify-content:center;text-align:center}
+.reference-stats .stat-card small,.reference-stats .stat-card a{display:none}
 .reference-stats .stat-label,.reference-stats .stat-card small,.reference-stats .stat-card a{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
-.reference-stats .stat-card .tier-value{font-size:14px}
+.reference-stats .stat-card .tier-value{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
 .reference-section-title,.activity-heading,.wlt-section-heading,.dpt-section-heading{flex-wrap:wrap}
 #panel-profile .profile-menu-copy strong,#panel-profile .profile-shortcut-row strong{font-size:15px;line-height:1.45}
 #panel-profile .profile-menu-copy small,#panel-profile .profile-shortcut-row small{font-size:13px;line-height:1.5}
