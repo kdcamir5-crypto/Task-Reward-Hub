@@ -54,3 +54,19 @@ main p,main small,main label{overflow-wrap:anywhere}
  .reference-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .bottom-nav .nav-item{padding-left:0;padding-right:0}
 }
+
+
+/* App-wide unified typography scale — keep feature layouts and spacing unchanged. */
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-size:12px!important;line-height:1.5!important}
+body :is(p,small,label,button,input,select,textarea,a,li,dt,dd){font-size:12px!important;line-height:1.5}
+body :is(h1,h2,h3,h4,h5,h6){font-weight:800!important;line-height:1.3}
+body h1{font-size:17px!important}
+body h2{font-size:15px!important}
+body :is(h3,h4,h5,h6){font-size:14px!important}
+body :is(.section-title,.reference-section-title,.activity-heading,.wlt-section-heading,.dpt-section-heading) :is(strong,b){font-size:14px!important;font-weight:800!important}
+body .topbar .collector-details>strong{font-size:15px!important;font-weight:800!important}
+body .balance-value strong{font-size:24px!important;font-weight:800!important}
+body .wlt-main-amount strong{font-size:27px!important;font-weight:800!important}
+body .dpt-balance-amount strong{font-size:26px!important;font-weight:800!important}
+body :is(input,select,textarea){font-family:inherit!important}
