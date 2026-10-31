@@ -280,6 +280,9 @@
     });
     const titleByTab = {home:"Home",rank:"Rank",bots:"AI Bots",feed:"Feed",profile:"Profile"};
     document.body.classList.toggle("reference-home-active", tab === "home");
+    document.body.classList.toggle("rank-tab-active", tab === "rank");
+    document.body.classList.toggle("bots-tab-active", tab === "bots");
+    document.body.classList.toggle("feed-tab-active", tab === "feed");
     const homeLayout = document.querySelector(".home-reference-layout");
     if (homeLayout) homeLayout.hidden = tab !== "home";
     document.title = titleByTab[tab] + " · Task Reward Hub";
