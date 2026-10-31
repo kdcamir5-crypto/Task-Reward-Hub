@@ -867,3 +867,10 @@ body.deposit-page-active .deposit-page:not([hidden]){display:block;width:100%;ma
 @media (prefers-reduced-motion:reduce){
   #tap-main-button,#tap-main-button:after{animation:none!important;transition:none!important}
 }
+
+
+/* Scroll spacing fix — Rank, AI Bots and Feed only. Keep one nav clearance. */
+body.rank-tab-active main,
+body.bots-tab-active main,
+body.feed-tab-active main{padding:0 16px 0}
+#panel-rank .rank-board{min-height:0}
