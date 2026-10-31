@@ -133,6 +133,8 @@
     const activeCount = running.length;
     const displayCount = totalKnown === null ? records.length : Math.max(totalKnown, records.length);
     const hasActive = activeCount > 0;
+    const unlockButton = document.getElementById("fleet-unlock-button");
+    if (unlockButton) unlockButton.textContent = displayCount > 0 ? "➕ Add More Bots" : "🤖 Unlock 1st Bot";
     const statusText = hasActive ? activeCount + (activeCount === 1 ? " Bot • Online" : " Bots • Online") : (displayCount > 0 ? displayCount + (displayCount === 1 ? " Bot • Not running" : " Bots • Not running") : "0 Bots • Offline");
     setText("fleet-header-status", (hasActive ? "🟢 " : "🔒 ") + statusText);
     setText("fleet-live-status", statusText);
