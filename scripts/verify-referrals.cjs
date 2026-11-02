@@ -37,7 +37,7 @@ async function verifyAndAward(db,F,uid,membership,now=Date.now()){
   if(existingMine.exists)return 'invalid';
   tx.create(awardRef,{inviteeUid:uid,recipientUid:d.referrerUid,ordinal,botId,instanceId,createdAt:F.FieldValue.serverTimestamp()});
   tx.create(mineRef,{botId,botName:pkg.name,durationDays:30,targetReward:pkg.target,earnedReward:0,status:'running',startedAt:F.Timestamp.fromMillis(now),source:'referral',awardId:uid,referralOrdinal:ordinal,createdAt:F.FieldValue.serverTimestamp()});
-  tx.update(referrerRef,{verifiedReferralCount:ordinal,referralBotsCount:F.FieldValue.increment(1),referrals:F.FieldValue.increment(1),updatedAt:F.FieldValue.serverTimestamp()});
+  tx.update(referrerRef,{verifiedReferralCount:ordinal,referralBotsCount:F.FieldValue.increment(1),referrals:F.FieldValue.increment(1),verificationStatus:'success',verificationSuccessAt:F.FieldValue.serverTimestamp(),verificationExpiresAt:F.Timestamp.fromMillis(now+2*60*60*1000),updatedAt:F.FieldValue.serverTimestamp()});
   tx.update(referralRef,{...flags,status:'verified',ordinal,rewardBotId:botId,verifiedAt:F.FieldValue.serverTimestamp()});
   tx.update(userRef,{referralStatus:'verified'});
   return 'awarded';
