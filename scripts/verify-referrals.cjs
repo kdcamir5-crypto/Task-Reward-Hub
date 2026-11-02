@@ -48,6 +48,7 @@ function telegramApi(token){return async(method,body={})=>{
  let data;try{data=await response.json();}catch(_){throw Error('TELEGRAM_RESPONSE_INVALID');}
  if(!response.ok||!data.ok)throw Error('TELEGRAM_API_'+String(data.error_code||response.status));return data.result;
 };}
+async function expireVerificationStatuses(db,F,now=Date.now()){const docs=await db.collection('users').where('verificationExpiresAt','<=',F.Timestamp.fromMillis(now)).get();let count=0;for(const doc of docs.docs){const d=doc.data();if(d.verificationStatus==='success'&&d.verificationExpiresAt.toMillis()<=now){await doc.ref.update({verificationStatus:'active',updatedAt:F.FieldValue.serverTimestamp()});count++;}}return count;}
 async function run(db,F,api,{now=Date.now()}={}){
  const me=await api('getMe'),hook=await api('getWebhookInfo');if(hook.url)throw Error('TELEGRAM_WEBHOOK_PRESENT_USE_DEDICATED_VERIFICATION_BOT');
  const self=await api('getChatMember',{chat_id:CHANNEL,user_id:me.id});if(!['administrator','creator'].includes(self.status))throw Error('VERIFICATION_BOT_MUST_BE_CHANNEL_ADMIN');
