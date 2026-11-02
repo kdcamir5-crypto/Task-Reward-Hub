@@ -309,7 +309,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode','referrerUid','referrerCode'])
+        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','name','fullName','phoneNumber','email','role','balance','tasks','referrals','createdAt','updatedAt','collectorId','referralCode','referrerUid','referrerCode','verificationStatus'])
         && validRegistrationReferrer(uid, request.resource.data)
         && (!('usernameLower' in request.resource.data) || !exists(/databases/$(database)/documents/usernameClaims/$(request.resource.data.usernameLower)) || getAfter(/databases/$(database)/documents/usernameClaims/$(request.resource.data.usernameLower)).data.uid == uid)
         && request.resource.data.role == 'user'
@@ -318,6 +318,7 @@ service cloud.firestore {
         && request.resource.data.referrals == 0
         && request.resource.data.collectorId.matches('^[0-9]{8}$')
         && request.resource.data.referralCode == request.resource.data.collectorId
+        && request.resource.data.get('verificationStatus','active') == 'active'
         && getAfter(/databases/$(database)/documents/collectorIds/$(request.resource.data.collectorId)).data.uid == request.auth.uid;
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastRewardCode'])
@@ -325,6 +326,20 @@ service cloud.firestore {
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'fullName', 'phone', 'phoneNumber', 'telegram', 'telegramUsername', 'profileAvatar', 'profilePhotoData', 'profileUpdatedAt'])
         && validProfileChanges();
+      // Only a newly attributed signup can set the referrer's status to pending in the same atomic batch.
+      allow update: if signedIn() && request.auth.uid != uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verificationStatus','verificationStartedAt','verificationSuccessAt','verificationExpiresAt'])
+        && request.resource.data.verificationStatus == 'pending'
+        && request.resource.data.verificationStartedAt == request.time
+        && request.resource.data.verificationSuccessAt == null
+        && request.resource.data.verificationExpiresAt == null
+        && !exists(/databases/$(database)/documents/referrals/$(request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/referrals/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/referrals/$(request.auth.uid)).data.inviteeUid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/referrals/$(request.auth.uid)).data.referrerUid == uid
+        && getAfter(/databases/$(database)/documents/referrals/$(request.auth.uid)).data.status == 'pending'
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.referrerUid == uid
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.verificationStatus == 'active';
       // Bangladesh calendar day is based on trusted request time, not the client clock.
       function bangladeshTapDay() {
         let t = request.time + duration.value(6, 'h');
