@@ -1267,22 +1267,24 @@
       document.getElementById("tap-sponsored-card"),
       ...document.querySelectorAll('[data-tap-action="ads"]')
     ].filter(Boolean);
+    const adUsage = getTapAdUsage();
+    const adLimitReached = adUsage.count >= TAP_AD_DAILY_LIMIT;
     adButtons.forEach(button => {
-      button.disabled = !progress.unlocked || monetagLaunchInProgress;
-      button.classList.toggle("tap-ad-locked", !progress.unlocked);
-      button.setAttribute("aria-disabled", String(!progress.unlocked || monetagLaunchInProgress));
+      button.disabled = !progress.unlocked || adLimitReached || monetagLaunchInProgress;
+      button.classList.toggle("tap-ad-locked", !progress.unlocked || adLimitReached);
+      button.setAttribute("aria-disabled", String(!progress.unlocked || adLimitReached || monetagLaunchInProgress));
     });
 
     const sponsoredHeading = document.querySelector("#tap-sponsored-card .tap-sponsored-copy strong");
-    if (sponsoredHeading) sponsoredHeading.textContent = progress.unlocked ? "Watch a rewarded ad" : "Complete 200 daily coins to unlock ads";
+    if (sponsoredHeading) sponsoredHeading.textContent = !progress.unlocked ? "Complete 200 daily coins to unlock ads" : (adLimitReached ? "Daily 50-ad limit reached" : "Watch a rewarded ad");
     const sponsoredCopy = document.querySelector("#tap-sponsored-card .tap-sponsored-copy em");
     if (sponsoredCopy && !monetagLaunchInProgress) {
-      sponsoredCopy.textContent = progress.unlocked
-        ? "Daily goal complete · ads unlocked"
-        : "Locked · tap " + (TAP_DAILY_TARGET - visibleCount).toLocaleString("en-US") + " more coins to unlock ads";
+      sponsoredCopy.textContent = !progress.unlocked
+        ? "Locked · tap " + (TAP_DAILY_TARGET - visibleCount).toLocaleString("en-US") + " more coins to unlock ads"
+        : (adLimitReached ? "50/50 ads used today · resets at Bangladesh midnight" : "Ads unlocked · " + adUsage.count + "/" + TAP_AD_DAILY_LIMIT + " used today");
     }
     const sponsoredTag = document.querySelector("#tap-sponsored-card .tap-sponsored-tag");
-    if (sponsoredTag) sponsoredTag.textContent = progress.unlocked ? "UNLOCKED" : "LOCKED";
+    if (sponsoredTag) sponsoredTag.textContent = !progress.unlocked ? "LOCKED" : (adLimitReached ? "LIMIT REACHED" : "UNLOCKED");
     const note = document.querySelector(".tap-feature-note");
     if (tapAdStatusDate && tapAdStatusDate !== progress.today) { tapAdStatus = ""; tapAdStatusDate = ""; }
     const noteText = tapAdStatus || (progress.unlocked
@@ -1428,6 +1430,25 @@
   const MONETAG_ZONE_ID = "12051888";
   let monetagLaunchInProgress = false;
 
+  // App-side daily ad limit. Firebase rules currently do not permit client-side USD credits.
+  const TAP_AD_DAILY_LIMIT = 50;
+  function getTapAdUsage() {
+    const today = bangladeshDateKey();
+    try {
+      const saved = JSON.parse(window.localStorage.getItem("trhTapAdUsage") || "null");
+      return saved && saved.date === today && Number.isSafeInteger(saved.count)
+        ? { date: today, count: Math.max(0, Math.min(TAP_AD_DAILY_LIMIT, saved.count)) }
+        : { date: today, count: 0 };
+    } catch (_) { return { date: today, count: 0 }; }
+  }
+  function recordTapAdUsage() {
+    const usage = getTapAdUsage();
+    if (usage.count >= TAP_AD_DAILY_LIMIT) return usage;
+    usage.count += 1;
+    try { window.localStorage.setItem("trhTapAdUsage", JSON.stringify(usage)); } catch (_) {}
+    return usage;
+  }
+
   async function launchRewardedAd(triggerButton) {
     if (monetagLaunchInProgress) return;
     if (!auth || !auth.currentUser) {
@@ -1435,6 +1456,13 @@
       return;
     }
     const dailyProgress = getTapDailyProgress();
+    const adUsage = getTapAdUsage();
+    if (adUsage.count >= TAP_AD_DAILY_LIMIT) {
+      tapAdStatus = "আজকের ৫০টি Ad শেষ। বাংলাদেশ সময় রাত ১২টায় আবার চালু হবে।";
+      showToast(tapAdStatus);
+      renderTapDailyProgress();
+      return;
+    }
     if (!dailyProgress.unlocked) {
       showToast("Ads are locked. Collect " + (TAP_DAILY_TARGET - dailyProgress.count).toLocaleString("en-US") + " more tap coins today to unlock them.");
       renderTapDailyProgress();
@@ -1481,11 +1509,13 @@
       });
 
       if (result && ["valued", "non_valued"].includes(result.reward_event_type)) {
-        tapAdStatus = "বিজ্ঞাপনের ফল পাওয়া গেছে। Reward জমা হলে wallet balance-এ দেখাবে; যাচাইয়ে সময় লাগতে পারে।";
+        const updatedAdUsage = recordTapAdUsage();
+        tapAdStatus = "Ad দেখা হয়েছে (" + updatedAdUsage.count + "/" + TAP_AD_DAILY_LIMIT + ")। USD reward-এর আসল wallet credit Worker verification-এর ওপর নির্ভর করে।";
       } else {
         tapAdStatus = "বিজ্ঞাপনের ফল নিশ্চিত হয়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
       }
       showToast(tapAdStatus);
+      renderTapDailyProgress();
     } catch (error) {
       console.error("Monetag rewarded ad launch failed:", error);
       tapAdStatus = "বিজ্ঞাপন চালু বা যাচাই করা যায়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
