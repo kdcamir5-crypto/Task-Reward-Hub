@@ -2065,11 +2065,26 @@
       active:active ? active.name : "কোনো active bot নেই" };
   }
 
+  let collectorVerificationTimer = null;
+  function renderCollectorVerificationStatus() {
+    if (collectorVerificationTimer) clearInterval(collectorVerificationTimer);
+    const profile = currentReferralProfile || {};
+    const status = String(profile.verificationStatus || "active").toLowerCase();
+    const value = profile.verificationExpiresAt;
+    const expiresAt = value && typeof value.toMillis === "function" ? value.toMillis() : value && value.seconds ? value.seconds * 1000 : 0;
+    const success = status === "success" && expiresAt > Date.now();
+    const pending = status === "pending";
+    const label = pending ? "○ Verification Pending" : success ? "✓ Verification Success" : "✓ Account Active";
+    document.querySelectorAll(".verified-badge").forEach(el => { el.textContent = label; el.title = pending ? "Referral verification pending." : success ? "Verification success; account active returns after two hours." : "Account active."; el.classList.toggle("is-verified", !pending); el.classList.toggle("is-pending", pending); });
+    if (success) collectorVerificationTimer = setInterval(() => { if (Date.now() >= expiresAt) { clearInterval(collectorVerificationTimer); document.querySelectorAll(".verified-badge").forEach(el => { el.textContent = "✓ Account Active"; el.title = "Account active."; el.classList.toggle("is-verified", true); el.classList.toggle("is-pending", false); }); } }, 15000);
+  }
+
   function renderMembership() {
     const view = membershipView(currentReferralProfile || {}, currentMiningRecords);
     const verification = view.verified ? "✓ Verified Member" : "○ Verification Pending";
     const level = "Level " + view.level + ": " + view.name;
-    document.querySelectorAll(".verified-badge, .tap-member-badge").forEach(el => {
+    renderCollectorVerificationStatus();
+    document.querySelectorAll(".tap-member-badge").forEach(el => {
       el.textContent = verification;
       el.title = "Referral link দিয়ে signup ও Telegram channel membership যাচাই সফল হলে Verified।";
       el.classList.toggle("is-verified", view.verified);
