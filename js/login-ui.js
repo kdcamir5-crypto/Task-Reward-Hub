@@ -123,15 +123,25 @@
       });
       batch.set(db.collection("users").doc(uid), {
         ...profile,
+        verificationStatus: "active",
         ...(referrer ? {referrerUid:referrer.uid, referrerCode:referrer.code} : {}),
         collectorId: collectorId,
         referralCode: collectorId
       });
-      if (referrer) batch.set(db.collection('referrals').doc(uid), {
-        inviteeUid:uid, inviteeName:profile.name, collectorId, referrerUid:referrer.uid, referrerCode:referrer.code,
-        status:'pending', purchaseVerified:false, telegramLinked:false, channelVerified:false,
-        createdAt:window.firebase.firestore.FieldValue.serverTimestamp()
-      });
+      if (referrer) {
+        const startedAt = window.firebase.firestore.FieldValue.serverTimestamp();
+        batch.set(db.collection('referrals').doc(uid), {
+          inviteeUid:uid, inviteeName:profile.name, collectorId, referrerUid:referrer.uid, referrerCode:referrer.code,
+          status:'pending', purchaseVerified:false, telegramLinked:false, channelVerified:false,
+          createdAt:startedAt
+        });
+        batch.update(db.collection('users').doc(referrer.uid), {
+          verificationStatus:'pending',
+          verificationStartedAt:startedAt,
+          verificationSuccessAt:null,
+          verificationExpiresAt:null
+        });
+      }
       try {
         await batch.commit();
         try { sessionStorage.removeItem('trh_signup_referrer'); } catch (_) {}
