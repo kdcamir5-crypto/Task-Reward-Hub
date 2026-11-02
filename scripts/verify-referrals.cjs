@@ -54,7 +54,7 @@ async function run(db,F,api,{now=Date.now()}={}){
  const self=await api('getChatMember',{chat_id:CHANNEL,user_id:me.id});if(!['administrator','creator'].includes(self.status))throw Error('VERIFICATION_BOT_MUST_BE_CHANNEL_ADMIN');
  await db.collection('appSettings').doc('referralSettings').set({channel:CHANNEL,botUsername:me.username,active:true,verificationVersion:2,purchaseRequired:false,updatedAt:F.FieldValue.serverTimestamp()});
  const stateRef=db.collection('systemState').doc('telegramReferralPolling'),state=await stateRef.get();let offset=state.exists?state.data().offset||0:0;
- const summary={linked:0,pending:0,awarded:0,already:0,invalid:0};
+ const summary={linked:0,pending:0,awarded:0,already:0,invalid:0,expired:await expireVerificationStatuses(db,F,now)};
  for(let page=0;page<10;page++){
   const updates=await api('getUpdates',{offset,limit:100,timeout:0,allowed_updates:['message']});
   for(const update of updates){
@@ -81,4 +81,4 @@ async function main(){
  const summary=await run(admin.firestore(),admin.firestore,telegramApi(process.env.TELEGRAM_VERIFICATION_BOT_TOKEN));console.log('REFERRAL_SUMMARY '+JSON.stringify(summary));
 }
 if(require.main===module)main().catch(error=>{const allowed=/^(TELEGRAM_[A-Z_0-9]+|VERIFICATION_BOT_MUST_BE_CHANNEL_ADMIN|FIREBASE_[A-Z_]+)$/;console.error(allowed.test(error.message)?error.message:'Referral verification failed; no unchecked membership is accepted.');process.exitCode=1;});
-module.exports={CHANNEL,PACKAGES,botForOrdinal,isMember,linkIdentity,verifyAndAward,run};
+module.exports={CHANNEL,PACKAGES,botForOrdinal,isMember,linkIdentity,verifyAndAward,expireVerificationStatuses,run};
