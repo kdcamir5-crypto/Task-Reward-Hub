@@ -59,3 +59,12 @@ body.profile-fit-active #panel-profile .profile-fit-content{position:absolute;le
 #telegram-confirm-submit{width:100%;min-height:38px;margin-top:12px;border:0;border-radius:9px;background:#1769d7;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
 #telegram-confirm-message{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 #user-avatar[role=button]{cursor:pointer}
+
+/* Natural-height Profile scroll: no shrink-to-fit scale or blank black tail. */
+body.profile-fit-active .app-shell>main{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+body.profile-fit-active #panel-profile{height:auto;min-height:100%;overflow:visible}
+#panel-profile .profile-fit-viewport{height:auto;min-height:100%;overflow:visible}
+body.profile-fit-active #panel-profile .profile-fit-content{position:relative;left:auto;top:auto;min-height:0;transform:none;gap:10px;padding-bottom:12px}
+#panel-profile #profile-information-form{grid-template-columns:minmax(0,1fr);gap:6px}
+#panel-profile #profile-information-form .profile-form-heading,#panel-profile #profile-save-message,#panel-profile #profile-save-button{grid-column:1}
+#panel-profile [data-profile-view=main] .profile-shortcuts-card{flex:none;justify-content:flex-start}
