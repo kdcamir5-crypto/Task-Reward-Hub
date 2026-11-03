@@ -1,0 +1,53 @@
+name: Firestore Transaction Security Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firebase.rules'
+      - 'tests/**'
+      - 'js/*-core.js'
+      - 'scripts/**'
+      - 'package.json'
+      - 'firebase.json'
+      - '.github/workflows/firestore-transaction-security.yml'
+  workflow_dispatch:
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Test profile and protected account fields
+        run: npm run test:profile
+      - name: Test bot purchase and approval
+        run: npm run test:purchases
+      - name: Test spin prize claims and wallet credits
+        run: npm run test:spin
+      - name: Test referral verification and awards
+        run: npm run test:referrals
+      - name: Test withdrawal reservation and settlement
+        run: npm run test:withdrawals
+      - name: Test reward code claims
+        run: npm run test:codes
+      - name: Test community feed security
+        run: npm run test:community
+      - name: Test daily task submissions and review
+        run: npm run test:daily-tasks
+      - name: Test Telegram identity security
+        run: npm run test:telegram:identities
+      - name: Test recovery rules
+        run: npm run test:recovery:rules
+      - name: Test leaderboard synchronization rules
+        run: npm run test:leaderboard:sync
+      - name: Test rank avatar rules
+        run: npm run test:rank:avatar:rules
+      - name: Test Tap Earning 200 rules
+        run: npm run test:tap200:rules
+      - name: Test notification rules
+        run: npm run test:notifications:rules
