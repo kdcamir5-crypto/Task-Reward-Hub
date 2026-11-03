@@ -80,7 +80,7 @@ export class IdentityStore{
  }
 }
 // Server-only, idempotent daily ticket creation. Clients never supply prize or UID.
-export const SPIN_PRIZES=Object.freeze([['BDT',1000],['USD',20],['BDT',30000],['USD',50],['BDT',5000],['USD',100],['BDT',2000],['USD',10]].map(Object.freeze));
+export const SPIN_PRIZES=Object.freeze([['BDT',100],['USD',20],['BDT',1000],['USD',500],['BDT',500],['USD',100],['BDT',200],['USD',50]].map(Object.freeze));
 export async function prepareDailySpins(store,uid,now=Date.now(),randomIndex=()=>crypto.getRandomValues(new Uint32Array(1))[0]%8){
  const day=Math.floor((now+21600000)/86400000),userPath='users/'+encodeURIComponent(uid);
  const paths=[userPath,...[1,2].map(slot=>userPath+'/spinTickets/'+day+'_'+slot)];
