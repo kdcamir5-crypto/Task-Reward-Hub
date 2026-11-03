@@ -1512,9 +1512,12 @@
         requestVar: "daily_reward"
       });
 
-      if (result && ["valued", "non_valued"].includes(result.reward_event_type)) {
-        const updatedAdUsage = recordTapAdUsage();
+      if (result && result.reward_event_type === "valued") {
+        recordTapAdUsage();
         tapAdStatus = "0.025$ reward added your usd wallet.";
+      } else if (result && result.reward_event_type === "non_valued") {
+        recordTapAdUsage();
+        tapAdStatus = "Ad completed, but Monetag did not value this view. No reward confirmed.";
       } else {
         tapAdStatus = "বিজ্ঞাপনের ফল নিশ্চিত হয়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
       }
