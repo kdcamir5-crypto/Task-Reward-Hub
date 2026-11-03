@@ -1271,22 +1271,24 @@
     ].filter(Boolean);
     const adUsage = getTapAdUsage();
     const adLimitReached = adUsage.count >= TAP_AD_DAILY_LIMIT;
+    // Use the live visible total including pending taps, rather than a stale profile snapshot.
+    const adsUnlocked = visibleCount >= TAP_DAILY_TARGET;
     adButtons.forEach(button => {
-      button.disabled = !progress.unlocked || adLimitReached || monetagLaunchInProgress;
-      button.classList.toggle("tap-ad-locked", !progress.unlocked || adLimitReached);
-      button.setAttribute("aria-disabled", String(!progress.unlocked || adLimitReached || monetagLaunchInProgress));
+      button.disabled = !adsUnlocked || tapQueueRunning || adLimitReached || monetagLaunchInProgress;
+      button.classList.toggle("tap-ad-locked", !adsUnlocked || adLimitReached);
+      button.setAttribute("aria-disabled", String(!adsUnlocked || tapQueueRunning || adLimitReached || monetagLaunchInProgress));
     });
 
     const sponsoredHeading = document.querySelector("#tap-sponsored-card .tap-sponsored-copy strong");
-    if (sponsoredHeading) sponsoredHeading.textContent = !progress.unlocked ? "Complete 200 daily coins to unlock ads" : (adLimitReached ? "Daily 50-ad limit reached" : "Watch a rewarded ad");
+    if (sponsoredHeading) sponsoredHeading.textContent = !adsUnlocked ? "Complete 200 daily coins to unlock ads" : (adLimitReached ? "Daily 50-ad limit reached" : "Watch a rewarded ad");
     const sponsoredCopy = document.querySelector("#tap-sponsored-card .tap-sponsored-copy em");
     if (sponsoredCopy && !monetagLaunchInProgress) {
-      sponsoredCopy.textContent = !progress.unlocked
+      sponsoredCopy.textContent = !adsUnlocked
         ? "Locked · tap " + (TAP_DAILY_TARGET - visibleCount).toLocaleString("en-US") + " more coins to unlock ads"
-        : (adLimitReached ? "50/50 ads used today · resets at Bangladesh midnight" : "Ads unlocked · " + adUsage.count + "/" + TAP_AD_DAILY_LIMIT + " used today");
+        : (tapQueueRunning ? "Saving your completed tap goal…" : (adLimitReached ? "50/50 ads used today · resets at Bangladesh midnight" : "Ads unlocked · " + adUsage.count + "/" + TAP_AD_DAILY_LIMIT + " used today"));
     }
     const sponsoredTag = document.querySelector("#tap-sponsored-card .tap-sponsored-tag");
-    if (sponsoredTag) sponsoredTag.textContent = !progress.unlocked ? "LOCKED" : (adLimitReached ? "LIMIT REACHED" : "UNLOCKED");
+    if (sponsoredTag) sponsoredTag.textContent = !adsUnlocked ? "LOCKED" : (adLimitReached ? "LIMIT REACHED" : (tapQueueRunning ? "SAVING" : "UNLOCKED"));
     const note = document.querySelector(".tap-feature-note");
     if (tapAdStatusDate && tapAdStatusDate !== progress.today) { tapAdStatus = ""; tapAdStatusDate = ""; }
     const noteText = tapAdStatus || (progress.unlocked
@@ -1512,7 +1514,7 @@
 
       if (result && ["valued", "non_valued"].includes(result.reward_event_type)) {
         const updatedAdUsage = recordTapAdUsage();
-        tapAdStatus = "Ad দেখা হয়েছে (" + updatedAdUsage.count + "/" + TAP_AD_DAILY_LIMIT + ")। USD reward-এর আসল wallet credit Worker verification-এর ওপর নির্ভর করে।";
+        tapAdStatus = "0.025$ reward added your usd wallet.";
       } else {
         tapAdStatus = "বিজ্ঞাপনের ফল নিশ্চিত হয়নি। Reward জমা হলে wallet balance-এ দেখাবে।";
       }
