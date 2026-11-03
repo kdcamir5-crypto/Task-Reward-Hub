@@ -2,14 +2,14 @@
 (function(root){
 'use strict';
 const rewards=Object.freeze([
- {label:'৳১',currency:'BDT',amountMinor:100},
- {label:'$0.20',currency:'USD',amountMinor:20},
- {label:'৳২',currency:'BDT',amountMinor:200},
- {label:'$0.50',currency:'USD',amountMinor:50},
- {label:'৳৫',currency:'BDT',amountMinor:500},
- {label:'$1.00',currency:'USD',amountMinor:100},
  {label:'৳১০',currency:'BDT',amountMinor:1000},
- {label:'$5.00',currency:'USD',amountMinor:500}
+ {label:'$0.20',currency:'USD',amountMinor:20},
+ {label:'৳৩০০',currency:'BDT',amountMinor:30000},
+ {label:'$0.50',currency:'USD',amountMinor:50},
+ {label:'৳৫০',currency:'BDT',amountMinor:5000},
+ {label:'$1.00',currency:'USD',amountMinor:100},
+ {label:'৳২০',currency:'BDT',amountMinor:2000},
+ {label:'$0.10',currency:'USD',amountMinor:10}
 ].map(Object.freeze));
 function dayKey(now=Date.now()){return Math.floor((now+21600000)/86400000);}
 function validate(ticket){
