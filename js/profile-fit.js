@@ -15,8 +15,7 @@
   const height=Math.max(1,Math.min(window.innerHeight,window.visualViewport?.height||window.innerHeight));
   set('--profile-viewport-height',height+'px');
   set('--profile-nav-space',Math.max(0,height-nav.getBoundingClientRect().top)+'px');
-  const content=views.find(view=>!view.hidden),natural=content?.scrollHeight,available=viewport.clientHeight;
-  if(natural>0&&available>0)set('--profile-fit-scale',String(Math.min(1,Math.max(0,available-1)/natural)));
+  set('--profile-fit-scale','1');
  }
  function recoveryTab(tab){
   panel.querySelectorAll('[data-recovery-tab]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.recoveryTab===tab)));
