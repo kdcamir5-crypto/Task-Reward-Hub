@@ -998,7 +998,8 @@
       if (subscription !== spinSubscription || walletUser?.uid !== user.uid) return;
       spinTickets = snapshot.docs.map(doc => ({id:doc.id, ...doc.data()})).sort((a,b) => a.slot-b.slot);
       spinTicketsReady = true; spinLoadError = ''; updateSpinCount();
-      if (spinTickets.length < 2 && !spinPreparationAttempt) prepareSpinTickets();
+      const needsRepair = spinTickets.some(ticket => ticket.claimed === false && (!Number.isInteger(ticket.rewardIndex) || !spinRewards[ticket.rewardIndex] || ticket.currency !== spinRewards[ticket.rewardIndex].currency || ticket.amountMinor !== spinRewards[ticket.rewardIndex].amountMinor));
+      if ((spinTickets.length < 2 || needsRepair) && !spinPreparationAttempt) prepareSpinTickets();
     }, error => {
       spinTicketsReady = false;
       spinLoadError = 'Spin লোড করা যায়নি। সংযোগ পরীক্ষা করুন অথবা support-এ যোগাযোগ করুন।';
@@ -1015,7 +1016,8 @@
   }
 
   async function prepareSpinTickets() {
-    if (spinPreparing || !walletUser || spinTickets.length >= 2) return;
+    const needsRepair = spinTickets.some(ticket => ticket.claimed === false && (!Number.isInteger(ticket.rewardIndex) || !spinRewards[ticket.rewardIndex] || ticket.currency !== spinRewards[ticket.rewardIndex].currency || ticket.amountMinor !== spinRewards[ticket.rewardIndex].amountMinor));
+    if (spinPreparing || !walletUser || (spinTickets.length >= 2 && !needsRepair)) return;
     const user = walletUser, subscription = spinSubscription;
     spinPreparing = true; spinPreparationAttempt = user.uid + ':' + spinDay;
     spinLoadError = ''; updateSpinCount();
