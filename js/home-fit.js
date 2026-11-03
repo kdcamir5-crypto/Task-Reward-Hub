@@ -16,8 +16,7 @@
   set('--home-viewport-height',height+'px');
   const navRect=nav.getBoundingClientRect();
   set('--home-nav-space',Math.max(0,height-navRect.top)+'px');
-  const available=home.clientHeight,natural=content.scrollHeight;
-  if(available>0&&natural>0)set('--home-fit-scale',String(Math.min(1,Math.max(0,available-1)/natural)));
+  set('--home-fit-scale','1');
  }
  function schedule(){if(!frame)frame=requestAnimationFrame(update);}
  new MutationObserver(schedule).observe(body,{attributes:true,attributeFilter:['class']});
