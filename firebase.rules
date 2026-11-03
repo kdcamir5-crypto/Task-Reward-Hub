@@ -405,7 +405,9 @@ service cloud.firestore {
       allow update: if signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasAny(['activeWithdrawalId'])
         && reservedWithdrawal(uid, request.resource.data.activeWithdrawalId);
-      allow update: if isAdmin();
+      // Admin user-profile reads are allowed, but profile updates must use the
+      // narrowly validated transaction paths above. This prevents unrestricted
+      // admin edits to roles, balances, referral state, and account identity.
       match /codeClaims/{code} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
         allow create: if signedIn() && request.auth.uid == uid
