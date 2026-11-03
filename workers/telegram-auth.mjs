@@ -89,15 +89,18 @@ export async function prepareDailySpins(store,uid,now=Date.now(),randomIndex=()=
   try{
    const [profile,...tickets]=await store.read(paths,transaction);
    if(!profile)fail('PROFILE_MISSING',409);
-   if(tickets.every(Boolean))return {day,prepared:0};
    const name=store.root.replace(/^https?:\/\/[^/]+\/v1\//,'');
    const writes=[];
    tickets.forEach((ticket,index)=>{
-    if(ticket)return;
+    // Repair old prize-table tickets only while unclaimed; completed receipts stay immutable.
+    if(ticket&&ticket.claimed===true)return;
     const rewardIndex=randomIndex(),prize=SPIN_PRIZES[rewardIndex];
     if(!Number.isInteger(rewardIndex)||!prize)fail('SERVER_UNAVAILABLE',503);
-    writes.push({update:{name:name+'/'+paths[index+1],fields:{uid:{stringValue:uid},day:{integerValue:String(day)},slot:{integerValue:String(index+1)},rewardIndex:{integerValue:String(rewardIndex)},currency:{stringValue:prize[0]},amountMinor:{integerValue:String(prize[1])},claimed:{booleanValue:false},claimedAt:{nullValue:null}}},currentDocument:{exists:false},updateTransforms:[{fieldPath:'createdAt',setToServerValue:'REQUEST_TIME'}]});
+    const fields={uid:{stringValue:uid},day:{integerValue:String(day)},slot:{integerValue:String(index+1)},rewardIndex:{integerValue:String(rewardIndex)},currency:{stringValue:prize[0]},amountMinor:{integerValue:String(prize[1])},claimed:{booleanValue:false},claimedAt:{nullValue:null}};
+    if(ticket)writes.push({update:{name:name+'/'+paths[index+1],fields},updateMask:{fieldPaths:Object.keys(fields)},currentDocument:{exists:true}});
+    else writes.push({update:{name:name+'/'+paths[index+1],fields},currentDocument:{exists:false},updateTransforms:[{fieldPath:'createdAt',setToServerValue:'REQUEST_TIME'}]});
    });
+   if(!writes.length)return {day,prepared:0};
    await store.call(':commit',{transaction,writes});committed=true;return {day,prepared:writes.length};
   }catch(e){if(attempt===3||!['ABORTED','FAILED_PRECONDITION','ALREADY_EXISTS'].includes(e.upstream))throw e;}
   finally{if(!committed)try{await store.call(':rollback',{transaction});}catch(_){}}
