@@ -49,3 +49,10 @@ body.home-fit-active .home-fit-content{position:absolute;left:50%;top:0;width:10
 .code-claim-dialog #home-claim-form input{min-height:42px}
 .code-claim-dialog #home-claim-message{line-height:1.5;overflow-wrap:anywhere}
 .code-claim-dialog #home-claim-message:empty{display:none}
+
+/* Natural-height scroll layout: keep header/nav fixed, scroll only Home content. */
+body.home-fit-active .app-shell>main{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+body.home-fit-active .home-reference-layout:not([hidden]){height:auto;min-height:100%;overflow:visible}
+body.home-fit-active .home-fit-content{position:relative;left:auto;top:auto;width:100%;min-height:0;justify-content:flex-start;transform:none;gap:8px;padding-bottom:12px}
+body.home-fit-active .home-fit-content>.reference-section{flex:none}
+body.home-fit-active .home-fit-content .bot-sleep-card{flex:none;min-height:160px}
